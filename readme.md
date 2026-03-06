@@ -57,38 +57,6 @@ Key highlights:
 
 ---
 
-
-```
-digivents/
-├── backend/                  # Strapi v5 headless CMS
-│   ├── config/               # Server, database, plugin & middleware config
-│   ├── database/migrations/  # Database migration files
-│   ├── public/uploads/       # Uploaded media assets
-│   ├── scripts/              # Seed scripts
-│   ├── src/
-│   │   ├── api/              # Content-type APIs (controllers, routes, services)
-│   │   ├── components/       # Shared Strapi components (SEO, media, etc.)
-│   │   └── extensions/       # Strapi extension overrides
-│   └── types/generated/      # Auto-generated TypeScript definitions
-│
-├── frontend/                 # React SPA
-│   ├── public/               # Static HTML entry point
-│   ├── src/
-│   │   ├── assets/           # Static assets (images, fonts, etc.)
-│   │   ├── components/       # Reusable UI components
-│   │   ├── data/             # API service layer & data-fetching utilities
-│   │   ├── pages/            # Route-level page components
-│   │   ├── animations.js     # Framer Motion animation utilities
-│   │   ├── App.js            # Root application component & routing
-│   │   └── index.css         # Global styles & Tailwind directives
-│   ├── tailwind.config.js    # Tailwind CSS configuration
-│   └── postcss.config.js     # PostCSS configuration
-│
-└── readme.md                 # ← You are here
-```
-
----
-
 ## Prerequisites
 
 - **Node.js** ≥ 20.x (LTS recommended)

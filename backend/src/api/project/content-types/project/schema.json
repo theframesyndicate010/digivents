@@ -1,0 +1,78 @@
+{
+  "kind": "collectionType",
+  "collectionName": "projects",
+  "info": {
+    "singularName": "project",
+    "pluralName": "projects",
+    "displayName": "Project",
+    "description": "Portfolio projects"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true,
+      "maxLength": 200
+    },
+    "slug": {
+      "type": "uid",
+      "targetField": "name"
+    },
+    "description": {
+      "type": "richtext"
+    },
+    "media": {
+      "type": "media",
+      "multiple": true,
+      "required": false,
+      "allowedTypes": ["images", "videos"]
+    },
+    "tag": {
+      "type": "string",
+      "maxLength": 100
+    },
+    "instagramLink": {
+      "type": "string",
+      "maxLength": 255
+    },
+    "tiktokLink": {
+      "type": "string",
+      "maxLength": 255
+    },
+    "facebookLink": {
+      "type": "string",
+      "maxLength": 255
+    },
+    "youtubeLink": {
+      "type": "string",
+      "maxLength": 255
+    },
+    "videoUrl": {
+      "type": "string",
+      "maxLength": 500
+    },
+    "likes": {
+      "type": "integer",
+      "default": 0,
+      "min": 0
+    },
+    "createdDate": {
+      "type": "date"
+    },
+    "client": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::client.client",
+      "inversedBy": "projects"
+    },
+    "workers": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::worker.worker",
+      "mappedBy": "projects"
+    }
+  }
+}

@@ -1,12 +1,15 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
 import { pageTransition, fadeInUp, staggerContainer } from '../animations';
 import { PlayCircle, Mouse, Search } from 'lucide-react';
+import { fetchAllProjects } from '../data/projectsApi';
 
 const ProjectsPage = () => {
   const heroRef = useRef(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterType, setFilterType] = useState('all');
+  const [projects, setProjects] = useState([]);
+  const [loading, setLoading] = useState(true);
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ['start start', 'end start'] });
   const bgY = useTransform(scrollYProgress, [0, 1], ['0%', '30%']);
   const bgScale = useTransform(scrollYProgress, [0, 1], [1, 1.15]);
@@ -14,26 +17,33 @@ const ProjectsPage = () => {
   const textOpacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
   const overlayOpacity = useTransform(scrollYProgress, [0, 0.8], [0.3, 0.85]);
 
-  // Mock Data - Updated for vertical orientation
-  const projects = [
-    { id: 1, title: "Summer Campaign", type: "video", album: "Marketing 2024", client: "Nike", creator: "Alex River", date: "2024-03-01", thumb: "https://images.unsplash.com/photo-1536240478700-b869070f9279?w=600&q=80" },
-    { id: 2, title: "Brand Identity", type: "graphic", album: "Branding", client: "Apple", creator: "Sarah Chen", date: "2024-02-28", thumb: "https://images.unsplash.com/photo-1626785774573-4b799315345d?w=600&q=80" },
-    { id: 3, title: "Product Launch", type: "video", album: "Marketing 2024", client: "Tesla", creator: "Alex River", date: "2024-03-05", thumb: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=600&q=80" },
-    { id: 4, title: "Social Headers", type: "graphic", album: "Social Media", client: "Nike", creator: "Jordan Lee", date: "2024-01-15", thumb: "https://images.unsplash.com/photo-1557683316-973673baf926?w=600&q=80" },
-    { id: 5, title: "Cinematic Intro", type: "video", album: "VFX", client: "Netflix", creator: "Sarah Chen", date: "2024-03-10", thumb: "https://images.unsplash.com/photo-1485846234645-a62644f84728?w=600&q=80" },
-    { id: 6, title: "Logo Variations", type: "graphic", album: "Branding", client: "Starbucks", creator: "Jordan Lee", date: "2023-12-01", thumb: "https://images.unsplash.com/photo-1541462608141-ad516aeb6a30?w=600&q=80" },
-  ];
+  useEffect(() => {
+    fetchAllProjects()
+      .then((data) => setProjects(data))
+      .catch((error) => {
+        console.error('Failed to fetch projects:', error);
+        setProjects([]);
+      })
+      .finally(() => setLoading(false));
+  }, []);
 
-  const filteredProjects = projects.filter(project => {
-    const matchesSearch = 
-      project.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      project.client.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      project.creator.toLowerCase().includes(searchQuery.toLowerCase());
-      
-    const matchesFilter = filterType === 'all' || project.type === filterType;
-    
-    return matchesSearch && matchesFilter;
-  });
+  const filteredProjects = useMemo(() => {
+    return projects.filter((project) => {
+      const projectType = project.videoUrl ? 'video' : 'graphic';
+      const creator = project.workers?.[0]?.name || '';
+      const query = searchQuery.toLowerCase().trim();
+
+      const matchesSearch =
+        project.title.toLowerCase().includes(query) ||
+        (project.client || '').toLowerCase().includes(query) ||
+        creator.toLowerCase().includes(query) ||
+        (project.category || '').toLowerCase().includes(query);
+
+      const matchesFilter = filterType === 'all' || projectType === filterType;
+
+      return matchesSearch && matchesFilter;
+    });
+  }, [projects, searchQuery, filterType]);
 
   return (
     <motion.div
@@ -145,14 +155,35 @@ const ProjectsPage = () => {
                 animate="visible"
                 className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6"
               >
-                {filteredProjects.map(project => (
+                {loading && (
+                  Array.from({ length: 8 }).map((_, index) => (
+                    <div
+                      key={`skeleton-${index}`}
+                      className="bg-darkGray rounded-xl overflow-hidden aspect-[9/16] border border-white/5 animate-pulse"
+                    >
+                      <div className="w-full h-full bg-white/5" />
+                    </div>
+                  ))
+                )}
+
+                {!loading && filteredProjects.map((project) => {
+                  const projectType = project.videoUrl ? 'video' : 'graphic';
+                  const creator = project.workers?.[0]?.name || 'Digivents Team';
+                  const imageSrc = project.image || 'https://images.unsplash.com/photo-1529074963764-98f45c47344b?w=800&q=80';
+
+                  return (
                   <motion.div 
                     key={project.id} 
                     variants={fadeInUp}
                     className="group relative bg-darkGray rounded-xl overflow-hidden aspect-[9/16] cursor-pointer"
+                    onClick={() => {
+                      if (project.videoUrl) {
+                        window.open(project.videoUrl, '_blank', 'noopener,noreferrer');
+                      }
+                    }}
                   >
                     <img 
-                      src={project.thumb} 
+                      src={imageSrc}
                       alt={project.title} 
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                     />
@@ -171,19 +202,30 @@ const ProjectsPage = () => {
                     <div className="absolute bottom-0 left-0 w-full p-4 transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
                       <div className="flex items-center gap-2 mb-2">
                         <span className="px-2 py-0.5 bg-accent1 text-white text-[9px] font-bold rounded-md uppercase tracking-wider">
-                           {project.type === 'video' ? 'Reel' : 'Design'}
+                           {projectType === 'video' ? 'Reel' : 'Design'}
                         </span>
                       </div>
                       <h3 className="font-bold text-white text-sm md:text-base leading-snug line-clamp-2 mb-1">
                         {project.title}
                       </h3>
                       <p className="text-white/60 text-xs font-medium truncate">
-                        {project.client} • {project.creator}
+                        {project.client || project.category || 'Client'} • {creator}
                       </p>
                     </div>
                   </motion.div>
-                ))}
+                )})}
               </motion.div>
+
+              {!loading && filteredProjects.length === 0 && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="text-center py-16"
+                >
+                  <p className="text-white/35 text-lg">No projects found</p>
+                  <p className="text-white/20 text-sm mt-2">Try another search or filter.</p>
+                </motion.div>
+              )}
           </AnimatePresence>
         </main>
       </div>

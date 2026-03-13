@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { fetchAllClients } from '../data/clientsApi';
+import ClientModal from './ClientModal';
 
 const BrandPartners = () => {
   const [clients, setClients] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedClient, setSelectedClient] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     fetchAllClients()
@@ -47,6 +50,10 @@ const BrandPartners = () => {
                     y: -5,
                     transition: { duration: 0.3 },
                   }}
+                  onClick={() => {
+                    setSelectedClient(client);
+                    setIsModalOpen(true);
+                  }}
                   className="group flex items-center gap-2 cursor-pointer"
                 >
                   <motion.div
@@ -65,6 +72,12 @@ const BrandPartners = () => {
               ))}
         </div>
       </div>
+      
+      <ClientModal 
+        client={selectedClient} 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
+      />
     </section>
   );
 };

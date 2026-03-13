@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { motion, useScroll, useTransform, useVelocity, useMotionValueEvent, useSpring } from 'framer-motion';
 import { HiArrowRight, HiOutlineArrowNarrowRight } from 'react-icons/hi';
-import { FiClipboard, FiVideo, FiFilm, FiMonitor, FiCamera, FiMic, FiZap, FiLayers, FiCheckCircle } from 'react-icons/fi';
+import { FiClipboard, FiVideo, FiFilm, FiMonitor, FiCamera, FiMic, FiZap, FiLayers, FiCheckCircle, FiUsers, FiFileText, FiMessageSquare, FiBox, FiPenTool } from 'react-icons/fi';
 import { pageTransition } from '../animations';
 
 const phases = [
@@ -42,6 +42,39 @@ const stats = [
   { value: '50+', label: 'Happy Clients' },
   { value: '3x', label: 'Avg. ROI Increase' },
   { value: '24/7', label: 'Dedicated Support' },
+];
+
+const onboardingSteps = [
+  {
+    icon: <FiUsers />,
+    title: 'Coordinate',
+    description: 'We meet with you to understand your vision, goals, and brand identity.',
+    step: '01'
+  },
+  {
+    icon: <FiFileText />,
+    title: 'Requirements',
+    description: 'We analyze exactly what services and solutions fit your business needs.',
+    step: '02'
+  },
+  {
+    icon: <FiMessageSquare />,
+    title: 'Team Discussion',
+    description: 'Our experts brainstorm to craft the perfect strategy for your campaign.',
+    step: '03'
+  },
+  {
+    icon: <FiBox />,
+    title: 'Package Selection',
+    description: 'We propose the best service package tailored to your budget and goals.',
+    step: '04'
+  },
+  {
+    icon: <FiPenTool />,
+    title: 'Agreement',
+    description: 'We finalize the contract and kick off the project immediately.',
+    step: '05'
+  },
 ];
 
 // Fold-away section wrapper — folds on desktop always, on mobile only if mobileEnabled
@@ -389,6 +422,64 @@ const ServicesPage = () => {
           </div>
         </section>
       </SlideAwaySection>
+
+      {/* ─── HOW WE WORK ─── */}
+      <section className="section-padding bg-dark relative border-t border-white/5">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+            className="text-center mb-16"
+          >
+            <span className="text-white/40 text-sm uppercase tracking-[0.2em] font-medium">Workflow</span>
+            <h2 className="section-title mt-3">How We <span className="gradient-text">Work</span></h2>
+            <motion.div
+              initial={{ width: 0 }}
+              whileInView={{ width: '5rem' }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.3, duration: 0.6 }}
+              className="h-[2px] bg-gradient-to-r from-accent1 to-accent2 mx-auto mt-5 rounded-full"
+            />
+          </motion.div>
+
+          <div className="relative">
+             {/* Connecting line for desktop */}
+            <div className="hidden lg:block absolute top-12 left-[10%] right-[10%] h-[1px] bg-gradient-to-r from-white/5 via-white/20 to-white/5 -z-0" />
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
+              {onboardingSteps.map((step, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.1, duration: 0.5 }}
+                  className="relative group"
+                >
+                   {/* Step Number Circle */}
+                  <div className="w-24 h-24 mx-auto bg-darkGray border border-white/10 rounded-full flex items-center justify-center mb-6 group-hover:border-accent1/50 transition-colors duration-300 relative z-10">
+                    <div className="text-3xl text-white/80 group-hover:text-accent1 transition-colors duration-300">
+                      {step.icon}
+                    </div>
+                    <div className="absolute -top-2 -right-2 w-8 h-8 bg-gradient-to-r from-accent1 to-accent2 rounded-full flex items-center justify-center text-[10px] font-bold text-white">
+                      {step.step}
+                    </div>
+                  </div>
+
+                  <div className="text-center px-2">
+                    <h3 className="text-lg font-bold text-white mb-3">{step.title}</h3>
+                    <p className="text-white/40 text-sm leading-relaxed">
+                      {step.description}
+                    </p>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* ─── CTA SECTION ─── */}
       <section className="relative py-24 sm:py-32 overflow-hidden">

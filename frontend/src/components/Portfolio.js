@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { HiArrowRight, HiHeart, HiPlay } from 'react-icons/hi';
-import { SiTiktok } from 'react-icons/si';
+import { SiTiktok, SiInstagram } from 'react-icons/si';
 import { Link } from 'react-router-dom';
 import { fadeInUp, staggerContainer } from '../animations';
 import { fetchFeaturedProjects } from '../data/projectsApi';
@@ -13,11 +13,28 @@ const getTikTokVideoId = (url) => {
   return match ? match[1] : null;
 };
 
+/* ── Helper: extract Instagram post/reel ID ───────────────────── */
+const getInstagramPostId = (url) => {
+  if (!url) return null;
+  const match = url.match(/instagram\.com\/(?:reel|p)\/([A-Za-z0-9_-]+)/);
+  return match ? match[1] : null;
+};
+
+/* ── Detect platform type ──────────────────────────────────────── */
+const getProjectPlatform = (project) => {
+  const tiktokUrl = project.videoUrl || project.socialLinks?.tiktok || '';
+  const instaUrl = project.socialLinks?.instagram || '';
+  if (getTikTokVideoId(tiktokUrl)) return 'tiktok';
+  if (getInstagramPostId(instaUrl)) return 'instagram';
+  return null;
+};
+
 /* ── Mini TikTok Card for homepage ────────────────────────────── */
 const MiniProjectCard = ({ project, index }) => {
   const [liked, setLiked] = useState(false);
-  const videoUrl = project.videoUrl || project.socialLinks?.tiktok || '';
-  const hasTikTok = !!getTikTokVideoId(videoUrl);
+  const platform = getProjectPlatform(project);
+  const hasVideo = !!platform;
+  const PlatformIcon = platform === 'instagram' ? SiInstagram : SiTiktok;
 
   return (
     <motion.div
@@ -40,7 +57,7 @@ const MiniProjectCard = ({ project, index }) => {
           )}
 
           {/* Play overlay */}
-          {hasTikTok && (
+          {hasVideo && (
             <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
               <div className="w-12 h-12 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center border border-white/20">
                 <HiPlay className="text-white text-lg ml-0.5" />
@@ -48,11 +65,11 @@ const MiniProjectCard = ({ project, index }) => {
             </div>
           )}
 
-          {/* TikTok badge */}
-          {hasTikTok && (
+          {/* Platform badge */}
+          {hasVideo && (
             <div className="absolute top-3 left-3">
               <div className="w-7 h-7 bg-black/50 backdrop-blur-sm rounded-full flex items-center justify-center">
-                <SiTiktok className="text-white/80 text-xs" />
+                <PlatformIcon className="text-white/80 text-xs" />
               </div>
             </div>
           )}
@@ -115,6 +132,7 @@ const Portfolio = ({ limit }) => {
               transition={{ delay: 0.2 }}
               className="text-white/50 text-sm uppercase tracking-widest font-medium inline-flex items-center gap-2"
             >
+              <SiInstagram className="text-base" />
               <SiTiktok className="text-base" /> Portfolio
             </motion.span>
             <motion.h2

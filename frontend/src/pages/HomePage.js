@@ -9,7 +9,6 @@ import Industries from '../components/Industries';
 import About from '../components/About';
 import Testimonials from '../components/Testimonials';
 import FAQ from '../components/FAQ';
-import Blog from '../components/Blog';
 import Contact from '../components/Contact';
 
 const HomePage = () => {
@@ -23,7 +22,6 @@ const HomePage = () => {
       <About />
       <Testimonials />
       <FAQ />
-      <Blog />
       <Contact />
     </motion.div>
   );

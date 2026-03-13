@@ -1,8 +1,25 @@
 const path = require('path');
 
+const getPostgresUrl = (env) => {
+  const url = env('DATABASE_URL');
+  if (!url || url.includes('<') || url.includes('>')) return null;
+  try {
+    const parsed = new URL(url);
+    if (parsed.protocol !== 'postgres:' && parsed.protocol !== 'postgresql:') return null;
+    return url;
+  } catch {
+    return null;
+  }
+};
+
 module.exports = ({ env }) => ({
+  // Use postgres by default in production (Strapi Cloud), sqlite in local development.
+  // DATABASE_CLIENT always has highest priority when explicitly provided.
   connection: {
-    client: env('DATABASE_CLIENT', 'sqlite'),
+    client: env(
+      'DATABASE_CLIENT',
+      getPostgresUrl(env) ? 'postgres' : env('NODE_ENV') === 'production' ? 'postgres' : 'sqlite'
+    ),
     ...({
       mysql: {
         connection: {
@@ -24,7 +41,7 @@ module.exports = ({ env }) => ({
       },
       postgres: {
         connection: {
-          connectionString: env('DATABASE_URL'),
+          ...(getPostgresUrl(env) ? { connectionString: getPostgresUrl(env) } : {}),
           host: env('DATABASE_HOST', 'localhost'),
           port: env.int('DATABASE_PORT', 5432),
           database: env('DATABASE_NAME', 'strapi'),
@@ -33,7 +50,7 @@ module.exports = ({ env }) => ({
           ssl: env.bool('DATABASE_SSL', false) && {
             rejectUnauthorized: env.bool('DATABASE_SSL_REJECT_UNAUTHORIZED', true),
           },
-          schema: env('DATABASE_SCHEMA', 'public'),
+          schema: env('DATABASE_SCHEMA', env('DATABASE_SHEMA', 'public')),
         },
         pool: { min: env.int('DATABASE_POOL_MIN', 2), max: env.int('DATABASE_POOL_MAX', 10) },
       },
@@ -43,6 +60,11 @@ module.exports = ({ env }) => ({
         },
         useNullAsDefault: true,
       },
-    }[env('DATABASE_CLIENT', 'sqlite')]),
+    }[
+      env(
+        'DATABASE_CLIENT',
+        getPostgresUrl(env) ? 'postgres' : env('NODE_ENV') === 'production' ? 'postgres' : 'sqlite'
+      )
+    ]),
   },
 });

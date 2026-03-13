@@ -9,7 +9,15 @@ module.exports = [
         "useDefaults": true,
         "directives": {
           "connect-src": ["'self'", "https:"],
-          "img-src": [
+          "img-src": [          {
+            name: 'strapi::cors',
+            config: {
+              origin: ['https://digivents.com.np', 'http://localhost:3000'],
+              methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'OPTIONS'],
+              headers: ['Content-Type', 'Authorization', 'Origin', 'Accept'],
+              keepHeaderOnError: true,
+            },
+          },
             "'self'",
             "data:",
             "blob:",

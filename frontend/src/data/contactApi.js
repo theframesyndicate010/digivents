@@ -74,19 +74,26 @@ export const fetchFormFields = async () => {
 // Submit contact form to Strapi
 export const sendMessage = async (formData) => {
   try {
-    console.log('[Contact API] Sending message:', formData);
+    console.log('[Contact API] Raw formData:', formData);
     
+    // Build the payload with exact field names from form
     const payload = {
       data: {
-        firstName: formData['First Name']?.trim() || '',
-        lastName: formData['Last Name']?.trim() || '',
-        email: formData['Email']?.trim() || '',
-        subject: formData['Subject']?.trim() || '',
-        message: formData['Message']?.trim() || '',
+        firstName: (formData['First Name'] || '').trim(),
+        lastName: (formData['Last Name'] || '').trim(),
+        email: (formData['Email'] || '').trim(),
+        subject: (formData['Subject'] || '').trim(),
+        message: (formData['Message'] || '').trim(),
       },
     };
 
-    console.log('[Contact API] Payload:', payload);
+    console.log('[Contact API] Prepared payload:', JSON.stringify(payload, null, 2));
+
+    // Validate all required fields are present and not empty
+    if (!payload.data.firstName) throw new Error('First Name is required');
+    if (!payload.data.lastName) throw new Error('Last Name is required');
+    if (!payload.data.email) throw new Error('Email is required');
+    if (!payload.data.message) throw new Error('Message is required');
 
     const response = await apiFetch('/contacts', {
       method: 'POST',
@@ -99,7 +106,8 @@ export const sendMessage = async (formData) => {
       message: 'Your message has been sent successfully! We\'ll get back to you soon.' 
     };
   } catch (error) {
-    console.error('[Contact API] Failed to send message:', error);
+    console.error('[Contact API] Full error:', error);
+    console.error('[Contact API] Error message:', error.message);
     throw new Error(error.message || 'Failed to send message. Please try again.');
   }
 };

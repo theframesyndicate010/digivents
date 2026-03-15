@@ -254,6 +254,7 @@ const ContactPage = () => {
                             <input
                               type="text"
                               placeholder={ph}
+                              value={formData[ph] || ''}
                               onChange={(e) => handleInputChange(ph, e.target.value)}
                               className="w-full bg-dark/60 border border-white/[0.1] rounded-xl px-5 py-3.5 text-white placeholder:text-white/25 focus:border-accent1 focus:bg-dark/80 focus:outline-none focus:ring-2 focus:ring-accent1/30 transition-all duration-300 text-sm font-medium hover:border-white/20"
                             />
@@ -273,6 +274,7 @@ const ContactPage = () => {
                           <input
                             type={field.type}
                             placeholder={field.placeholder}
+                            value={formData[field.label] || ''}
                             onChange={(e) => handleInputChange(field.label, e.target.value)}
                             className="w-full bg-dark/60 border border-white/[0.1] rounded-xl px-5 py-3.5 text-white placeholder:text-white/25 focus:border-accent1 focus:bg-dark/80 focus:outline-none focus:ring-2 focus:ring-accent1/30 transition-all duration-300 text-sm font-medium hover:border-white/20"
                           />
@@ -287,6 +289,7 @@ const ContactPage = () => {
                       >
                         <label className="text-white/50 text-xs uppercase tracking-wider font-medium mb-2.5 block">{formConfig.messageField.label}</label>
                         <textarea
+                          value={formData['Message'] || ''}
                           placeholder={formConfig.messageField.placeholder}
                           rows={formConfig.messageField.rows}
                           onChange={(e) => handleInputChange('Message', e.target.value)}

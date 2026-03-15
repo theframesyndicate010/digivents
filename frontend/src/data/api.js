@@ -42,27 +42,53 @@ export const apiFetch = async (endpoint, options = {}) => {
   const url = `${API_URL}/api${endpoint}`;
   try {
     console.log('[API] Fetching:', url);
+    console.log('[API] Request body:', options.body);
+    
     const response = await fetch(url, {
       headers: { 'Content-Type': 'application/json', ...options.headers },
       ...options,
     });
     
+    let responseBody = '';
+    let errorDetails = null;
+    
+    try {
+      responseBody = await response.text();
+      errorDetails = JSON.parse(responseBody);
+    } catch {
+      // Response is not JSON
+    }
+    
     if (!response.ok) {
-      const errorBody = await response.text().catch(() => '');
-      console.error('[API Error]', {
+      const errorMessage = errorDetails?.error?.message || 
+                          errorDetails?.message || 
+                          responseBody || 
+                          response.statusText;
+      
+      const detailedError = errorDetails?.error?.details?.errors || 
+                           errorDetails?.data || null;
+      
+      console.error('[API Error Details]', {
         status: response.status,
         statusText: response.statusText,
         url,
-        body: errorBody,
+        message: errorMessage,
+        details: detailedError,
+        fullResponse: errorDetails,
       });
-      throw new Error(`API error: ${response.status} ${response.statusText}`);
+      
+      throw new Error(
+        `API error: ${response.status}${errorMessage ? ` - ${errorMessage}` : ''}${
+          detailedError ? ` - ${JSON.stringify(detailedError)}` : ''
+        }`
+      );
     }
     
-    const data = await response.json();
+    const data = JSON.parse(responseBody);
     console.log('[API] Success:', endpoint, data);
     return data;
   } catch (error) {
-    console.error(`[API Error] Failed to fetch ${url}:`, error);
+    console.error(`[API Error] Failed to fetch ${url}:`, error.message);
     throw error;
   }
 };

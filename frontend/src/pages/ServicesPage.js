@@ -190,7 +190,7 @@ const ServicesPage = () => {
               initial={{ width: 0 }}
               animate={{ width: '4rem' }}
               transition={{ delay: 0.1, duration: 0.7, ease: 'easeOut' }}
-              className="h-[3px] bg-gradient-to-r from-accent1 to-accent2 mb-8 rounded-full"
+              className="h-[3px] bg-gradient-to-r from-accent2 to-accent1 mb-8 rounded-full"
             />
             <motion.span
               initial={{ opacity: 0, y: 20 }}
@@ -283,7 +283,7 @@ const ServicesPage = () => {
                 whileInView={{ width: '5rem' }}
                 viewport={{ once: true }}
                 transition={{ delay: 0.3, duration: 0.6 }}
-                className="h-[2px] bg-gradient-to-r from-accent1 to-accent2 mx-auto mt-5 rounded-full"
+                className="h-[2px] bg-gradient-to-r from-accent2 to-accent1 mx-auto mt-5 rounded-full"
               />
             </motion.div>
 
@@ -295,7 +295,7 @@ const ServicesPage = () => {
                 whileInView={{ scaleX: 1 }}
                 viewport={{ once: true }}
                 transition={{ duration: 1, delay: 0.3, ease: [0.33, 1, 0.68, 1] }}
-                className="hidden lg:block absolute top-[140px] left-[16.67%] right-[16.67%] h-[1px] bg-gradient-to-r from-accent1/50 via-white/10 to-accent2/50 origin-left z-0"
+                className="hidden lg:block absolute top-[140px] left-[16.67%] right-[16.67%] h-[1px] bg-gradient-to-r from-accent2/50 via-white/10 to-accent1/50 origin-left z-0"
               />
 
               {phases.map((phase, i) => (
@@ -325,7 +325,7 @@ const ServicesPage = () => {
                         </div>
                       </div>
                       <div className="absolute top-4 right-4">
-                        <div className="bg-gradient-to-r from-accent1 to-accent2 text-white text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-full">
+                        <div className="bg-gradient-to-r from-accent2 to-accent1 text-white text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-full">
                           Step 0{i + 1}
                         </div>
                       </div>
@@ -374,7 +374,7 @@ const ServicesPage = () => {
                 whileInView={{ width: '5rem' }}
                 viewport={{ once: true }}
                 transition={{ delay: 0.3, duration: 0.6 }}
-                className="h-[2px] bg-gradient-to-r from-accent1 to-accent2 mx-auto mt-5 rounded-full"
+                className="h-[2px] bg-gradient-to-r from-accent2 to-accent1 mx-auto mt-5 rounded-full"
               />
               <p className="text-white/40 text-base mt-6 max-w-2xl mx-auto leading-relaxed">
                 End-to-end digital marketing solutions tailored to your brand's goals and audience.
@@ -440,7 +440,7 @@ const ServicesPage = () => {
               whileInView={{ width: '5rem' }}
               viewport={{ once: true }}
               transition={{ delay: 0.3, duration: 0.6 }}
-              className="h-[2px] bg-gradient-to-r from-accent1 to-accent2 mx-auto mt-5 rounded-full"
+              className="h-[2px] bg-gradient-to-r from-accent2 to-accent1 mx-auto mt-5 rounded-full"
             />
           </motion.div>
 
@@ -463,7 +463,7 @@ const ServicesPage = () => {
                     <div className="text-3xl text-white/80 group-hover:text-accent1 transition-colors duration-300">
                       {step.icon}
                     </div>
-                    <div className="absolute -top-2 -right-2 w-8 h-8 bg-gradient-to-r from-accent1 to-accent2 rounded-full flex items-center justify-center text-[10px] font-bold text-white">
+                    <div className="absolute -top-2 -right-2 w-8 h-8 bg-gradient-to-r from-accent2 to-accent1 rounded-full flex items-center justify-center text-[10px] font-bold text-white">
                       {step.step}
                     </div>
                   </div>

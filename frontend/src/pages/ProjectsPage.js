@@ -92,7 +92,7 @@ const ProjectsPage = () => {
             initial={{ width: 0 }}
             animate={{ width: '4rem' }}
             transition={{ delay: 0.1, duration: 0.7, ease: 'easeOut' }}
-            className="h-[3px] bg-gradient-to-r from-accent1 to-accent2 mb-8 rounded-full"
+            className="h-[3px] bg-gradient-to-r from-accent2 to-accent1 mb-8 rounded-full"
           />
           <motion.h1
             initial={{ opacity: 0, y: 50 }}
@@ -238,7 +238,7 @@ const ProjectsPage = () => {
                     {/* Content (Bottom) */}
                     <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/95 via-black/60 to-transparent transform translate-y-1 group-hover:translate-y-0 transition-transform duration-300">
                       <div className="flex items-center gap-2 mb-3">
-                        <span className={`px-3 py-1 ${projectType === 'video' ? 'bg-gradient-to-r from-accent1 to-accent2' : 'bg-blue-500/70'} text-white text-[10px] font-bold rounded-full uppercase tracking-wider shadow-lg`}>
+                        <span className={`px-3 py-1 ${projectType === 'video' ? 'bg-gradient-to-r from-accent2 to-accent1' : 'bg-blue-500/70'} text-white text-[10px] font-bold rounded-full uppercase tracking-wider shadow-lg`}>
                            {projectType === 'video' ? '▶ Reel' : '◆ Design'}
                         </span>
                       </div>
@@ -386,7 +386,7 @@ const ProjectsPage = () => {
                 <div className="p-8 bg-gradient-to-t from-black via-black/80 to-black/0 border-t border-white/10 shrink-0">
                   <h3 className="text-3xl font-bold text-white mb-3">{selectedProject.title}</h3>
                   <div className="flex items-center gap-3 mb-4">
-                    <span className={`px-4 py-1.5 ${selectedProject.videoUrl ? 'bg-gradient-to-r from-accent1 to-accent2' : 'bg-blue-500/70'} text-white text-xs font-bold rounded-full uppercase tracking-wider`}>
+                    <span className={`px-4 py-1.5 ${selectedProject.videoUrl ? 'bg-gradient-to-r from-accent2 to-accent1' : 'bg-blue-500/70'} text-white text-xs font-bold rounded-full uppercase tracking-wider`}>
                       {selectedProject.videoUrl ? '▶ Video' : '◆ Image'}
                     </span>
                     {selectedProject.client && (

@@ -101,7 +101,7 @@ const Industries = () => {
                     whileInView={{ width: '40%' }}
                     viewport={{ once: true }}
                     transition={{ delay: 0.6 + index * 0.1, duration: 0.6 }}
-                    className="h-0.5 bg-gradient-to-r from-accent1 to-accent2 mt-4 rounded-full"
+                    className="h-0.5 bg-gradient-to-r from-accent2 to-accent1 mt-4 rounded-full"
                   />
                 </div>
                 <div className="sm:w-1/2 h-64 sm:h-auto overflow-hidden relative">

@@ -102,7 +102,7 @@ const ContactPage = () => {
             initial={{ width: 0 }}
             animate={{ width: '4rem' }}
             transition={{ delay: 0.1, duration: 0.7, ease: 'easeOut' }}
-            className="h-[3px] bg-gradient-to-r from-accent1 to-accent2 mb-8 rounded-full"
+            className="h-[3px] bg-gradient-to-r from-accent2 to-accent1 mb-8 rounded-full"
           />
           <motion.span
             initial={{ opacity: 0, y: 20 }}
@@ -188,7 +188,7 @@ const ContactPage = () => {
                     transition={{ delay: i * 0.08, duration: 0.5, ease: smooth }}
                     className="flex items-start gap-5 group cursor-pointer p-4 rounded-xl hover:bg-white/[0.04] transition-all duration-300"
                   >
-                    <span className="w-12 h-12 bg-gradient-to-br from-accent1/20 to-accent2/20 border border-white/[0.06] rounded-xl flex items-center justify-center text-white text-lg shrink-0 group-hover:border-white/15 transition-colors duration-300">
+                    <span className="w-12 h-12 bg-gradient-to-br from-accent2/20 to-accent1/20 border border-white/[0.06] rounded-xl flex items-center justify-center text-white text-lg shrink-0 group-hover:border-white/15 transition-colors duration-300">
                       {info.icon}
                     </span>
                     <div>
@@ -228,7 +228,7 @@ const ContactPage = () => {
                 <div className="flex items-center gap-3 mb-10">
                   <motion.div
                     whileHover={{ scale: 1.1, rotate: 5 }}
-                    className="w-12 h-12 bg-gradient-to-br from-accent1/30 to-accent2/30 border border-white/[0.15] rounded-xl flex items-center justify-center text-accent1 shadow-lg shadow-accent1/20"
+                    className="w-12 h-12 bg-gradient-to-br from-accent2/30 to-accent1/30 border border-white/[0.15] rounded-xl flex items-center justify-center text-accent1 shadow-lg shadow-accent1/20"
                   >
                     <FiSend size={20} />
                   </motion.div>

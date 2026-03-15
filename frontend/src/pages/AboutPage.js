@@ -60,7 +60,7 @@ const AboutPage = () => {
             initial={{ width: 0 }}
             animate={{ width: '4rem' }}
             transition={{ delay: 0.1, duration: 0.7, ease: 'easeOut' }}
-            className="h-[3px] bg-gradient-to-r from-accent1 to-accent2 mb-8 rounded-full"
+            className="h-[3px] bg-gradient-to-r from-accent2 to-accent1 mb-8 rounded-full"
           />
           <motion.span
             initial={{ opacity: 0, y: 20 }}
@@ -134,7 +134,7 @@ const AboutPage = () => {
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
                 transition={{ delay: 0.3, duration: 0.5, ease: [0.33, 1, 0.68, 1] }}
-                className="absolute -bottom-6 -right-4 sm:-right-6 bg-gradient-to-r from-accent1 to-accent2 rounded-2xl p-6 shadow-2xl"
+                className="absolute -bottom-6 -right-4 sm:-right-6 bg-gradient-to-r from-accent2 to-accent1 rounded-2xl p-6 shadow-2xl"
               >
                 <span className="text-4xl font-bold text-white">2022</span>
                 <p className="text-white/70 text-sm font-medium mt-1">Established</p>
@@ -150,7 +150,7 @@ const AboutPage = () => {
             >
               <motion.div
                 variants={fadeInRight}
-                className="w-10 h-[2px] bg-gradient-to-r from-accent1 to-accent2 mb-6 rounded-full"
+                className="w-10 h-[2px] bg-gradient-to-r from-accent2 to-accent1 mb-6 rounded-full"
               />
               <motion.h2 variants={fadeInRight} className="section-title mb-6">Our Story</motion.h2>
               <motion.p variants={fadeInRight} custom={1} className="text-white/55 leading-relaxed mb-4">
@@ -196,7 +196,7 @@ Since its launch, the agency has successfully organized various events and live 
               whileInView={{ width: '5rem' }}
               viewport={{ once: true }}
               transition={{ delay: 0.3, duration: 0.6 }}
-              className="h-[2px] bg-gradient-to-r from-accent1 to-accent2 mx-auto mt-5 rounded-full"
+              className="h-[2px] bg-gradient-to-r from-accent2 to-accent1 mx-auto mt-5 rounded-full"
             />
           </motion.div>
 
@@ -211,7 +211,7 @@ Since its launch, the agency has successfully organized various events and live 
                 whileHover={{ y: -8, transition: { duration: 0.25, ease: 'easeOut' } }}
                 className="p-6 bg-dark border border-white/[0.06] rounded-2xl text-center group cursor-pointer hover:border-white/15 transition-colors duration-300"
               >
-                <div className="w-14 h-14 bg-gradient-to-br from-accent1/20 to-accent2/20 rounded-2xl flex items-center justify-center mx-auto mb-5 group-hover:from-accent1/30 group-hover:to-accent2/30 transition-all duration-300">
+                <div className="w-14 h-14 bg-gradient-to-br from-accent2/20 to-accent1/20 rounded-2xl flex items-center justify-center mx-auto mb-5 group-hover:from-accent2/30 group-hover:to-accent1/30 transition-all duration-300">
                   <span className="text-white/80 text-xl font-bold">0{i + 1}</span>
                 </div>
                 <h3 className="text-white font-bold text-lg mb-2 group-hover:text-white/80 transition-colors duration-300">{val.title}</h3>
@@ -239,7 +239,7 @@ Since its launch, the agency has successfully organized various events and live 
               whileInView={{ width: '5rem' }}
               viewport={{ once: true }}
               transition={{ delay: 0.3, duration: 0.6 }}
-              className="h-[2px] bg-gradient-to-r from-accent1 to-accent2 mx-auto mt-5 rounded-full"
+              className="h-[2px] bg-gradient-to-r from-accent2 to-accent1 mx-auto mt-5 rounded-full"
             />
           </motion.div>
 

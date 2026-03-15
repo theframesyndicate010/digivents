@@ -59,7 +59,7 @@ const About = () => {
               viewport={{ once: true }}
               transition={{ delay: 0.6, type: 'spring', stiffness: 200 }}
               whileHover={{ scale: 1.1, rotate: 5 }}
-              className="absolute -bottom-6 -right-6 bg-gradient-to-r from-accent1 to-accent2 rounded-2xl p-6 shadow-2xl cursor-pointer"
+              className="absolute -bottom-6 -right-6 bg-gradient-to-r from-accent2 to-accent1 rounded-2xl p-6 shadow-2xl cursor-pointer"
             >
               <motion.span
                 initial={{ opacity: 0 }}

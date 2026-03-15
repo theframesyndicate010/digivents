@@ -65,7 +65,7 @@ const Services = () => {
               whileInView={{ height: '100%' }}
               viewport={{ once: true }}
               transition={{ duration: 1.5, ease: 'easeInOut' }}
-              className="absolute left-6 lg:left-8 top-0 w-px bg-gradient-to-b from-accent1 via-white/20 to-accent2 origin-top"
+              className="absolute left-6 lg:left-8 top-0 w-px bg-gradient-to-b from-accent2 via-white/20 to-accent1 origin-top"
             />
 
             <div className="space-y-10">

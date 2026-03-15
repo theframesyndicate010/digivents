@@ -110,7 +110,7 @@ const MiniProjectCard = ({ project, index }) => {
           {/* Bottom info */}
           <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/95 via-black/70 to-transparent">
             <div className="flex items-center gap-2 mb-2">
-              <span className={`px-2 py-0.5 ${hasVideo ? 'bg-gradient-to-r from-accent1 to-accent2' : 'bg-blue-500/70'} text-white text-[8px] font-bold rounded-full uppercase tracking-wider`}>
+              <span className={`px-2 py-0.5 ${hasVideo ? 'bg-gradient-to-r from-accent2 to-accent1' : 'bg-blue-500/70'} text-white text-[8px] font-bold rounded-full uppercase tracking-wider`}>
                 {hasVideo ? '▶ Video' : '◆ Design'}
               </span>
             </div>

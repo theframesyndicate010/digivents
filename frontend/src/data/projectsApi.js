@@ -8,9 +8,44 @@ import { apiFetch, getImageUrl } from './api';
  */
 const transformProject = (project) => {
   const attrs = project;
-  // Get first media image as cover, or null
   const mediaItems = attrs.media || [];
-  const coverImage = mediaItems.length > 0 ? getImageUrl(mediaItems[0]) : null;
+
+  // 1. Determine Cover Image
+  // Try to find the first image in media
+  let coverMedia = mediaItems.find((m) => m.mime?.startsWith('image/'));
+  // If no image found, fallback to first media item (could be video thumbnail if available)
+  if (!coverMedia && mediaItems.length > 0) coverMedia = mediaItems[0];
+  
+  // If it's a video file, try to use its thumbnail if available
+  let coverImage = null;
+  if (coverMedia) {
+      if (coverMedia.mime?.startsWith('video/') && coverMedia.formats?.thumbnail) {
+          coverImage = getImageUrl(coverMedia.formats.thumbnail);
+      } else {
+          coverImage = getImageUrl(coverMedia);
+      }
+  }
+
+  // 2. Determine Video URL
+  // Priority: videoUrl field -> Social Links -> Video File in Media
+  let videoUrl = attrs.videoUrl || '';
+  
+  if (!videoUrl) {
+    if (attrs.tiktokLink && attrs.tiktokLink.includes('tiktok.com')) {
+      videoUrl = attrs.tiktokLink;
+    } else if (attrs.instagramLink && attrs.instagramLink.includes('instagram.com')) {
+      videoUrl = attrs.instagramLink;
+    } else if (attrs.youtubeLink && (attrs.youtubeLink.includes('youtube.com') || attrs.youtubeLink.includes('youtu.be'))) {
+      videoUrl = attrs.youtubeLink;
+    } else {
+      // Check for video file in media
+      const videoFile = mediaItems.find((m) => m.mime?.startsWith('video/'));
+      if (videoFile) {
+        videoUrl = getImageUrl(videoFile);
+      }
+    }
+  }
+
   // Build all media URLs
   const allMedia = mediaItems.map((m) => getImageUrl(m));
 
@@ -26,7 +61,7 @@ const transformProject = (project) => {
     description: attrs.description || '',
     createdDate: attrs.createdDate || '',
     client: attrs.client?.name || '',
-    videoUrl: attrs.videoUrl || '',
+    videoUrl: videoUrl,
     likes: attrs.likes || 0,
     workers: (attrs.workers || []).map((w) => ({
       id: w.id,

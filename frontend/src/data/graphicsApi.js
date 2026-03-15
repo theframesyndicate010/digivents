@@ -21,8 +21,12 @@ const transformGraphic = (graphic) => {
 // Fetch all graphics from Strapi
 export const fetchAllGraphics = async () => {
   try {
+    console.log('Fetching graphics from Strapi...');
     const data = await apiFetch('/graphics?populate=*&sort=createdAt:desc');
-    return (data.data || []).map(transformGraphic);
+    console.log('Graphics API response:', data);
+    const transformed = (data.data || []).map(transformGraphic);
+    console.log('Transformed graphics:', transformed);
+    return transformed;
   } catch (error) {
     console.error('Failed to fetch graphics:', error);
     return [];

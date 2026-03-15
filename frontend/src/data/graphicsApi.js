@@ -28,77 +28,30 @@ export const fetchAllGraphics = async () => {
     return [];
   }
 };
-    
-      
-      if (project.media && Array.isArray(project.media)) {
-        project.media.forEach(mediaItem => {
-          graphics.push(transformProjectToGraphic(project, mediaItem));
-        });
-      }
-    });
-    
-    console.log('[Graphics API] Extracted', graphics.length, 'graphics from projects');
-    console.log('[Graphics API] Final graphics:', graphics);
-    return graphics;
-=======
-    const data = await apiFetch('/graphics?populate=*&sort=createdAt:desc');
-    return (data.data || []).map(transformGraphic);
->>>>>>> 6d99c53 (Integrate graphics into projects page and cleanup)
-  } catch (error) {
-    console.error('[Graphics API] Failed to fetch graphics:', error.message);
-    console.error('[Graphics API] Full error:', error);
-    return [];
-  }
-};
 
 // Fetch limited graphics for homepage or previews
 export const fetchFeaturedGraphics = async (limit = 6) => {
   try {
     const data = await apiFetch(
-      `/projects?populate=media&sort=createdAt:desc&pagination[limit]=50`
+      `/graphics?populate=*&sort=createdAt:desc&pagination[limit]=${limit}`
     );
-    const projects = data.data || [];
-    
-    const graphics = [];
-    projects.forEach(project => {
-      if (project.media && Array.isArray(project.media)) {
-        project.media.forEach(mediaItem => {
-          graphics.push(transformProjectToGraphic(project, mediaItem));
-        });
-      }
-    });
-    
-    return graphics.slice(0, limit);
+    return (data.data || []).map(transformGraphic);
   } catch (error) {
-    console.error('[Graphics API] Failed to fetch featured graphics:', error);
+    console.error('Failed to fetch featured graphics:', error);
     return [];
   }
 };
 
-// Fetch graphics for a specific project
-export const fetchProjectGraphics = async (projectSlug) => {
+// Fetch single graphic by slug
+export const fetchGraphicBySlug = async (slug) => {
   try {
     const data = await apiFetch(
-      `/projects?filters[slug][$eq]=${projectSlug}&populate=media`
+      `/graphics?filters[slug][$eq]=${slug}&populate=*`
     );
-    const projects = data.data || [];
-    
-    if (projects.length === 0) {
-      throw new Error('Project not found');
-    }
-    
-    const project = projects[0];
-    const graphics = [];
-    
-    if (project.media && Array.isArray(project.media)) {
-      project.media.forEach(mediaItem => {
-        graphics.push(transformProjectToGraphic(project, mediaItem));
-      });
-    }
-    
-    return graphics;
+    const graphics = (data.data || []).map(transformGraphic);
+    return graphics.length > 0 ? graphics[0] : null;
   } catch (error) {
-    console.error('[Graphics API] Failed to fetch project graphics:', error);
+    console.error('Failed to fetch graphic by slug:', error);
     throw error;
   }
 };

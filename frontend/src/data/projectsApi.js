@@ -10,23 +10,7 @@ const transformProject = (project) => {
   const attrs = project;
   const mediaItems = attrs.media || [];
 
-  // 1. Determine Cover Image
-  // Try to find the first image in media
-  let coverMedia = mediaItems.find((m) => m.mime?.startsWith('image/'));
-  // If no image found, fallback to first media item (could be video thumbnail if available)
-  if (!coverMedia && mediaItems.length > 0) coverMedia = mediaItems[0];
-  
-  // If it's a video file, try to use its thumbnail if available
-  let coverImage = null;
-  if (coverMedia) {
-      if (coverMedia.mime?.startsWith('video/') && coverMedia.formats?.thumbnail) {
-          coverImage = getImageUrl(coverMedia.formats.thumbnail);
-      } else {
-          coverImage = getImageUrl(coverMedia);
-      }
-  }
-
-  // 2. Determine Video URL
+  // 1. Determine Video URL
   // Priority: videoUrl field -> Social Links -> Video File in Media
   let videoUrl = attrs.videoUrl || '';
   
@@ -42,6 +26,32 @@ const transformProject = (project) => {
       const videoFile = mediaItems.find((m) => m.mime?.startsWith('video/'));
       if (videoFile) {
         videoUrl = getImageUrl(videoFile);
+      }
+    }
+  }
+
+  // 2. Determine Cover Image
+  // Try to find the first image in media
+  let coverMedia = mediaItems.find((m) => m.mime?.startsWith('image/'));
+  let coverImage = null;
+
+  if (coverMedia) {
+    coverImage = getImageUrl(coverMedia);
+  } else {
+    // If no image media, try to get thumbnail from video media
+    const videoMedia = mediaItems.find((m) => m.mime?.startsWith('video/'));
+    if (videoMedia && videoMedia.formats?.thumbnail) {
+      coverImage = getImageUrl(videoMedia.formats.thumbnail);
+    }
+  }
+
+  // If still no cover image, try to extract from video URL (YouTube only for now)
+  if (!coverImage && videoUrl) {
+    if (videoUrl.includes('youtube.com') || videoUrl.includes('youtu.be')) {
+      let videoId = videoUrl.split('v=')[1]?.split('&')[0];
+      if (!videoId && videoUrl.includes('youtu.be')) videoId = videoUrl.split('/').pop();
+      if (videoId) {
+        coverImage = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
       }
     }
   }

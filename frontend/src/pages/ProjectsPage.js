@@ -171,7 +171,7 @@ const ProjectsPage = () => {
                 {!loading && filteredProjects.map((project) => {
                   const projectType = project.videoUrl ? 'video' : 'graphic';
                   const creator = project.workers?.[0]?.name || 'Digivents Team';
-                  const imageSrc = project.image || 'https://images.unsplash.com/photo-1529074963764-98f45c47344b?w=800&q=80';
+                  const imageSrc = project.image;
 
                   return (
                   <motion.div 
@@ -180,12 +180,34 @@ const ProjectsPage = () => {
                     className="group relative bg-darkGray rounded-xl overflow-hidden aspect-[9/16] cursor-pointer"
                     onClick={() => setSelectedProject(project)}
                   >
-                    <img 
-                      src={imageSrc}
-                      alt={project.title} 
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                    />
+                    {imageSrc ? (
+                      <img 
+                        src={imageSrc}
+                        alt={project.title} 
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                        onError={(e) => {
+                          e.target.style.display = 'none';
+                          e.target.nextSibling.style.display = 'flex'; // Show placeholder
+                        }}
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-white/5 flex items-center justify-center group-hover:scale-105 transition-transform duration-700">
+                         {/* Placeholder if no image */}
+                         <div className="text-white/20 flex flex-col items-center gap-2">
+                            {projectType === 'video' ? <PlayCircle size={48} strokeWidth={1} /> : <Search size={48} strokeWidth={1} />}
+                            <span className="text-xs uppercase tracking-widest font-bold opacity-50">No Preview</span>
+                         </div>
+                      </div>
+                    )}
                     
+                    {/* Fallback Placeholder (Hidden by default, shown on error) */}
+                    <div className="hidden absolute inset-0 bg-white/5 items-center justify-center group-hover:scale-105 transition-transform duration-700">
+                         <div className="text-white/20 flex flex-col items-center gap-2">
+                            {projectType === 'video' ? <PlayCircle size={48} strokeWidth={1} /> : <Search size={48} strokeWidth={1} />}
+                            <span className="text-xs uppercase tracking-widest font-bold opacity-50">No Preview</span>
+                         </div>
+                    </div>
+
                     {/* Gradient Overlay */}
                     <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/80 opacity-60 group-hover:opacity-80 transition-opacity duration-300" />
 

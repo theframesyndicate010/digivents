@@ -190,58 +190,63 @@ const ProjectsPage = () => {
                   <motion.div 
                     key={project.id} 
                     variants={fadeInUp}
-                    className="group relative bg-darkGray rounded-xl overflow-hidden aspect-[9/16] cursor-pointer"
+                    className="group relative bg-darkGray rounded-2xl overflow-hidden aspect-[9/16] cursor-pointer border border-white/10 hover:border-white/30 shadow-lg hover:shadow-2xl transition-all duration-500 h-full"
                     onClick={() => setSelectedProject(project)}
                   >
                     {imageSrc ? (
                       <img 
                         src={imageSrc}
                         alt={project.title} 
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                         onError={(e) => {
                           e.target.style.display = 'none';
                           e.target.nextSibling.style.display = 'flex'; // Show placeholder
                         }}
                       />
                     ) : (
-                      <div className="w-full h-full bg-white/5 flex items-center justify-center group-hover:scale-105 transition-transform duration-700">
+                      <div className="w-full h-full bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center group-hover:scale-110 transition-transform duration-700">
                          {/* Placeholder if no image */}
-                         <div className="text-white/20 flex flex-col items-center gap-2">
-                            {projectType === 'video' ? <PlayCircle size={48} strokeWidth={1} /> : <Search size={48} strokeWidth={1} />}
-                            <span className="text-xs uppercase tracking-widest font-bold opacity-50">No Preview</span>
+                         <div className="text-white/30 flex flex-col items-center gap-3">
+                            {projectType === 'video' ? <PlayCircle size={56} strokeWidth={1.5} /> : <Search size={56} strokeWidth={1.5} />}
+                            <span className="text-xs uppercase tracking-widest font-bold opacity-60">No Preview</span>
                          </div>
                       </div>
                     )}
                     
                     {/* Fallback Placeholder (Hidden by default, shown on error) */}
-                    <div className="hidden absolute inset-0 bg-white/5 items-center justify-center group-hover:scale-105 transition-transform duration-700">
-                         <div className="text-white/20 flex flex-col items-center gap-2">
-                            {projectType === 'video' ? <PlayCircle size={48} strokeWidth={1} /> : <Search size={48} strokeWidth={1} />}
-                            <span className="text-xs uppercase tracking-widest font-bold opacity-50">No Preview</span>
+                    <div className="hidden absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 items-center justify-center group-hover:scale-110 transition-transform duration-700">
+                         <div className="text-white/30 flex flex-col items-center gap-3">
+                            {projectType === 'video' ? <PlayCircle size={56} strokeWidth={1.5} /> : <Search size={56} strokeWidth={1.5} />}
+                            <span className="text-xs uppercase tracking-widest font-bold opacity-60">No Preview</span>
                          </div>
                     </div>
 
                     {/* Gradient Overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/80 opacity-60 group-hover:opacity-80 transition-opacity duration-300" />
+                    <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/40 to-black/90 opacity-50 group-hover:opacity-70 transition-opacity duration-300" />
 
                     {/* Play Button (Center) */}
-                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                        <div className="w-12 h-12 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center text-white border border-white/30">
-                           <PlayCircle size={24} fill="currentColor" />
-                        </div>
+                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
+                        <motion.div
+                          initial={{ scale: 0.8 }}
+                          whileHover={{ scale: 1.2 }}
+                          className="w-14 h-14 bg-white/25 backdrop-blur-xl rounded-full flex items-center justify-center text-white border border-white/40 shadow-xl shadow-white/20"
+                        >
+                           <PlayCircle size={28} fill="currentColor" />
+                        </motion.div>
                     </div>
 
                     {/* Content (Bottom) */}
-                    <div className="absolute bottom-0 left-0 w-full p-4 transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
-                      <div className="flex items-center gap-2 mb-2">
-                        <span className="px-2 py-0.5 bg-accent1 text-white text-[9px] font-bold rounded-md uppercase tracking-wider">
-                           {projectType === 'video' ? 'Reel' : 'Design'}
+                    <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/95 via-black/60 to-transparent transform translate-y-1 group-hover:translate-y-0 transition-transform duration-300">
+                      <div className="flex items-center gap-2 mb-3">
+                        <span className={`px-3 py-1 ${projectType === 'video' ? 'bg-gradient-to-r from-accent1 to-accent2' : 'bg-blue-500/70'} text-white text-[10px] font-bold rounded-full uppercase tracking-wider shadow-lg`}>
+                           {projectType === 'video' ? '▶ Reel' : '◆ Design'}
                         </span>
                       </div>
-                      <h3 className="font-bold text-white text-sm md:text-base leading-snug line-clamp-2 mb-1">
+                      <h3 className="font-bold text-white text-sm md:text-base leading-tight line-clamp-2 mb-2">
                         {project.title}
                       </h3>
-                      <p className="text-white/60 text-xs font-medium truncate">
+                      <p className="text-white/70 text-xs font-medium truncate flex items-center gap-1">
+                        <span className="w-1 h-1 bg-accent1 rounded-full"></span>
                         {project.client || project.category || 'Client'} • {creator}
                       </p>
                     </div>
@@ -271,24 +276,25 @@ const ProjectsPage = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-sm"
+              className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/95 backdrop-blur-md"
               onClick={() => setSelectedProject(null)}
             >
               <motion.div
-                initial={{ scale: 0.95, opacity: 0 }}
+                initial={{ scale: 0.9, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0.95, opacity: 0 }}
-                className="relative w-full max-w-5xl bg-darkGray rounded-2xl overflow-hidden shadow-2xl border border-white/10 flex flex-col max-h-[90vh]"
+                exit={{ scale: 0.9, opacity: 0 }}
+                transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+                className="relative w-full max-w-6xl bg-black rounded-3xl overflow-hidden shadow-2xl border border-white/20 flex flex-col max-h-[95vh]"
                 onClick={(e) => e.stopPropagation()}
               >
                 <button
                   onClick={() => setSelectedProject(null)}
-                  className="absolute top-4 right-4 z-10 p-2 bg-black/50 hover:bg-white/10 rounded-full text-white transition-colors"
+                  className="absolute top-6 right-6 z-10 p-3 bg-black/60 hover:bg-white/20 rounded-full text-white transition-all duration-300 border border-white/20 hover:border-white/40 shadow-lg"
                 >
                   <X size={24} />
                 </button>
                 
-                <div className="flex-1 w-full bg-black flex items-center justify-center overflow-hidden">
+                <div className="relative w-full bg-black flex items-center justify-center overflow-auto">
                   {selectedProject.videoUrl ? (
                     (() => {
                       const url = selectedProject.videoUrl;
@@ -296,25 +302,29 @@ const ProjectsPage = () => {
                         let videoId = url.split('v=')[1]?.split('&')[0];
                         if (!videoId && url.includes('youtu.be')) videoId = url.split('/').pop();
                         return (
-                          <iframe
-                            src={`https://www.youtube.com/embed/${videoId}?autoplay=1`}
-                            title={selectedProject.title}
-                            className="w-full h-full aspect-video"
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                            allowFullScreen
-                          />
+                          <div className="w-full aspect-video max-h-[calc(95vh-200px)]">
+                            <iframe
+                              src={`https://www.youtube.com/embed/${videoId}?autoplay=1`}
+                              title={selectedProject.title}
+                              className="w-full h-full"
+                              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                              allowFullScreen
+                            />
+                          </div>
                         );
                       }
                       if (url.includes('vimeo.com')) {
                         const videoId = url.split('/').pop();
                         return (
-                          <iframe
-                            src={`https://player.vimeo.com/video/${videoId}?autoplay=1`}
-                            title={selectedProject.title}
-                            className="w-full h-full aspect-video"
-                            allow="autoplay; fullscreen; picture-in-picture"
-                            allowFullScreen
-                          />
+                          <div className="w-full aspect-video max-h-[calc(95vh-200px)]">
+                            <iframe
+                              src={`https://player.vimeo.com/video/${videoId}?autoplay=1`}
+                              title={selectedProject.title}
+                              className="w-full h-full"
+                              allow="autoplay; fullscreen; picture-in-picture"
+                              allowFullScreen
+                            />
+                          </div>
                         );
                       }
                       if (url.includes('tiktok.com')) {
@@ -323,13 +333,15 @@ const ProjectsPage = () => {
                         const videoId = match ? match[1] : null;
                         if (videoId) {
                            return (
-                            <iframe
-                              src={`https://www.tiktok.com/embed/v2/${videoId}`}
-                              title={selectedProject.title}
-                              className="w-full h-full max-w-[400px] aspect-[9/16] mx-auto"
-                              allow="autoplay; fullscreen; picture-in-picture"
-                              allowFullScreen
-                            />
+                            <div className="w-full max-w-[400px] aspect-[9/16] max-h-[calc(95vh-200px)]">
+                              <iframe
+                                src={`https://www.tiktok.com/embed/v2/${videoId}`}
+                                title={selectedProject.title}
+                                className="w-full h-full"
+                                allow="autoplay; fullscreen; picture-in-picture"
+                                allowFullScreen
+                              />
+                            </div>
                            )
                         }
                       }
@@ -337,15 +349,17 @@ const ProjectsPage = () => {
                          // Convert to embed url
                          const embedUrl = url.split('?')[0].replace(/\/$/, '') + '/embed';
                          return (
-                          <iframe
-                            src={embedUrl}
-                            title={selectedProject.title}
-                            className="w-full h-full max-w-[400px] aspect-[9/16] mx-auto bg-white"
-                            allow="autoplay; fullscreen; picture-in-picture"
-                            allowFullScreen
-                            scrolling="no"
-                            frameBorder="0"
-                          />
+                          <div className="w-full max-w-[400px] aspect-[9/16] max-h-[calc(95vh-200px)] bg-white rounded-xl overflow-hidden">
+                            <iframe
+                              src={embedUrl}
+                              title={selectedProject.title}
+                              className="w-full h-full"
+                              allow="autoplay; fullscreen; picture-in-picture"
+                              allowFullScreen
+                              scrolling="no"
+                              frameBorder="0"
+                            />
+                          </div>
                          )
                       }
                       return (
@@ -353,7 +367,7 @@ const ProjectsPage = () => {
                           src={url}
                           controls
                           autoPlay
-                          className="w-full h-full object-contain"
+                          className="w-full h-auto max-h-[calc(95vh-200px)] object-contain"
                         />
                       );
                     })()
@@ -361,15 +375,26 @@ const ProjectsPage = () => {
                     <img
                       src={selectedProject.image}
                       alt={selectedProject.title}
-                      className="w-full h-full object-contain"
+                      className="w-full h-auto max-h-[calc(95vh-200px)] object-contain rounded-lg"
+                      onError={(e) => {
+                        e.target.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 600"%3E%3Crect fill="%23222" width="400" height="600"/%3E%3C/svg%3E';
+                      }}
                     />
                   )}
                 </div>
                 
-                <div className="p-6 bg-darkGray border-t border-white/10 shrink-0">
-                  <h3 className="text-2xl font-bold text-white mb-2">{selectedProject.title}</h3>
-                  <p className="text-white/60 text-sm">
-                    {selectedProject.description || selectedProject.category}
+                <div className="p-8 bg-gradient-to-t from-black via-black/80 to-black/0 border-t border-white/10 shrink-0">
+                  <h3 className="text-3xl font-bold text-white mb-3">{selectedProject.title}</h3>
+                  <div className="flex items-center gap-3 mb-4">
+                    <span className={`px-4 py-1.5 ${selectedProject.videoUrl ? 'bg-gradient-to-r from-accent1 to-accent2' : 'bg-blue-500/70'} text-white text-xs font-bold rounded-full uppercase tracking-wider`}>
+                      {selectedProject.videoUrl ? '▶ Video' : '◆ Image'}
+                    </span>
+                    {selectedProject.client && (
+                      <span className="text-white/60 text-sm">• {selectedProject.client}</span>
+                    )}
+                  </div>
+                  <p className="text-white/70 text-base leading-relaxed">
+                    {selectedProject.description || selectedProject.category || 'No description available'}
                   </p>
                 </div>
               </motion.div>

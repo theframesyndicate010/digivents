@@ -52,10 +52,57 @@
   }
 
   .card-dark {
-    @apply bg-darkGray border border-white/10 rounded-2xl overflow-hidden;
+    @apply bg-darkGray border border-white/10 rounded-2xl overflow-hidden shadow-lg transition-all duration-300;
+  }
+
+  .card-dark:hover {
+    @apply border-white/20 shadow-2xl shadow-accent1/10;
   }
 
   .gradient-text {
     @apply text-transparent bg-clip-text bg-gradient-to-r from-accent1 to-accent2;
   }
+
+  /* Enhanced card styles */
+  .project-card {
+    @apply relative rounded-2xl overflow-hidden border border-white/10 hover:border-white/30 shadow-lg hover:shadow-2xl transition-all duration-500;
+  }
+
+  .project-card-image {
+    @apply w-full h-full object-cover transition-transform duration-700;
+  }
+
+  .project-card-image:hover {
+    @apply scale-110;
+  }
+
+  /* Modal improvements */
+  .modal-backdrop {
+    @apply fixed inset-0 z-50 bg-black/95 backdrop-blur-md;
+  }
+
+  .modal-content {
+    @apply relative w-full max-w-6xl bg-black rounded-3xl overflow-hidden shadow-2xl border border-white/20;
+  }
+
+  .modal-close-btn {
+    @apply p-3 bg-black/60 hover:bg-white/20 rounded-full text-white transition-all duration-300 border border-white/20 hover:border-white/40 shadow-lg;
+  }
+}
+
+/* Scrollbar styling for modal content */
+.modal-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.modal-scroll::-webkit-scrollbar-track {
+  @apply bg-black/30;
+}
+
+.modal-scroll::-webkit-scrollbar-thumb {
+  @apply bg-white/20 rounded-full;
+}
+
+.modal-scroll::-webkit-scrollbar-thumb:hover {
+  @apply bg-white/40;
 }

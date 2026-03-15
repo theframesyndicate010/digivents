@@ -1,29 +1,45 @@
-// Dynamic graphics API — fetches from Strapi backend
-// Used by GraphicsPage to display graphic design portfolio
+// Dynamic graphics API — fetches from Strapi projects (not separate graphics)
+// Graphics are now part of projects - fetches project media as graphics
 
 import { apiFetch, getImageUrl, uploadFile } from './api';
 
 /**
- * Transform Strapi graphic response to frontend format
+ * Transform Strapi project media into graphic format
  */
-const transformGraphic = (graphic) => {
+const transformProjectToGraphic = (project, mediaItem) => {
   return {
-    id: graphic.id,
-    documentId: graphic.documentId,
-    title: graphic.title || '',
-    slug: graphic.slug || '',
-    description: graphic.description || '',
-    category: graphic.category || '',
-    image: getImageUrl(graphic.image),
+    id: `${project.id}-${mediaItem.id}`,
+    documentId: mediaItem.documentId || `${project.documentId}-${mediaItem.id}`,
+    title: project.name || '',
+    slug: project.slug || '',
+    description: project.description || '',
+    category: project.tag || '',
+    image: getImageUrl(mediaItem),
+    projectId: project.id,
+    projectSlug: project.slug,
   };
 };
 
-// Fetch all graphics from Strapi
+// Fetch all graphics from projects
 export const fetchAllGraphics = async () => {
   try {
-    const data = await apiFetch('/graphics?populate=*&sort=createdAt:desc');
-    const graphics = (data.data || []).map(transformGraphic);
-    console.log('[Graphics API] Fetched', graphics.length, 'graphics');
+    // Fetch all published projects with their media
+    const data = await apiFetch('/projects?populate=media&sort=createdAt:desc&pagination[limit]=200');
+    const projects = data.data || [];
+    
+    console.log('[Graphics API] Fetched', projects.length, 'projects');
+    
+    // Extract media from projects and transform to graphics
+    const graphics = [];
+    projects.forEach(project => {
+      if (project.media && Array.isArray(project.media)) {
+        project.media.forEach(mediaItem => {
+          graphics.push(transformProjectToGraphic(project, mediaItem));
+        });
+      }
+    });
+    
+    console.log('[Graphics API] Extracted', graphics.length, 'graphics from projects');
     return graphics;
   } catch (error) {
     console.error('[Graphics API] Failed to fetch graphics:', error.message);
@@ -35,75 +51,50 @@ export const fetchAllGraphics = async () => {
 export const fetchFeaturedGraphics = async (limit = 6) => {
   try {
     const data = await apiFetch(
-      `/graphics?populate=*&sort=createdAt:desc&pagination[limit]=${limit}`
+      `/projects?populate=media&sort=createdAt:desc&pagination[limit]=50`
     );
-    return (data.data || []).map(transformGraphic);
+    const projects = data.data || [];
+    
+    const graphics = [];
+    projects.forEach(project => {
+      if (project.media && Array.isArray(project.media)) {
+        project.media.forEach(mediaItem => {
+          graphics.push(transformProjectToGraphic(project, mediaItem));
+        });
+      }
+    });
+    
+    return graphics.slice(0, limit);
   } catch (error) {
-    console.error('Failed to fetch featured graphics:', error);
+    console.error('[Graphics API] Failed to fetch featured graphics:', error);
     return [];
   }
 };
 
-// Fetch single graphic by slug
-export const fetchGraphicBySlug = async (slug) => {
+// Fetch graphics for a specific project
+export const fetchProjectGraphics = async (projectSlug) => {
   try {
     const data = await apiFetch(
-      `/graphics?filters[slug][$eq]=${slug}&populate=*`
+      `/projects?filters[slug][$eq]=${projectSlug}&populate=media`
     );
-    const graphics = data.data || [];
-    if (graphics.length === 0) throw new Error('Graphic not found');
-    return transformGraphic(graphics[0]);
-  } catch (error) {
-    console.error('Failed to fetch graphic by slug:', error);
-    throw new Error('Graphic not found');
-  }
-};
-
-/**
- * Upload a new graphic with image and metadata
- * @param {File} file - Image file to upload
- * @param {string} title - Graphic title
- * @param {string} description - Graphic description
- * @param {string} category - Graphic category
- * @param {string} token - JWT token for authentication
- * @returns {Promise<Object>} Created graphic object
- */
-export const uploadGraphic = async (file, title, description, category, token) => {
-  try {
-    // Step 1: Upload image file
-    const formData = new FormData();
-    formData.append('file', file);
-
-    const uploadResponse = await uploadFile('/upload', formData, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+    const projects = data.data || [];
     
-    if (!uploadResponse.url) {
-      throw new Error('Upload response missing URL');
+    if (projects.length === 0) {
+      throw new Error('Project not found');
     }
-
-    const imageUrl = uploadResponse.url;
-
-    // Step 2: Create graphic entry with metadata
-    const graphicPayload = {
-      data: {
-        title: title || file.name,
-        slug: (title || file.name).toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, ''),
-        description: description || '',
-        category: category || '',
-        image: imageUrl,
-      },
-    };
-
-    const response = await apiFetch('/graphics', {
-      method: 'POST',
-      body: JSON.stringify(graphicPayload),
-      headers: { Authorization: `Bearer ${token}` },
-    });
-
-    return response?.data ? transformGraphic(response.data) : response;
+    
+    const project = projects[0];
+    const graphics = [];
+    
+    if (project.media && Array.isArray(project.media)) {
+      project.media.forEach(mediaItem => {
+        graphics.push(transformProjectToGraphic(project, mediaItem));
+      });
+    }
+    
+    return graphics;
   } catch (error) {
-    console.error('Failed to upload graphic:', error);
+    console.error('[Graphics API] Failed to fetch project graphics:', error);
     throw error;
   }
 };

@@ -3,11 +3,34 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { HiChevronLeft, HiChevronRight } from 'react-icons/hi';
 import { FiStar } from 'react-icons/fi';
 
+// Import images from your assets folder
+import benidhi from '../assets/benidhi.jpeg';
+import clinic from '../assets/clinic.jpeg';
+import shivam from '../assets/shivam.jpeg';
+import goldCup from '../assets/gold-cup.jpeg';
+
+
 const testimonials = [
-  { text: 'We are thrilled with our new corporate videos. The team was incredibly calm, patient, and fostered a pleasant atmosphere. Everything came together seamlessly!', name: 'Sarah Adams', title: 'Chief Marketing Officer, HorizonTech Solutions', avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&q=80' },
-  { text: "Our experience with CreativeEdge Productions was outstanding! Their team's relaxed and patient approach led to the successful delivery of our corporate videos.", name: 'Michael Lee', title: 'Director of Sales, EcoGrowth Enterprises', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&q=80' },
-  { text: "After a year of working on various projects, I'm consistently amazed by their professionalism, commitment, and extensive knowledge in the film and video industry.", name: 'Emily Rodriguez', title: 'Creative Director, BrightSights Media', avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&q=80' },
-  { text: "Working with CreativeEdge Productions was a pleasure. Their team's ability to maintain a calm and patient demeanor resulted in exceptional corporate videos.", name: 'David Chen', title: 'CEO, Nexus Innovations', avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&q=80' },
+  {
+    text: 'We wanted to improve our online presence and reach more customers. Digivents helped us with digital marketing and the results have been very positive for our business.',
+    name: 'Bednidhi Traders',
+    avatar: benidhi
+  },
+  {
+    text: 'Working with Digivents has been a smooth experience. They helped us grow our visibility online and connect with more people who need our services',
+    name: 'Advance Pain Specialist Clinic',
+    avatar: clinic
+  },
+  {
+    text: 'Our social media presence has improved a lot. We are now reaching the right audience for our housing projects',
+    name: 'Shivam Housing',
+    avatar: shivam
+  },
+  {
+    text: 'With Digivents’ support, our match updates and schedules reached fans instantly. The engagement this season was outstanding.',
+    name: 'Jhapa Gold Cup',
+    avatar: goldCup
+  },
 ];
 
 const slideVariants = {

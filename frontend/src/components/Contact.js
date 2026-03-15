@@ -6,10 +6,10 @@ import { Link } from 'react-router-dom';
 import { fadeInUp, fadeInLeft, fadeInRight, staggerContainer } from '../animations';
 
 const contactInfo = [
-  { icon: <FiMapPin />, label: 'Address', value: '123 Artistic Lane, Suite 302, NY, USA M5V 1A1' },
-  { icon: <FiMail />, label: 'Email', value: 'contact@storystream.com' },
-  { icon: <FiPhone />, label: 'Phone', value: '(416) 555-1234' },
-  { icon: <FiClock />, label: 'Business Hours', value: 'Sunday - Thursday: 9am to 5pm' },
+   { icon: <FiMapPin />, label: 'Address', value: 'Birtamode-04, Bhadrapur Road, Opposite to Hangout, Jhapa, Nepal' },
+  { icon: <FiMail />, label: 'Email', value: 'digivents02@gmail.com' },
+  { icon: <FiPhone />, label: 'Phone', value: '+977 985-2623936' },
+  { icon: <FiClock />, label: 'Business Hours', value: 'Sunday - Friday: 10am - 6pm' },
 ];
 
 const Contact = () => {

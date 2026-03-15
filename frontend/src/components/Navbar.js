@@ -61,7 +61,7 @@ const Navbar = () => {
               alt="Digivents Logo"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="h-80 w-auto"
+              className="h-20 w-auto"
             />
           </Link>
 

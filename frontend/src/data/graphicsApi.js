@@ -7,7 +7,7 @@ import { apiFetch, getImageUrl, uploadFile } from './api';
  * Transform Strapi project media into graphic format
  */
 const transformProjectToGraphic = (project, mediaItem) => {
-  return {
+  const graphic = {
     id: `${project.id}-${mediaItem.id}`,
     documentId: mediaItem.documentId || `${project.documentId}-${mediaItem.id}`,
     title: project.name || '',
@@ -18,6 +18,14 @@ const transformProjectToGraphic = (project, mediaItem) => {
     projectId: project.id,
     projectSlug: project.slug,
   };
+  
+  console.log('[Graphics API] Transformed media item:', {
+    projectName: project.name,
+    mediaItem,
+    transformedGraphic: graphic,
+  });
+  
+  return graphic;
 };
 
 // Fetch all graphics from projects
@@ -28,10 +36,19 @@ export const fetchAllGraphics = async () => {
     const projects = data.data || [];
     
     console.log('[Graphics API] Fetched', projects.length, 'projects');
+    console.log('[Graphics API] Raw projects data:', projects);
     
     // Extract media from projects and transform to graphics
     const graphics = [];
-    projects.forEach(project => {
+    projects.forEach((project, idx) => {
+      console.log(`[Graphics API] Project ${idx}:`, {
+        name: project.name,
+        hasMedia: !!project.media,
+        mediaType: Array.isArray(project.media) ? 'array' : typeof project.media,
+        mediaLength: Array.isArray(project.media) ? project.media.length : 'N/A',
+        media: project.media,
+      });
+      
       if (project.media && Array.isArray(project.media)) {
         project.media.forEach(mediaItem => {
           graphics.push(transformProjectToGraphic(project, mediaItem));
@@ -40,9 +57,11 @@ export const fetchAllGraphics = async () => {
     });
     
     console.log('[Graphics API] Extracted', graphics.length, 'graphics from projects');
+    console.log('[Graphics API] Final graphics:', graphics);
     return graphics;
   } catch (error) {
     console.error('[Graphics API] Failed to fetch graphics:', error.message);
+    console.error('[Graphics API] Full error:', error);
     return [];
   }
 };

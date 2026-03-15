@@ -1,13 +1,15 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
 import { pageTransition, fadeInUp, staggerContainer } from '../animations';
-import { PlayCircle, Mouse, Search } from 'lucide-react';
+import { PlayCircle, Mouse, Search, X } from 'lucide-react';
 import { fetchAllProjects } from '../data/projectsApi';
 
 const ProjectsPage = () => {
   const heroRef = useRef(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterType, setFilterType] = useState('all');
+  const [selectedProject, setSelectedProject] = useState(null);
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ['start start', 'end start'] });
@@ -67,7 +69,7 @@ const ProjectsPage = () => {
           />
           <div className="absolute inset-0 bg-gradient-to-t from-dark via-dark/40 to-dark/20" />
           <motion.div className="absolute inset-0 bg-dark" style={{ opacity: overlayOpacity }} />
-        </motion.div>
+    </motion.div>
 
         <motion.div
           className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative w-full pb-16 sm:pb-24"
@@ -176,11 +178,7 @@ const ProjectsPage = () => {
                     key={project.id} 
                     variants={fadeInUp}
                     className="group relative bg-darkGray rounded-xl overflow-hidden aspect-[9/16] cursor-pointer"
-                    onClick={() => {
-                      if (project.videoUrl) {
-                        window.open(project.videoUrl, '_blank', 'noopener,noreferrer');
-                      }
-                    }}
+                    onClick={() => setSelectedProject(project)}
                   >
                     <img 
                       src={imageSrc}
@@ -229,6 +227,91 @@ const ProjectsPage = () => {
           </AnimatePresence>
         </main>
       </div>
+
+      {/* Modal Popup */}
+      {createPortal(
+        <AnimatePresence>
+          {selectedProject && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-sm"
+              onClick={() => setSelectedProject(null)}
+            >
+              <motion.div
+                initial={{ scale: 0.95, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.95, opacity: 0 }}
+                className="relative w-full max-w-5xl bg-darkGray rounded-2xl overflow-hidden shadow-2xl border border-white/10 flex flex-col max-h-[90vh]"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <button
+                  onClick={() => setSelectedProject(null)}
+                  className="absolute top-4 right-4 z-10 p-2 bg-black/50 hover:bg-white/10 rounded-full text-white transition-colors"
+                >
+                  <X size={24} />
+                </button>
+                
+                <div className="flex-1 w-full bg-black flex items-center justify-center overflow-hidden">
+                  {selectedProject.videoUrl ? (
+                    (() => {
+                      const url = selectedProject.videoUrl;
+                      if (url.includes('youtube.com') || url.includes('youtu.be')) {
+                        let videoId = url.split('v=')[1]?.split('&')[0];
+                        if (!videoId && url.includes('youtu.be')) videoId = url.split('/').pop();
+                        return (
+                          <iframe
+                            src={`https://www.youtube.com/embed/${videoId}?autoplay=1`}
+                            title={selectedProject.title}
+                            className="w-full h-full aspect-video"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowFullScreen
+                          />
+                        );
+                      }
+                      if (url.includes('vimeo.com')) {
+                        const videoId = url.split('/').pop();
+                        return (
+                          <iframe
+                            src={`https://player.vimeo.com/video/${videoId}?autoplay=1`}
+                            title={selectedProject.title}
+                            className="w-full h-full aspect-video"
+                            allow="autoplay; fullscreen; picture-in-picture"
+                            allowFullScreen
+                          />
+                        );
+                      }
+                      return (
+                        <video
+                          src={url}
+                          controls
+                          autoPlay
+                          className="w-full h-full object-contain"
+                        />
+                      );
+                    })()
+                  ) : (
+                    <img
+                      src={selectedProject.image}
+                      alt={selectedProject.title}
+                      className="w-full h-full object-contain"
+                    />
+                  )}
+                </div>
+                
+                <div className="p-6 bg-darkGray border-t border-white/10 shrink-0">
+                  <h3 className="text-2xl font-bold text-white mb-2">{selectedProject.title}</h3>
+                  <p className="text-white/60 text-sm">
+                    {selectedProject.description || selectedProject.category}
+                  </p>
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
     </motion.div>
   );
 };

@@ -76,29 +76,35 @@ export const sendMessage = async (formData) => {
   try {
     console.log('[Contact API] Raw formData:', formData);
     
-    // Build the payload with exact field names from form
+    const firstName = (formData['First Name'] || '').trim();
+    const lastName = (formData['Last Name'] || '').trim();
+    const email = (formData['Email'] || '').trim();
+    const subject = (formData['Subject'] || '').trim();
+    const messageText = (formData['Message'] || '').trim();
+
+    // Validate all required fields are present and not empty
+    if (!firstName) throw new Error('First Name is required');
+    if (!lastName) throw new Error('Last Name is required');
+    if (!email) throw new Error('Email is required');
+    if (!messageText) throw new Error('Message is required');
+
+    // Combine subject with message text if subject is provided
+    let finalMessage = messageText;
+    if (subject) {
+      finalMessage = `Subject: ${subject}\n\nMessage: ${messageText}`;
+    }
+
+    // Build the payload with only fields that Strapi supports
     const payload = {
       data: {
-        firstName: (formData['First Name'] || '').trim(),
-        lastName: (formData['Last Name'] || '').trim(),
-        email: (formData['Email'] || '').trim(),
-        message: (formData['Message'] || '').trim(),
+        firstName,
+        lastName,
+        email,
+        message: finalMessage,
       },
     };
 
-    // Only add subject if it's provided and not empty
-    const subject = (formData['Subject'] || '').trim();
-    if (subject) {
-      payload.data.subject = subject;
-    }
-
     console.log('[Contact API] Prepared payload:', JSON.stringify(payload, null, 2));
-
-    // Validate all required fields are present and not empty
-    if (!payload.data.firstName) throw new Error('First Name is required');
-    if (!payload.data.lastName) throw new Error('Last Name is required');
-    if (!payload.data.email) throw new Error('Email is required');
-    if (!payload.data.message) throw new Error('Message is required');
 
     const response = await apiFetch('/contacts', {
       method: 'POST',

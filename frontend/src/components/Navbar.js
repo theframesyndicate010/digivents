@@ -56,12 +56,12 @@ const Navbar = () => {
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-3 group">
-            <motion.img
+                      <motion.img
               src={logo}
               alt="Digivents Logo"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="h-20 w-auto"
+              className="h-12 sm:h-16 md:h-20 w-auto"
             />
           </Link>
 

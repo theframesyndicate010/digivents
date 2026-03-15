@@ -154,11 +154,9 @@ const AboutPage = () => {
               />
               <motion.h2 variants={fadeInRight} className="section-title mb-6">Our Story</motion.h2>
               <motion.p variants={fadeInRight} custom={1} className="text-white/55 leading-relaxed mb-4">
-                Established in 2015, we have dedicated ourselves to crafting captivating visual narratives defined by creativity, innovation, and an unwavering commitment to excellence in video production.
-              </motion.p>
+Founded in 2022, DigiVents is a digital marketing and event management agency based in Birtamode, Jhapa. The company specializes in social media marketing, branding, corporate events, musical concerts, and live experiences. By combining creativity, strategy, and technology, DigiVents helps businesses grow their online presence while delivering impactful events.              </motion.p>
               <motion.p variants={fadeInRight} custom={2} className="text-white/45 leading-relaxed mb-8">
-                Our mission is clear: to transform ideas into compelling visual stories. We believe that every project is an opportunity to create something extraordinary. Whether it's a corporate video, a commercial, an event coverage, or an animation, we approach each endeavor with enthusiasm.
-              </motion.p>
+Since its launch, the agency has successfully organized various events and live performances, creating engaging experiences and effective digital campaigns for its clients.              </motion.p>
               <motion.div variants={fadeInRight} custom={3} className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
                 {stats.map((stat, i) => (
                   <motion.div

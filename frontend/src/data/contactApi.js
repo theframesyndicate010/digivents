@@ -74,25 +74,33 @@ export const fetchFormFields = async () => {
 // Submit contact form to Strapi
 export const sendMessage = async (formData) => {
   try {
+    console.log('[Contact API] Sending message:', formData);
+    
     const payload = {
       data: {
-        firstName: formData['First Name'] || '',
-        lastName: formData['Last Name'] || '',
-        email: formData['Email'] || '',
-        phone: formData['Subject'] || '', // Map subject to phone or add subject field
-        message: formData['Message'] || '',
+        firstName: formData['First Name']?.trim() || '',
+        lastName: formData['Last Name']?.trim() || '',
+        email: formData['Email']?.trim() || '',
+        subject: formData['Subject']?.trim() || '',
+        message: formData['Message']?.trim() || '',
       },
     };
 
-    await apiFetch('/contacts', {
+    console.log('[Contact API] Payload:', payload);
+
+    const response = await apiFetch('/contacts', {
       method: 'POST',
       body: JSON.stringify(payload),
     });
 
-    return { success: true, message: 'Your message has been sent successfully!' };
+    console.log('[Contact API] Success response:', response);
+    return { 
+      success: true, 
+      message: 'Your message has been sent successfully! We\'ll get back to you soon.' 
+    };
   } catch (error) {
-    console.error('Failed to send message:', error);
-    throw new Error('Failed to send message. Please try again.');
+    console.error('[Contact API] Failed to send message:', error);
+    throw new Error(error.message || 'Failed to send message. Please try again.');
   }
 };
 

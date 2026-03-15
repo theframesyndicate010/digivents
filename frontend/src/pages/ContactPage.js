@@ -3,24 +3,23 @@ import { motion, useScroll, useTransform } from 'framer-motion';
 import { HiArrowRight } from 'react-icons/hi';
 import { FiSend } from 'react-icons/fi';
 import { pageTransition } from '../animations';
-import { fetchContactInfo, fetchFormFields, sendMessage } from '../data/contactApi';
+import { contactInfo } from '../data/contactData';
+import { fetchFormFields, sendMessage } from '../data/contactApi';
 
 const smooth = [0.33, 1, 0.68, 1];
 
 const ContactPage = () => {
-  const [contactInfo, setContactInfo] = useState([]);
   const [formConfig, setFormConfig] = useState(null);
   const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({});
   const [submitStatus, setSubmitStatus] = useState(null);
 
   useEffect(() => {
-    Promise.all([fetchContactInfo(), fetchFormFields()])
-      .then(([infoData, fieldsData]) => {
-        setContactInfo(infoData);
+    fetchFormFields()
+      .then((fieldsData) => {
         setFormConfig(fieldsData);
       })
-      .catch((err) => console.error('Failed to fetch contact data:', err))
+      .catch((err) => console.error('Failed to fetch form fields:', err))
       .finally(() => setLoading(false));
   }, []);
 
@@ -28,16 +27,43 @@ const ContactPage = () => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
+  const validateForm = () => {
+    const required = ['First Name', 'Last Name', 'Email', 'Message'];
+    const missing = required.filter(field => !formData[field]?.trim());
+    
+    if (missing.length > 0) {
+      setSubmitStatus(`Please fill in: ${missing.join(', ')}`);
+      return false;
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData['Email'])) {
+      setSubmitStatus('Please enter a valid email address');
+      return false;
+    }
+
+    return true;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    if (!validateForm()) {
+      return;
+    }
+
     try {
+      setSubmitStatus('Sending your message...');
       const result = await sendMessage(formData);
       setSubmitStatus(result.message);
       setFormData({});
       e.target.reset();
-      setTimeout(() => setSubmitStatus(null), 3000);
+      setTimeout(() => setSubmitStatus(null), 5000);
     } catch (err) {
-      setSubmitStatus('Failed to send message. Please try again.');
+      console.error('Submit error:', err);
+      const errorMsg = err.message || 'Failed to send message. Please try again.';
+      setSubmitStatus(`Error: ${errorMsg}`);
     }
   };
   const heroRef = useRef(null);
@@ -198,53 +224,98 @@ const ContactPage = () => {
               viewport={{ once: true }}
               transition={{ delay: 0.15, duration: 0.6, ease: smooth }}
             >
-              <div className="bg-darkGray border border-white/[0.06] rounded-3xl p-8 lg:p-10 hover:border-white/10 transition-colors duration-300">
-                <div className="flex items-center gap-3 mb-8">
-                  <div className="w-10 h-10 bg-gradient-to-br from-accent1/20 to-accent2/20 border border-white/[0.06] rounded-xl flex items-center justify-center text-white">
-                    <FiSend />
-                  </div>
+              <div className="bg-gradient-to-br from-darkGray via-darkGray to-dark border border-white/[0.1] rounded-3xl p-8 lg:p-10 hover:border-white/20 transition-all duration-300 shadow-2xl">
+                <div className="flex items-center gap-3 mb-10">
+                  <motion.div
+                    whileHover={{ scale: 1.1, rotate: 5 }}
+                    className="w-12 h-12 bg-gradient-to-br from-accent1/30 to-accent2/30 border border-white/[0.15] rounded-xl flex items-center justify-center text-accent1 shadow-lg shadow-accent1/20"
+                  >
+                    <FiSend size={20} />
+                  </motion.div>
                   <div>
-                    <h3 className="text-xl font-bold text-white">Send a Message</h3>
-                    <p className="text-white/35 text-xs">We'll respond within 24 hours</p>
+                    <h3 className="text-2xl font-bold text-white">Send a Message</h3>
+                    <p className="text-white/40 text-xs mt-1">We'll respond within 24 hours</p>
                   </div>
                 </div>
 
-                <form className="space-y-5" onSubmit={handleSubmit}>
+                <form className="space-y-6" onSubmit={handleSubmit}>
                   {formConfig && (
                     <>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                         {formConfig.nameFields.map((ph, i) => (
-                          <div key={i}>
-                            <label className="text-white/40 text-xs uppercase tracking-wider mb-2 block">{ph}</label>
-                            <input type="text" placeholder={ph} onChange={(e) => handleInputChange(ph, e.target.value)} className="w-full bg-dark border border-white/[0.08] rounded-xl px-5 py-3.5 text-white placeholder:text-white/20 focus:border-white/25 focus:outline-none focus:ring-1 focus:ring-white/10 transition-all duration-300 text-sm" />
-                          </div>
+                          <motion.div
+                            key={i}
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: i * 0.1 }}
+                          >
+                            <label className="text-white/50 text-xs uppercase tracking-wider font-medium mb-2.5 block">{ph}</label>
+                            <input
+                              type="text"
+                              placeholder={ph}
+                              onChange={(e) => handleInputChange(ph, e.target.value)}
+                              className="w-full bg-dark/60 border border-white/[0.1] rounded-xl px-5 py-3.5 text-white placeholder:text-white/25 focus:border-accent1 focus:bg-dark/80 focus:outline-none focus:ring-2 focus:ring-accent1/30 transition-all duration-300 text-sm font-medium hover:border-white/20"
+                            />
+                          </motion.div>
                         ))}
                       </div>
 
                       {formConfig.inputFields.map((field, i) => (
-                        <div key={i}>
-                          <label className="text-white/40 text-xs uppercase tracking-wider mb-2 block">{field.label}</label>
-                          <input type={field.type} placeholder={field.placeholder} onChange={(e) => handleInputChange(field.label, e.target.value)} className="w-full bg-dark border border-white/[0.08] rounded-xl px-5 py-3.5 text-white placeholder:text-white/20 focus:border-white/25 focus:outline-none focus:ring-1 focus:ring-white/10 transition-all duration-300 text-sm" />
-                        </div>
+                        <motion.div
+                          key={i}
+                          initial={{ opacity: 0, y: 20 }}
+                          whileInView={{ opacity: 1, y: 0 }}
+                          viewport={{ once: true }}
+                          transition={{ delay: (2 + i) * 0.1 }}
+                        >
+                          <label className="text-white/50 text-xs uppercase tracking-wider font-medium mb-2.5 block">{field.label}</label>
+                          <input
+                            type={field.type}
+                            placeholder={field.placeholder}
+                            onChange={(e) => handleInputChange(field.label, e.target.value)}
+                            className="w-full bg-dark/60 border border-white/[0.1] rounded-xl px-5 py-3.5 text-white placeholder:text-white/25 focus:border-accent1 focus:bg-dark/80 focus:outline-none focus:ring-2 focus:ring-accent1/30 transition-all duration-300 text-sm font-medium hover:border-white/20"
+                          />
+                        </motion.div>
                       ))}
 
-                      <div>
-                        <label className="text-white/40 text-xs uppercase tracking-wider mb-2 block">{formConfig.messageField.label}</label>
-                        <textarea placeholder={formConfig.messageField.placeholder} rows={formConfig.messageField.rows} onChange={(e) => handleInputChange('Message', e.target.value)} className="w-full bg-dark border border-white/[0.08] rounded-xl px-5 py-3.5 text-white placeholder:text-white/20 focus:border-white/25 focus:outline-none focus:ring-1 focus:ring-white/10 transition-all duration-300 text-sm resize-none" />
-                      </div>
+                      <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: 0.4 }}
+                      >
+                        <label className="text-white/50 text-xs uppercase tracking-wider font-medium mb-2.5 block">{formConfig.messageField.label}</label>
+                        <textarea
+                          placeholder={formConfig.messageField.placeholder}
+                          rows={formConfig.messageField.rows}
+                          onChange={(e) => handleInputChange('Message', e.target.value)}
+                          className="w-full bg-dark/60 border border-white/[0.1] rounded-xl px-5 py-3.5 text-white placeholder:text-white/25 focus:border-accent1 focus:bg-dark/80 focus:outline-none focus:ring-2 focus:ring-accent1/30 transition-all duration-300 text-sm font-medium hover:border-white/20 resize-none"
+                        />
+                      </motion.div>
                     </>
                   )}
 
                   {submitStatus && (
-                    <p className="text-accent1 text-sm text-center">{submitStatus}</p>
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      className={`px-4 py-3 rounded-xl text-sm text-center font-medium transition-all duration-300 ${
+                        submitStatus.toLowerCase().includes('failed')
+                          ? 'bg-accentRed/20 border border-accentRed/40 text-accentRed'
+                          : 'bg-accentGreen/20 border border-accentGreen/40 text-accentGreen'
+                      }`}
+                    >
+                      {submitStatus}
+                    </motion.div>
                   )}
 
                   <motion.button
                     type="submit"
-                    whileHover={{ y: -2 }}
+                    whileHover={{ y: -3, scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     transition={{ duration: 0.2, ease: 'easeOut' }}
-                    className="btn-primary w-full justify-center text-sm"
+                    className="btn-primary w-full justify-center text-sm font-semibold shadow-lg hover:shadow-xl hover:shadow-accent1/30 transition-all duration-300"
                   >
                     Send Message <HiArrowRight />
                   </motion.button>

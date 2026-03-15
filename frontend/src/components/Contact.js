@@ -1,16 +1,9 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { HiArrowRight } from 'react-icons/hi';
-import { FiMapPin, FiMail, FiPhone, FiClock } from 'react-icons/fi';
 import { Link } from 'react-router-dom';
 import { fadeInUp, fadeInLeft, fadeInRight, staggerContainer } from '../animations';
-
-const contactInfo = [
-   { icon: <FiMapPin />, label: 'Address', value: 'Birtamode-04, Bhadrapur Road, Opposite to Hangout, Jhapa, Nepal' },
-  { icon: <FiMail />, label: 'Email', value: 'digivents02@gmail.com' },
-  { icon: <FiPhone />, label: 'Phone', value: '+977 985-2623936' },
-  { icon: <FiClock />, label: 'Business Hours', value: 'Sunday - Friday: 10am - 6pm' },
-];
+import { contactInfo } from '../data/contactData';
 
 const Contact = () => {
   return (
@@ -89,8 +82,8 @@ const Contact = () => {
             className="flex items-center"
           >
             <motion.div
-              whileHover={{ borderColor: 'rgba(255,255,255,0.15)' }}
-              className="w-full bg-darkGray border border-white/10 rounded-3xl p-8 lg:p-10 transition-colors"
+              whileHover={{ borderColor: 'rgba(255, 153, 51, 0.3)' }}
+              className="w-full bg-gradient-to-br from-darkGray via-darkGray to-dark border border-white/10 rounded-3xl p-8 lg:p-10 hover:border-accent1/30 transition-all shadow-xl hover:shadow-2xl hover:shadow-accent1/10 duration-300"
             >
               <motion.h3
                 initial={{ opacity: 0, y: 15 }}
@@ -103,7 +96,7 @@ const Contact = () => {
               </motion.h3>
               <p className="text-white/40 text-sm mb-8">We'll get back to you within 24 hours.</p>
 
-              <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
+              <form className="space-y-5" onSubmit={(e) => e.preventDefault()}>
                 {['Your Name', 'Your Email'].map((placeholder, i) => (
                   <motion.div
                     key={i}
@@ -115,7 +108,7 @@ const Contact = () => {
                     <input
                       type={i === 1 ? 'email' : 'text'}
                       placeholder={placeholder}
-                      className="w-full bg-dark border border-white/10 rounded-xl px-5 py-3.5 text-white placeholder:text-white/30 focus:border-white/30 focus:outline-none focus:ring-1 focus:ring-white/10 transition-all text-sm"
+                      className="w-full bg-dark/60 border border-white/[0.1] rounded-xl px-5 py-3.5 text-white placeholder:text-white/25 focus:border-accent1 focus:bg-dark/80 focus:outline-none focus:ring-2 focus:ring-accent1/30 hover:border-white/20 transition-all text-sm font-medium"
                     />
                   </motion.div>
                 ))}
@@ -128,14 +121,14 @@ const Contact = () => {
                   <textarea
                     placeholder="Your Message"
                     rows={4}
-                    className="w-full bg-dark border border-white/10 rounded-xl px-5 py-3.5 text-white placeholder:text-white/30 focus:border-white/30 focus:outline-none focus:ring-1 focus:ring-white/10 transition-all text-sm resize-none"
+                    className="w-full bg-dark/60 border border-white/[0.1] rounded-xl px-5 py-3.5 text-white placeholder:text-white/25 focus:border-accent1 focus:bg-dark/80 focus:outline-none focus:ring-2 focus:ring-accent1/30 hover:border-white/20 transition-all text-sm font-medium resize-none"
                   />
                 </motion.div>
                 <motion.button
                   type="submit"
-                  whileHover={{ scale: 1.02, y: -2 }}
+                  whileHover={{ scale: 1.02, y: -3 }}
                   whileTap={{ scale: 0.98 }}
-                  className="btn-primary w-full justify-center text-sm"
+                  className="btn-primary w-full justify-center text-sm font-semibold shadow-lg hover:shadow-xl hover:shadow-accent1/30 transition-all duration-300"
                 >
                   Send Message <HiArrowRight />
                 </motion.button>

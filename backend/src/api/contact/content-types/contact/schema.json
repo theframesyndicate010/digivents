@@ -26,9 +26,9 @@
       "type": "email",
       "required": true
     },
-    "phone": {
+    "subject": {
       "type": "string",
-      "maxLength": 20
+      "maxLength": 200
     },
     "message": {
       "type": "text",

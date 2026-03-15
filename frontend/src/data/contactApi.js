@@ -82,10 +82,15 @@ export const sendMessage = async (formData) => {
         firstName: (formData['First Name'] || '').trim(),
         lastName: (formData['Last Name'] || '').trim(),
         email: (formData['Email'] || '').trim(),
-        subject: (formData['Subject'] || '').trim(),
         message: (formData['Message'] || '').trim(),
       },
     };
+
+    // Only add subject if it's provided and not empty
+    const subject = (formData['Subject'] || '').trim();
+    if (subject) {
+      payload.data.subject = subject;
+    }
 
     console.log('[Contact API] Prepared payload:', JSON.stringify(payload, null, 2));
 

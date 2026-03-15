@@ -1,7 +1,7 @@
 // Dynamic graphics API — fetches from Strapi backend
 // Used by GraphicsPage to display graphic design portfolio
 
-import { apiFetch, getImageUrl } from './api';
+import { apiFetch, getImageUrl, uploadFile } from './api';
 
 /**
  * Transform Strapi graphic response to frontend format
@@ -54,5 +54,54 @@ export const fetchGraphicBySlug = async (slug) => {
   } catch (error) {
     console.error('Failed to fetch graphic by slug:', error);
     throw new Error('Graphic not found');
+  }
+};
+
+/**
+ * Upload a new graphic with image and metadata
+ * @param {File} file - Image file to upload
+ * @param {string} title - Graphic title
+ * @param {string} description - Graphic description
+ * @param {string} category - Graphic category
+ * @param {string} token - JWT token for authentication
+ * @returns {Promise<Object>} Created graphic object
+ */
+export const uploadGraphic = async (file, title, description, category, token) => {
+  try {
+    // Step 1: Upload image file
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const uploadResponse = await uploadFile('/upload', formData, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    
+    if (!uploadResponse.url) {
+      throw new Error('Upload response missing URL');
+    }
+
+    const imageUrl = uploadResponse.url;
+
+    // Step 2: Create graphic entry with metadata
+    const graphicPayload = {
+      data: {
+        title: title || file.name,
+        slug: (title || file.name).toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, ''),
+        description: description || '',
+        category: category || '',
+        image: imageUrl,
+      },
+    };
+
+    const response = await apiFetch('/graphics', {
+      method: 'POST',
+      body: JSON.stringify(graphicPayload),
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    return response?.data ? transformGraphic(response.data) : response;
+  } catch (error) {
+    console.error('Failed to upload graphic:', error);
+    throw error;
   }
 };

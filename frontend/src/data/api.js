@@ -34,4 +34,29 @@ export const apiFetch = async (endpoint, options = {}) => {
   }
 };
 
+/**
+ * Upload file to backend (without Content-Type header for multipart/form-data)
+ * Browser will set Content-Type: multipart/form-data automatically
+ */
+export const uploadFile = async (endpoint, formData, options = {}) => {
+  const url = `${API_URL}/api${endpoint}`;
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      body: formData,
+      // DO NOT set Content-Type header for multipart/form-data
+      // Browser will add it with correct boundary
+      ...options,
+    });
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({ message: response.statusText }));
+      throw new Error(error.message || `Upload failed: ${response.status}`);
+    }
+    return await response.json();
+  } catch (error) {
+    console.error(`Failed to upload to ${url}:`, error);
+    throw error;
+  }
+};
+
 export default API_URL;

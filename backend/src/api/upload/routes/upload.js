@@ -5,7 +5,7 @@ module.exports = {
       path: '/upload',
       handler: 'upload.upload',
       config: {
-        policies: [],
+        policies: ['api::upload.is-authenticated'],
         middlewares: [],
       },
     },

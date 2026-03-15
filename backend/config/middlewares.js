@@ -3,47 +3,46 @@ module.exports = [
   'strapi::errors',
   'strapi::security',
   {
-    "name": "strapi::security",
-    "config": {
-      "contentSecurityPolicy": {
-        "useDefaults": true,
-        "directives": {
-          "connect-src": ["'self'", "https:"],
-          "img-src": [          {
-            name: 'strapi::cors',
-            config: {
-              origin: ['https://digivents.com.np', 'http://localhost:3000'],
-              methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'OPTIONS'],
-              headers: ['Content-Type', 'Authorization', 'Origin', 'Accept'],
-              keepHeaderOnError: true,
-            },
-          },
+    name: 'strapi::security',
+    config: {
+      contentSecurityPolicy: {
+        useDefaults: true,
+        directives: {
+          'connect-src': ["'self'", 'https:'],
+          'img-src': [
             "'self'",
-            "data:",
-            "blob:",
-            "market-assets.strapi.io",
-            "ik.imagekit.io", // ImageKit domain for images, add your custom domain if you use one
+            'data:',
+            'blob:',
+            'market-assets.strapi.io',
+            'ik.imagekit.io',
           ],
-          "media-src": [
+          'media-src': [
             "'self'",
-            "data:",
-            "blob:",
-            "market-assets.strapi.io",
-            "ik.imagekit.io", // ImageKit domain for videos/audio, add your custom domain if you use one
+            'data:',
+            'blob:',
+            'market-assets.strapi.io',
+            'ik.imagekit.io',
           ],
-          "frame-src": [
+          'frame-src': [
             "'self'",
-            "data:",
-            "blob:",
-            "eml.imagekit.io", // For ImageKit UI components
+            'data:',
+            'blob:',
+            'eml.imagekit.io',
           ],
-          "upgradeInsecureRequests": null,
+          upgradeInsecureRequests: null,
         },
       },
     },
   },
-
-  'strapi::cors',
+  {
+    name: 'strapi::cors',
+    config: {
+      origin: ['https://digivents.com.np', 'http://localhost:3000'],
+      methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'OPTIONS'],
+      headers: ['Content-Type', 'Authorization', 'Origin', 'Accept'],
+      keepHeaderOnError: true,
+    },
+  },
   'strapi::poweredBy',
   'strapi::query',
   'strapi::body',

@@ -2,7 +2,7 @@ import React, { useRef, useState, useEffect } from 'react';
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
 import { HiX } from 'react-icons/hi';
 import { pageTransition } from '../animations';
-import { fetchAllGraphics } from '../data/graphicsApi';
+import { fetchAllGraphics, uploadGraphic } from '../data/graphicsApi';
 
 /* ── Lightbox overlay ─────────────────────────────────────────── */
 const Lightbox = ({ graphic, onClose }) => (
@@ -114,12 +114,162 @@ const FilterPill = ({ label, active, onClick }) => (
   </motion.button>
 );
 
+/* ── Upload Graphic Modal ──────────────────────────────────────── */
+const UploadGraphicModal = ({ isOpen, onClose, onUpload, isLoading }) => {
+  const [formData, setFormData] = useState({
+    file: null,
+    title: '',
+    description: '',
+    category: '',
+  });
+  const fileInputRef = useRef(null);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setFormData(prev => ({ ...prev, file }));
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!formData.file) {
+      alert('Please select an image');
+      return;
+    }
+    await onUpload(formData);
+    setFormData({ file: null, title: '', description: '', category: '' });
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
+  return (
+    <AnimatePresence>
+      {isOpen && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-50 flex items-center justify-center bg-dark/90 backdrop-blur-md p-4"
+          onClick={onClose}
+        >
+          <motion.div
+            initial={{ scale: 0.85, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.85, opacity: 0 }}
+            transition={{ duration: 0.35, ease: [0.33, 1, 0.68, 1] }}
+            className="relative max-w-md w-full bg-dark/80 backdrop-blur-xl border border-white/10 rounded-xl p-6 sm:p-8"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={onClose}
+              className="absolute top-4 right-4 text-white/60 hover:text-white transition-colors"
+              disabled={isLoading}
+            >
+              <HiX size={24} />
+            </button>
+
+            <h2 className="text-2xl font-bold text-white mb-6">Upload Graphic</h2>
+
+            <form onSubmit={handleSubmit} className="space-y-4">
+              {/* File upload */}
+              <div>
+                <label className="block text-white/60 text-sm font-medium mb-2">
+                  Image File *
+                </label>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileChange}
+                  disabled={isLoading}
+                  className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm focus:outline-none focus:border-accent1 transition-colors disabled:opacity-50"
+                  required
+                />
+                {formData.file && (
+                  <p className="text-white/50 text-xs mt-1">{formData.file.name}</p>
+                )}
+              </div>
+
+              {/* Title */}
+              <div>
+                <label className="block text-white/60 text-sm font-medium mb-2">
+                  Title *
+                </label>
+                <input
+                  type="text"
+                  name="title"
+                  value={formData.title}
+                  onChange={handleChange}
+                  placeholder="Graphic title"
+                  disabled={isLoading}
+                  className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm placeholder-white/30 focus:outline-none focus:border-accent1 transition-colors disabled:opacity-50"
+                  required
+                />
+              </div>
+
+              {/* Category */}
+              <div>
+                <label className="block text-white/60 text-sm font-medium mb-2">
+                  Category
+                </label>
+                <input
+                  type="text"
+                  name="category"
+                  value={formData.category}
+                  onChange={handleChange}
+                  placeholder="e.g., Logo, Poster, Social Media"
+                  disabled={isLoading}
+                  className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm placeholder-white/30 focus:outline-none focus:border-accent1 transition-colors disabled:opacity-50"
+                />
+              </div>
+
+              {/* Description */}
+              <div>
+                <label className="block text-white/60 text-sm font-medium mb-2">
+                  Description
+                </label>
+                <textarea
+                  name="description"
+                  value={formData.description}
+                  onChange={handleChange}
+                  placeholder="Brief description of the graphic"
+                  disabled={isLoading}
+                  rows="3"
+                  className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm placeholder-white/30 focus:outline-none focus:border-accent1 transition-colors resize-none disabled:opacity-50"
+                />
+              </div>
+
+              {/* Submit button */}
+              <motion.button
+                whileHover={{ scale: isLoading ? 1 : 1.02 }}
+                whileTap={{ scale: isLoading ? 1 : 0.98 }}
+                type="submit"
+                disabled={isLoading}
+                className="w-full mt-6 px-4 py-3 bg-gradient-to-r from-accent1 to-accent2 text-white font-semibold rounded-lg hover:shadow-lg hover:shadow-accent1/30 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isLoading ? 'Uploading...' : 'Upload Graphic'}
+              </motion.button>
+            </form>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+};
+
 /* ── Main page ────────────────────────────────────────────────── */
 const GraphicsPage = () => {
   const [graphics, setGraphics] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeFilter, setActiveFilter] = useState('All');
   const [lightbox, setLightbox] = useState(null);
+  const [uploadModalOpen, setUploadModalOpen] = useState(false);
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     fetchAllGraphics()
@@ -127,6 +277,35 @@ const GraphicsPage = () => {
       .catch((err) => console.error('Failed to fetch graphics:', err))
       .finally(() => setLoading(false));
   }, []);
+
+  // Handle graphic upload
+  const handleUploadGraphic = async (formData) => {
+    setUploading(true);
+    try {
+      // Get token from localStorage (adjust based on your auth implementation)
+      const token = localStorage.getItem('jwt_token') || 'guest-token';
+      
+      const newGraphic = await uploadGraphic(
+        formData.file,
+        formData.title,
+        formData.description,
+        formData.category,
+        token
+      );
+
+      // Add new graphic to the beginning of the list
+      setGraphics(prev => [newGraphic, ...prev]);
+      setUploadModalOpen(false);
+      
+      // Show success message
+      alert('Graphic uploaded successfully!');
+    } catch (err) {
+      console.error('Upload failed:', err);
+      alert(`Upload failed: ${err.message}`);
+    } finally {
+      setUploading(false);
+    }
+  };
 
   // Lock body scroll when lightbox is open
   useEffect(() => {
@@ -262,6 +441,25 @@ const GraphicsPage = () => {
       {/* ── Gallery section ───────────────────────────────────── */}
       <section className="section-padding bg-dark">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Header with upload button */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+            className="flex items-center justify-between mb-8"
+          >
+            <h2 className="text-2xl sm:text-3xl font-bold text-white">Portfolio Gallery</h2>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setUploadModalOpen(true)}
+              className="px-4 py-2 bg-gradient-to-r from-accent1 to-accent2 text-white font-semibold text-sm rounded-lg hover:shadow-lg hover:shadow-accent1/30 transition-all duration-300"
+            >
+              + Upload
+            </motion.button>
+          </motion.div>
+
           {/* Category filters */}
           {categories.length > 1 && (
             <motion.div
@@ -337,6 +535,14 @@ const GraphicsPage = () => {
           <Lightbox graphic={lightbox} onClose={() => setLightbox(null)} />
         )}
       </AnimatePresence>
+
+      {/* ── Upload Modal ──────────────────────────────────────── */}
+      <UploadGraphicModal
+        isOpen={uploadModalOpen}
+        onClose={() => setUploadModalOpen(false)}
+        onUpload={handleUploadGraphic}
+        isLoading={uploading}
+      />
     </motion.div>
   );
 };

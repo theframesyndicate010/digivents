@@ -41,10 +41,11 @@ const Footer = () => {
           <motion.div variants={fadeInUp} className="lg:col-span-1">
             <Link to="/" className="flex items-center gap-2 mb-5">
               <motion.img
-                src={logo}
-                alt="Digivents Logo"
-                whileHover={{ scale: 1.05 }}
-                className="h-80 w-auto"
+                      src={logo}
+                             alt="Digivents Logo"
+                             whileHover={{ scale: 1.05 }}
+                             whileTap={{ scale: 0.95 }}
+                             className="h-12 sm:h-16 md:h-20 w-auto"
               />
             </Link>
             <p className="text-white/40 text-sm leading-relaxed mb-6">

@@ -282,6 +282,37 @@ const ProjectsPage = () => {
                           />
                         );
                       }
+                      if (url.includes('tiktok.com')) {
+                        // Extract video ID from tiktok url (e.g. https://www.tiktok.com/@user/video/123456789)
+                        const match = url.match(/video\/(\d+)/);
+                        const videoId = match ? match[1] : null;
+                        if (videoId) {
+                           return (
+                            <iframe
+                              src={`https://www.tiktok.com/embed/v2/${videoId}`}
+                              title={selectedProject.title}
+                              className="w-full h-full max-w-[400px] aspect-[9/16] mx-auto"
+                              allow="autoplay; fullscreen; picture-in-picture"
+                              allowFullScreen
+                            />
+                           )
+                        }
+                      }
+                      if (url.includes('instagram.com/reel') || url.includes('instagram.com/p/')) {
+                         // Convert to embed url
+                         const embedUrl = url.split('?')[0].replace(/\/$/, '') + '/embed';
+                         return (
+                          <iframe
+                            src={embedUrl}
+                            title={selectedProject.title}
+                            className="w-full h-full max-w-[400px] aspect-[9/16] mx-auto bg-white"
+                            allow="autoplay; fullscreen; picture-in-picture"
+                            allowFullScreen
+                            scrolling="no"
+                            frameBorder="0"
+                          />
+                         )
+                      }
                       return (
                         <video
                           src={url}

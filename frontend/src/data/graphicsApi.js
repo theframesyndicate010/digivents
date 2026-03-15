@@ -1,53 +1,34 @@
-// Dynamic graphics API — fetches from Strapi projects (not separate graphics)
-// Graphics are now part of projects - fetches project media as graphics
+// Dynamic graphics API — fetches from Strapi backend
+// Used by ProjectsPage to load graphics alongside projects
 
 import { apiFetch, getImageUrl, uploadFile } from './api';
 
 /**
- * Transform Strapi project media into graphic format
+ * Transform Strapi graphic response to frontend format
  */
-const transformProjectToGraphic = (project, mediaItem) => {
-  const graphic = {
-    id: `${project.id}-${mediaItem.id}`,
-    documentId: mediaItem.documentId || `${project.documentId}-${mediaItem.id}`,
-    title: project.name || '',
-    slug: project.slug || '',
-    description: project.description || '',
-    category: project.tag || '',
-    image: getImageUrl(mediaItem),
-    projectId: project.id,
-    projectSlug: project.slug,
+const transformGraphic = (graphic) => {
+  return {
+    id: graphic.id,
+    documentId: graphic.documentId,
+    title: graphic.title || '',
+    slug: graphic.slug || '',
+    description: graphic.description || '',
+    category: graphic.category || '',
+    image: getImageUrl(graphic.image),
   };
-  
-  console.log('[Graphics API] Transformed media item:', {
-    projectName: project.name,
-    mediaItem,
-    transformedGraphic: graphic,
-  });
-  
-  return graphic;
 };
 
-// Fetch all graphics from projects
+// Fetch all graphics from Strapi
 export const fetchAllGraphics = async () => {
   try {
-    // Fetch all published projects with their media
-    const data = await apiFetch('/projects?populate=media&sort=createdAt:desc&pagination[limit]=200');
-    const projects = data.data || [];
+    const data = await apiFetch('/graphics?populate=*&sort=createdAt:desc');
+    return (data.data || []).map(transformGraphic);
+  } catch (error) {
+    console.error('Failed to fetch graphics:', error);
+    return [];
+  }
+};
     
-    console.log('[Graphics API] Fetched', projects.length, 'projects');
-    console.log('[Graphics API] Raw projects data:', projects);
-    
-    // Extract media from projects and transform to graphics
-    const graphics = [];
-    projects.forEach((project, idx) => {
-      console.log(`[Graphics API] Project ${idx}:`, {
-        name: project.name,
-        hasMedia: !!project.media,
-        mediaType: Array.isArray(project.media) ? 'array' : typeof project.media,
-        mediaLength: Array.isArray(project.media) ? project.media.length : 'N/A',
-        media: project.media,
-      });
       
       if (project.media && Array.isArray(project.media)) {
         project.media.forEach(mediaItem => {
@@ -59,6 +40,10 @@ export const fetchAllGraphics = async () => {
     console.log('[Graphics API] Extracted', graphics.length, 'graphics from projects');
     console.log('[Graphics API] Final graphics:', graphics);
     return graphics;
+=======
+    const data = await apiFetch('/graphics?populate=*&sort=createdAt:desc');
+    return (data.data || []).map(transformGraphic);
+>>>>>>> 6d99c53 (Integrate graphics into projects page and cleanup)
   } catch (error) {
     console.error('[Graphics API] Failed to fetch graphics:', error.message);
     console.error('[Graphics API] Full error:', error);

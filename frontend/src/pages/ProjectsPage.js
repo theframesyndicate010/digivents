@@ -4,6 +4,7 @@ import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion'
 import { pageTransition, fadeInUp, staggerContainer } from '../animations';
 import { PlayCircle, Mouse, Search, X } from 'lucide-react';
 import { fetchAllProjects } from '../data/projectsApi';
+import { fetchAllGraphics } from '../data/graphicsApi';
 
 const ProjectsPage = () => {
   const heroRef = useRef(null);
@@ -20,28 +21,40 @@ const ProjectsPage = () => {
   const overlayOpacity = useTransform(scrollYProgress, [0, 0.8], [0.3, 0.85]);
 
   useEffect(() => {
-    fetchAllProjects()
-      .then((data) => setProjects(data))
+    Promise.all([fetchAllProjects(), fetchAllGraphics()])
+      .then(([projectsData, graphicsData]) => {
+        // Add type indicator to distinguish projects from graphics
+        const projectsWithType = projectsData.map((p) => ({ ...p, contentType: 'project' }));
+        const graphicsWithType = graphicsData.map((g) => ({ 
+          ...g, 
+          contentType: 'graphic',
+          title: g.title,
+          image: g.image 
+        }));
+        // Combine projects and graphics
+        setProjects([...projectsWithType, ...graphicsWithType]);
+      })
       .catch((error) => {
-        console.error('Failed to fetch projects:', error);
+        console.error('Failed to fetch projects or graphics:', error);
         setProjects([]);
       })
       .finally(() => setLoading(false));
   }, []);
 
   const filteredProjects = useMemo(() => {
-    return projects.filter((project) => {
-      const projectType = project.videoUrl ? 'video' : 'graphic';
-      const creator = project.workers?.[0]?.name || '';
+    return projects.filter((item) => {
+      // Determine type: project with video, project without video, or graphic
+      const itemType = item.contentType === 'graphic' ? 'graphic' : (item.videoUrl ? 'video' : 'graphic');
+      const creator = item.workers?.[0]?.name || '';
       const query = searchQuery.toLowerCase().trim();
 
       const matchesSearch =
-        project.title.toLowerCase().includes(query) ||
-        (project.client || '').toLowerCase().includes(query) ||
+        item.title.toLowerCase().includes(query) ||
+        (item.client || '').toLowerCase().includes(query) ||
         creator.toLowerCase().includes(query) ||
-        (project.category || '').toLowerCase().includes(query);
+        (item.category || '').toLowerCase().includes(query);
 
-      const matchesFilter = filterType === 'all' || projectType === filterType;
+      const matchesFilter = filterType === 'all' || itemType === filterType;
 
       return matchesSearch && matchesFilter;
     });

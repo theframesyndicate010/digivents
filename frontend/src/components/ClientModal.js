@@ -75,7 +75,7 @@ const ClientModal = ({ client, isOpen, onClose }) => {
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 transition={{ delay: 0.1, type: 'spring', damping: 20 }}
-                className="mb-6 w-24 h-24 rounded-3xl bg-gradient-to-br from-cyan-400/20 via-blue-500/20 to-purple-600/20 border border-cyan-400/30 flex items-center justify-center shadow-lg shadow-cyan-500/20"
+                className="mb-6 w-24 h-24 rounded-3xl bg-gradient-to-br from-accent1/20 via-accent2/20 to-accent1/20 border border-accent1/30 flex items-center justify-center shadow-lg shadow-accent1/20"
               >
                 {client.logo ? (
                   <img
@@ -171,7 +171,7 @@ const ClientModal = ({ client, isOpen, onClose }) => {
             </div>
 
             {/* Bottom accent */}
-            <div className="h-px bg-gradient-to-r from-transparent via-cyan-500/30 to-transparent" />
+            <div className="h-px bg-gradient-to-r from-transparent via-accent1/30 to-transparent" />
           </motion.div>
         </motion.div>
       )}

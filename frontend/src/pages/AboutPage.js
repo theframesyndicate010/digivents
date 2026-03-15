@@ -136,7 +136,7 @@ const AboutPage = () => {
                 transition={{ delay: 0.3, duration: 0.5, ease: [0.33, 1, 0.68, 1] }}
                 className="absolute -bottom-6 -right-4 sm:-right-6 bg-gradient-to-r from-accent1 to-accent2 rounded-2xl p-6 shadow-2xl"
               >
-                <span className="text-4xl font-bold text-white">2015</span>
+                <span className="text-4xl font-bold text-white">2022</span>
                 <p className="text-white/70 text-sm font-medium mt-1">Established</p>
               </motion.div>
             </motion.div>

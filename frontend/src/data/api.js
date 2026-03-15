@@ -1,5 +1,26 @@
 // API configuration — single source of truth for backend URL
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:1337';
+// For production, use environment variable. Falls back to relative API calls (same domain)
+const getApiUrl = () => {
+  // Development: explicit localhost URL or environment variable
+  if (process.env.NODE_ENV === 'development') {
+    return process.env.REACT_APP_API_URL || 'http://localhost:1337';
+  }
+  
+  // Production: use environment variable OR assume backend is on same domain
+  if (process.env.REACT_APP_API_URL) {
+    return process.env.REACT_APP_API_URL;
+  }
+  
+  // Fallback: use current domain (works if frontend and backend on same server)
+  const protocol = window.location.protocol;
+  const hostname = window.location.hostname;
+  const port = window.location.port ? `:${window.location.port}` : '';
+  return `${protocol}//${hostname}${port}`;
+};
+
+const API_URL = getApiUrl();
+
+console.log('[API Config] Using API URL:', API_URL);
 
 /**
  * Helper to build full image URL from Strapi media object
@@ -20,16 +41,28 @@ export const getImageUrl = (media) => {
 export const apiFetch = async (endpoint, options = {}) => {
   const url = `${API_URL}/api${endpoint}`;
   try {
+    console.log('[API] Fetching:', url);
     const response = await fetch(url, {
       headers: { 'Content-Type': 'application/json', ...options.headers },
       ...options,
     });
+    
     if (!response.ok) {
+      const errorBody = await response.text().catch(() => '');
+      console.error('[API Error]', {
+        status: response.status,
+        statusText: response.statusText,
+        url,
+        body: errorBody,
+      });
       throw new Error(`API error: ${response.status} ${response.statusText}`);
     }
-    return await response.json();
+    
+    const data = await response.json();
+    console.log('[API] Success:', endpoint, data);
+    return data;
   } catch (error) {
-    console.error(`Failed to fetch ${url}:`, error);
+    console.error(`[API Error] Failed to fetch ${url}:`, error);
     throw error;
   }
 };

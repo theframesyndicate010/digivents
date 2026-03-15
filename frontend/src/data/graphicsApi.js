@@ -22,9 +22,11 @@ const transformGraphic = (graphic) => {
 export const fetchAllGraphics = async () => {
   try {
     const data = await apiFetch('/graphics?populate=*&sort=createdAt:desc');
-    return (data.data || []).map(transformGraphic);
+    const graphics = (data.data || []).map(transformGraphic);
+    console.log('[Graphics API] Fetched', graphics.length, 'graphics');
+    return graphics;
   } catch (error) {
-    console.error('Failed to fetch graphics:', error);
+    console.error('[Graphics API] Failed to fetch graphics:', error.message);
     return [];
   }
 };

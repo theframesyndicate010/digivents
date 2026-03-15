@@ -53,6 +53,9 @@ const GraphicCard = ({ graphic, index, onClick }) => {
   const heights = ['h-64', 'h-80', 'h-72', 'h-96', 'h-60', 'h-72'];
   const heightClass = heights[index % heights.length];
 
+  // Fallback image if none provided
+  const imageUrl = graphic.image || 'https://via.placeholder.com/500x500?text=No+Image';
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 60 }}
@@ -69,10 +72,11 @@ const GraphicCard = ({ graphic, index, onClick }) => {
     >
       <div className={`relative overflow-hidden ${heightClass}`}>
         <img
-          src={graphic.image}
-          alt={graphic.title}
+          src={imageUrl}
+          alt={graphic.title || 'Graphic'}
           className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
           loading="lazy"
+          onerror="this.src='https://via.placeholder.com/500x500?text=Image+Error'"
         />
         {/* Hover overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-dark/90 via-dark/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
@@ -90,7 +94,7 @@ const GraphicCard = ({ graphic, index, onClick }) => {
         <div className="absolute bottom-0 left-0 right-0 p-5 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500">
           <div className="w-8 h-[2px] bg-gradient-to-r from-accent1 to-accent2 mb-2 rounded-full" />
           <h3 className="text-white font-bold text-lg leading-tight">
-            {graphic.title}
+            {graphic.title || 'Untitled'}
           </h3>
         </div>
       </div>

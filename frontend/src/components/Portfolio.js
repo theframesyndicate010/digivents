@@ -29,97 +29,131 @@ const getProjectPlatform = (project) => {
   return null;
 };
 
-/* ── Mini TikTok Card for homepage ────────────────────────────── */
+/* ── Professional Project Card for homepage ────────────────────────────── */
 const MiniProjectCard = ({ project, index }) => {
   const [liked, setLiked] = useState(false);
   const platform = getProjectPlatform(project);
   const hasVideo = !!platform;
+  const isGraphic = !hasVideo;
   const PlatformIcon = platform === 'instagram' ? SiInstagram : SiTiktok;
+  const projectType = hasVideo ? 'Video' : 'Graphic';
+  const typeColor = hasVideo ? 'from-blue-500 to-cyan-500' : 'from-purple-500 to-pink-500';
 
   return (
     <motion.div
       variants={fadeInUp}
       custom={index}
-      className="group relative h-full"
+      className="group h-full"
     >
-      <div className="relative bg-black rounded-2xl overflow-hidden border border-white/[0.12] hover:border-white/[0.25] transition-all duration-500 shadow-lg hover:shadow-2xl hover:shadow-accent1/10 h-full">
-        <div className={`relative overflow-hidden ${index === 0 ? 'aspect-[9/14]' : 'aspect-[9/16]'}`}>
-          {/* Thumbnail */}
+      <div className="relative h-full bg-white rounded-xl overflow-hidden border border-gray-200 hover:border-gray-300 transition-all duration-500 shadow-sm hover:shadow-xl flex flex-col">
+        {/* Image Container */}
+        <div className="relative overflow-hidden bg-gray-100 flex-1">
           {project.image ? (
             <img
               src={project.image}
               alt={project.title}
-              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
               loading="lazy"
             />
           ) : (
-            <div className="w-full h-full bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
-              <div className="text-white/30 flex flex-col items-center gap-2">
-                <HiPlay className="text-3xl" />
-                <span className="text-xs uppercase tracking-wider opacity-50">No Preview</span>
+            <div className="w-full h-full bg-gradient-to-br from-gray-200 via-gray-100 to-gray-200 flex items-center justify-center">
+              <div className="text-gray-400 flex flex-col items-center gap-2">
+                <HiPlay className="text-4xl" />
+                <span className="text-xs uppercase tracking-wider font-medium">No Preview</span>
               </div>
             </div>
           )}
 
           {/* Gradient Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/40 to-black/90 opacity-70 group-hover:opacity-80 transition-opacity duration-300" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
-          {/* Play overlay */}
+          {/* Play Button Overlay */}
           {hasVideo && (
-            <div className="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
+            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
               <motion.div
                 initial={{ scale: 0.8 }}
-                whileHover={{ scale: 1.2 }}
-                className="w-14 h-14 bg-white/30 backdrop-blur-lg rounded-full flex items-center justify-center border border-white/50 shadow-2xl shadow-white/20 hover:bg-white/40 hover:border-white transition-all"
+                whileHover={{ scale: 1.1 }}
+                className="w-12 h-12 bg-white shadow-lg rounded-full flex items-center justify-center"
               >
-                <HiPlay className="text-white text-xl ml-1 fill-white" />
+                <HiPlay className="text-blue-600 text-lg ml-0.5 fill-current" />
               </motion.div>
             </div>
           )}
 
-          {/* Platform badge */}
+          {/* Type Badge */}
+          <div className="absolute top-3 left-3 z-10">
+            <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r ${typeColor} text-white text-xs font-bold shadow-lg`}>
+              {hasVideo ? (
+                <>
+                  <HiPlay className="text-sm" /> {projectType}
+                </>
+              ) : (
+                <>
+                  <span className="text-sm">◆</span> {projectType}
+                </>
+              )}
+            </span>
+          </div>
+
+          {/* Platform Badge (for videos only) */}
           {hasVideo && (
-            <div className="absolute top-4 left-4 z-10">
-              <div className="w-9 h-9 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center border border-white/40 hover:border-white/70 transition-all hover:bg-white/30 shadow-lg">
-                <PlatformIcon className="text-white text-sm" />
+            <div className="absolute top-3 right-3 z-10">
+              <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-lg">
+                <PlatformIcon className="text-gray-800 text-sm" />
               </div>
             </div>
           )}
+        </div>
 
-          {/* Like button */}
-          <div className="absolute right-3 bottom-20 z-10">
+        {/* Content Section */}
+        <div className="p-4 bg-white flex-shrink-0">
+          {/* Title */}
+          <h3 className="text-gray-900 font-bold text-sm leading-snug mb-1 line-clamp-2 group-hover:text-blue-600 transition-colors">
+            {project.title}
+          </h3>
+
+          {/* Client/Category */}
+          {project.category && (
+            <p className="text-gray-500 text-xs mb-3 line-clamp-1">
+              {project.category}
+            </p>
+          )}
+
+          {/* Footer with Like and Type Info */}
+          <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+            <div className="flex items-center gap-2">
+              <span className={`text-xs font-semibold px-2 py-1 rounded-md ${
+                hasVideo 
+                  ? 'bg-blue-50 text-blue-700' 
+                  : 'bg-purple-50 text-purple-700'
+              }`}>
+                {projectType}
+              </span>
+            </div>
+
+            {/* Like Button */}
             <motion.button
-              whileTap={{ scale: 1.3 }}
-              onClick={(e) => { e.preventDefault(); setLiked(!liked); }}
-              className="flex flex-col items-center gap-0.5"
+              whileTap={{ scale: 1.2 }}
+              onClick={(e) => {
+                e.preventDefault();
+                setLiked(!liked);
+              }}
+              className="flex items-center gap-1"
             >
               <motion.div 
-                className={`w-10 h-10 rounded-full flex items-center justify-center backdrop-blur-md border transition-all ${
-                  liked ? 'bg-red-500/50 text-red-300 border-red-500/70' : 'bg-white/20 text-white/80 border-white/30 hover:border-white/60 hover:bg-white/30'
+                className={`text-lg transition-all ${
+                  liked ? 'text-red-500 scale-110' : 'text-gray-300 hover:text-red-400'
                 }`}
                 whileHover={{ scale: 1.15 }}
               >
-                <HiHeart className={`text-lg ${liked ? 'fill-red-300' : ''}`} />
+                <HiHeart className={liked ? 'fill-current' : ''} />
               </motion.div>
-              {project.likes > 0 && (
-                <span className="text-[10px] text-white/60 font-semibold">{project.likes + (liked ? 1 : 0)}</span>
+              {(project.likes || 0) > 0 && (
+                <span className="text-xs text-gray-500 font-medium">
+                  {(project.likes || 0) + (liked ? 1 : 0)}
+                </span>
               )}
             </motion.button>
-          </div>
-
-          {/* Bottom info */}
-          <div className="absolute bottom-0 left-0 right-0 p-5 bg-gradient-to-t from-black via-black/85 to-transparent">
-            <div className="flex items-center gap-2 mb-3">
-              <span className={`px-3 py-1 ${hasVideo ? 'bg-gradient-to-r from-accent2 to-accent1' : 'bg-blue-500/60'} text-white text-[9px] font-bold rounded-lg uppercase tracking-wider`}>
-                {hasVideo ? 'Video' : 'Design'}
-              </span>
-            </div>
-            <h3 className="text-white font-bold text-base leading-snug truncate mb-2">{project.title}</h3>
-            {project.category && (
-              <p className="text-white/60 text-xs font-medium truncate">
-                {project.category}
-              </p>
-            )}
           </div>
         </div>
       </div>
@@ -139,14 +173,14 @@ const Portfolio = ({ limit }) => {
   }, [limit]);
 
   return (
-    <section className="section-padding bg-dark">
+    <section className="section-padding bg-gradient-to-b from-dark to-dark/95">
       <div className="max-w-7xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-12"
+          className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-16"
         >
           <div>
             <motion.span
@@ -154,24 +188,25 @@ const Portfolio = ({ limit }) => {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.2 }}
-              className="text-white/50 text-sm uppercase tracking-widest font-medium inline-flex items-center gap-2"
+              className="text-white/50 text-sm uppercase tracking-widest font-medium inline-flex items-center gap-3"
             >
-              <SiInstagram className="text-base" />
-              <SiTiktok className="text-base" /> Portfolio
+              <SiInstagram className="text-lg" />
+              <SiTiktok className="text-lg" />
+              <span>Featured Portfolio</span>
             </motion.span>
             <motion.h2
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.3, duration: 0.6 }}
-              className="section-title mt-3"
+              className="section-title mt-4"
             >
-              Our Latest<br />Video Projects
+              Our Latest<br />Projects
             </motion.h2>
           </div>
           <motion.div whileHover={{ scale: 1.05, x: 5 }} whileTap={{ scale: 0.95 }}>
             <Link to="/projects" className="btn-outline text-sm shrink-0">
-              See All Projects <HiArrowRight />
+              Explore All <HiArrowRight />
             </Link>
           </motion.div>
         </motion.div>
@@ -181,12 +216,16 @@ const Portfolio = ({ limit }) => {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: '-100px' }}
-          className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6"
         >
           {loading
             ? Array.from({ length: limit || 4 }).map((_, i) => (
-                <div key={i} className="rounded-2xl overflow-hidden bg-[#121212] border border-white/[0.06] animate-pulse">
-                  <div className="aspect-[9/16] bg-white/[0.03]" />
+                <div key={i} className="rounded-xl overflow-hidden bg-gray-200 border border-gray-300 animate-pulse">
+                  <div className="aspect-[3/4] bg-gray-300" />
+                  <div className="p-4 space-y-3">
+                    <div className="h-4 bg-gray-300 rounded w-3/4"></div>
+                    <div className="h-3 bg-gray-300 rounded w-1/2"></div>
+                  </div>
                 </div>
               ))
             : items.map((project, index) => (

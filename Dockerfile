@@ -13,8 +13,8 @@ RUN npm ci --only=production && \
 # Copy source code
 COPY backend ./
 
-# Build Strapi
-RUN npm run build
+# Build Strapi with increased heap memory
+RUN NODE_OPTIONS="--max-old-space-size=4096" npm run build
 
 # Production stage
 FROM node:20-alpine
@@ -33,7 +33,7 @@ COPY backend/public ./public
 
 # Set environment variables
 ENV NODE_ENV=production
-ENV NODE_OPTIONS="--max-old-space-size=2048"
+ENV NODE_OPTIONS="--max-old-space-size=4096"
 
 # Expose port
 EXPOSE 1337

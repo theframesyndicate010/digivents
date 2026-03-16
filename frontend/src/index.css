@@ -9,14 +9,21 @@
     box-sizing: border-box;
   }
 
+  /* Dark mode (default) */
   body {
-    @apply bg-dark text-white font-sans;
+    @apply bg-dark text-white font-sans transition-colors duration-300;
+  }
+
+  /* Light mode */
+  :not(.dark) body {
+    @apply bg-light text-gray-900;
   }
 
   html {
     scroll-behavior: smooth;
   }
 
+  /* Scrollbar - Dark mode */
   ::-webkit-scrollbar {
     width: 8px;
   }
@@ -31,6 +38,19 @@
 
   ::-webkit-scrollbar-thumb:hover {
     @apply bg-white/40;
+  }
+
+  /* Scrollbar - Light mode */
+  :not(.dark) ::-webkit-scrollbar-track {
+    @apply bg-light;
+  }
+
+  :not(.dark) ::-webkit-scrollbar-thumb {
+    @apply bg-gray-300 rounded-full;
+  }
+
+  :not(.dark) ::-webkit-scrollbar-thumb:hover {
+    @apply bg-gray-500;
   }
 }
 

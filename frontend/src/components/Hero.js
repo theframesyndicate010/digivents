@@ -129,8 +129,8 @@ const Hero = () => {
             className="flex flex-wrap gap-8 mt-16 pt-8 border-t border-white/10"
           >
             {[
-              { value: '15+', label: 'Years Experience' },
-              { value: '478', label: 'Projects Done' },
+              { value: '4+', label: 'Years Experience' },
+              { value: '450+', label: 'Projects Done' },
               { value: '350+', label: 'Happy Clients' },
             ].map((stat, i) => (
               <motion.div

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { fadeInUp, staggerContainer } from '../animations';
+import { useTheme } from './ThemeContext';
 import logo from '../assets/logo.png';
 import { fetchSocialLinks } from '../data/socialApi';
 
@@ -21,6 +22,7 @@ const legalLinks = [
 
 const Footer = () => {
   const [socialLinks, setSocialLinks] = useState([]);
+  const { isDark } = useTheme();
 
   useEffect(() => {
     fetchSocialLinks()
@@ -29,7 +31,11 @@ const Footer = () => {
   }, []);
 
   return (
-    <footer className="bg-darkGray border-t border-white/10 overflow-hidden">
+    <footer className={`border-t overflow-hidden transition-colors duration-300 ${
+      isDark 
+        ? 'bg-darkGray border-white/10'
+        : 'bg-lightGrayBg border-gray-200'
+    }`}>
       <motion.div
         variants={staggerContainer}
         initial="hidden"
@@ -48,7 +54,9 @@ const Footer = () => {
                              className="h-12 sm:h-16 md:h-20 w-auto"
               />
             </Link>
-            <p className="text-white/40 text-sm leading-relaxed mb-6">
+            <p className={`text-sm leading-relaxed mb-6 ${
+              isDark ? 'text-white/40' : 'text-gray-600'
+            }`}>
               Turning Video into Vibrant Conversations. Your friendly video wizards creating fantastic visual content.
             </p>
             <div className="flex gap-3">
@@ -65,7 +73,11 @@ const Footer = () => {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: i * 0.1 }}
-                  className="w-9 h-9 bg-white/5 border border-white/10 rounded-lg flex items-center justify-center text-white/50 hover:bg-white/15 hover:text-white hover:border-white/20 transition-all duration-300"
+                  className={`w-9 h-9 rounded-lg flex items-center justify-center transition-all duration-300 ${
+                    isDark 
+                      ? 'bg-white/5 border border-white/10 text-white/50 hover:bg-white/15 hover:text-white hover:border-white/20'
+                      : 'bg-black/5 border border-black/10 text-gray-600 hover:bg-black/15 hover:text-gray-900 hover:border-black/20'
+                  }`}
                 >
                   {social.icon}
                 </motion.a>

@@ -26,9 +26,7 @@ RUN apk add --no-cache dumb-init
 
 # Copy from builder
 COPY --from=builder /app/backend/node_modules ./node_modules
-COPY --from=builder /app/backend/dist ./dist
 COPY --from=builder /app/backend/package*.json ./
-COPY backend/.env ./
 COPY backend/config ./config
 COPY backend/src ./src
 COPY backend/public ./public
@@ -48,4 +46,4 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
 ENTRYPOINT ["dumb-init", "--"]
 
 # Start Strapi
-CMD ["npm", "start"]
+CMD ["npm", "run", "develop"]

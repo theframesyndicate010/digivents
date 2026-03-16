@@ -29,15 +29,12 @@ const getProjectPlatform = (project) => {
   return null;
 };
 
-/* ── Professional Project Card for homepage ────────────────────────────── */
+/* ── Professional Project Card with Reference Design ────────────────────────────── */
 const MiniProjectCard = ({ project, index }) => {
   const [liked, setLiked] = useState(false);
   const platform = getProjectPlatform(project);
   const hasVideo = !!platform;
-  const isGraphic = !hasVideo;
   const PlatformIcon = platform === 'instagram' ? SiInstagram : SiTiktok;
-  const projectType = hasVideo ? 'Video' : 'Graphic';
-  const typeColor = hasVideo ? 'from-blue-500 to-cyan-500' : 'from-purple-500 to-pink-500';
 
   return (
     <motion.div
@@ -45,118 +42,138 @@ const MiniProjectCard = ({ project, index }) => {
       custom={index}
       className="group h-full"
     >
-      <div className="relative h-full bg-white rounded-xl overflow-hidden border border-gray-200 hover:border-gray-300 transition-all duration-500 shadow-sm hover:shadow-xl flex flex-col">
-        {/* Image Container */}
-        <div className="relative overflow-hidden bg-gray-100 flex-1">
-          {project.image ? (
-            <img
-              src={project.image}
-              alt={project.title}
-              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-              loading="lazy"
-            />
-          ) : (
-            <div className="w-full h-full bg-gradient-to-br from-gray-200 via-gray-100 to-gray-200 flex items-center justify-center">
-              <div className="text-gray-400 flex flex-col items-center gap-2">
-                <HiPlay className="text-4xl" />
-                <span className="text-xs uppercase tracking-wider font-medium">No Preview</span>
+      <Link to="/projects">
+        <div className="relative h-full rounded-2xl overflow-hidden bg-dark shadow-lg hover:shadow-2xl transition-all duration-500 border border-white/5 hover:border-white/10 cursor-pointer">
+          {/* Full-Bleed Image Container */}
+          <div className="relative overflow-hidden bg-gray-900 aspect-[3/4]">
+            {project.image ? (
+              <img
+                src={project.image}
+                alt={project.title}
+                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                loading="lazy"
+              />
+            ) : (
+              <div className="w-full h-full bg-gradient-to-br from-slate-800 via-slate-700 to-slate-900 flex items-center justify-center">
+                <div className="text-white/30 flex flex-col items-center gap-3">
+                  <HiPlay className="text-5xl" />
+                  <span className="text-xs uppercase tracking-wider font-medium">No Preview</span>
+                </div>
               </div>
-            </div>
-          )}
+            )}
 
-          {/* Gradient Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            {/* Gradient Overlay - More Elegant */}
+            <div className="absolute inset-0 bg-gradient-to-t from-dark via-dark/50 to-transparent opacity-80 group-hover:opacity-90 transition-opacity duration-300" />
 
-          {/* Play Button Overlay */}
-          {hasVideo && (
-            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
-              <motion.div
-                initial={{ scale: 0.8 }}
-                whileHover={{ scale: 1.1 }}
-                className="w-12 h-12 bg-white shadow-lg rounded-full flex items-center justify-center"
-              >
-                <HiPlay className="text-blue-600 text-lg ml-0.5 fill-current" />
-              </motion.div>
-            </div>
-          )}
-
-          {/* Type Badge */}
-          <div className="absolute top-3 left-3 z-10">
-            <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r ${typeColor} text-white text-xs font-bold shadow-lg`}>
-              {hasVideo ? (
-                <>
-                  <HiPlay className="text-sm" /> {projectType}
-                </>
-              ) : (
-                <>
-                  <span className="text-sm">◆</span> {projectType}
-                </>
-              )}
-            </span>
-          </div>
-
-          {/* Platform Badge (for videos only) */}
-          {hasVideo && (
-            <div className="absolute top-3 right-3 z-10">
-              <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-lg">
-                <PlatformIcon className="text-gray-800 text-sm" />
+            {/* Play Button Overlay for Videos */}
+            {hasVideo && (
+              <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
+                <motion.div
+                  initial={{ scale: 0.8 }}
+                  whileHover={{ scale: 1.15 }}
+                  className="w-16 h-16 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center border border-white/50 shadow-2xl hover:bg-white/30"
+                >
+                  <HiPlay className="text-white text-2xl ml-1 fill-white" />
+                </motion.div>
               </div>
-            </div>
-          )}
-        </div>
+            )}
 
-        {/* Content Section */}
-        <div className="p-4 bg-white flex-shrink-0">
-          {/* Title */}
-          <h3 className="text-gray-900 font-bold text-sm leading-snug mb-1 line-clamp-2 group-hover:text-blue-600 transition-colors">
-            {project.title}
-          </h3>
-
-          {/* Client/Category */}
-          {project.category && (
-            <p className="text-gray-500 text-xs mb-3 line-clamp-1">
-              {project.category}
-            </p>
-          )}
-
-          {/* Footer with Like and Type Info */}
-          <div className="flex items-center justify-between pt-3 border-t border-gray-100">
-            <div className="flex items-center gap-2">
-              <span className={`text-xs font-semibold px-2 py-1 rounded-md ${
-                hasVideo 
-                  ? 'bg-blue-50 text-blue-700' 
-                  : 'bg-purple-50 text-purple-700'
-              }`}>
-                {projectType}
-              </span>
-            </div>
-
-            {/* Like Button */}
-            <motion.button
-              whileTap={{ scale: 1.2 }}
-              onClick={(e) => {
-                e.preventDefault();
-                setLiked(!liked);
-              }}
-              className="flex items-center gap-1"
-            >
-              <motion.div 
-                className={`text-lg transition-all ${
-                  liked ? 'text-red-500 scale-110' : 'text-gray-300 hover:text-red-400'
+            {/* Top Badge */}
+            <div className="absolute top-4 left-4 z-10">
+              <motion.span 
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+                className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold backdrop-blur-md ${
+                  hasVideo 
+                    ? 'bg-blue-500/30 border border-blue-400/50 text-blue-100' 
+                    : 'bg-purple-500/30 border border-purple-400/50 text-purple-100'
                 }`}
-                whileHover={{ scale: 1.15 }}
               >
-                <HiHeart className={liked ? 'fill-current' : ''} />
-              </motion.div>
-              {(project.likes || 0) > 0 && (
-                <span className="text-xs text-gray-500 font-medium">
-                  {(project.likes || 0) + (liked ? 1 : 0)}
-                </span>
+                {hasVideo ? 'Video Project' : 'Graphic Design'}
+              </motion.span>
+            </div>
+
+            {/* Platform Icon */}
+            {hasVideo && (
+              <div className="absolute top-4 right-4 z-10">
+                <div className="w-9 h-9 bg-white/20 backdrop-blur-md rounded-lg flex items-center justify-center border border-white/30">
+                  <PlatformIcon className="text-white text-sm" />
+                </div>
+              </div>
+            )}
+
+            {/* Content Overlay at Bottom */}
+            <div className="absolute bottom-0 left-0 right-0 p-6 z-20">
+              {/* Tagline */}
+              <motion.p 
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                transition={{ delay: 0.1 }}
+                className="text-white/60 text-xs uppercase tracking-wider font-medium mb-2"
+              >
+                {hasVideo ? 'Video Production' : 'Design Work'}
+              </motion.p>
+
+              {/* Main Title */}
+              <motion.h3 
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                transition={{ delay: 0.15 }}
+                className="text-white font-bold text-lg lg:text-xl leading-snug mb-2 line-clamp-2 group-hover:text-accent1 transition-colors"
+              >
+                {project.title}
+              </motion.h3>
+
+              {/* Category/Description */}
+              {project.category && (
+                <motion.p 
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 1 }}
+                  transition={{ delay: 0.2 }}
+                  className="text-white/50 text-xs leading-relaxed line-clamp-1 mb-4"
+                >
+                  {project.category}
+                </motion.p>
               )}
-            </motion.button>
+
+              {/* Bottom Actions Bar */}
+              <div className="flex items-center justify-between pt-4 border-t border-white/10">
+                <motion.button
+                  whileTap={{ scale: 1.2 }}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setLiked(!liked);
+                  }}
+                  className="flex items-center gap-1.5"
+                >
+                  <motion.div 
+                    className={`text-lg transition-all ${
+                      liked ? 'text-red-400 scale-110' : 'text-white/40 hover:text-red-400'
+                    }`}
+                    whileHover={{ scale: 1.2 }}
+                  >
+                    <HiHeart className={liked ? 'fill-current' : ''} />
+                  </motion.div>
+                  {(project.likes || 0) > 0 && (
+                    <span className="text-xs text-white/40 font-medium">
+                      {(project.likes || 0) + (liked ? 1 : 0)}
+                    </span>
+                  )}
+                </motion.button>
+
+                <motion.span
+                  whileHover={{ x: 3 }}
+                  className="text-xs text-accent1 font-semibold flex items-center gap-1 group-hover:text-accent2 transition-colors cursor-pointer"
+                >
+                  View More <HiArrowRight className="text-sm" />
+                </motion.span>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
+      </Link>
     </motion.div>
   );
 };
@@ -216,22 +233,21 @@ const Portfolio = ({ limit }) => {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: '-100px' }}
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8"
         >
           {loading
             ? Array.from({ length: limit || 4 }).map((_, i) => (
-                <div key={i} className="rounded-xl overflow-hidden bg-gray-200 border border-gray-300 animate-pulse">
-                  <div className="aspect-[3/4] bg-gray-300" />
-                  <div className="p-4 space-y-3">
-                    <div className="h-4 bg-gray-300 rounded w-3/4"></div>
-                    <div className="h-3 bg-gray-300 rounded w-1/2"></div>
+                <div key={i} className="rounded-2xl overflow-hidden bg-darkGray border border-white/[0.05] animate-pulse">
+                  <div className="aspect-[3/4] bg-dark" />
+                  <div className="p-6 space-y-3">
+                    <div className="h-2 bg-white/10 rounded w-1/3"></div>
+                    <div className="h-4 bg-white/10 rounded w-4/5"></div>
+                    <div className="h-3 bg-white/5 rounded w-1/2"></div>
                   </div>
                 </div>
               ))
             : items.map((project, index) => (
-                <Link to="/projects" key={project.id || index}>
-                  <MiniProjectCard project={project} index={index} />
-                </Link>
+                <MiniProjectCard key={project.id || index} project={project} index={index} />
               ))}
         </motion.div>
       </div>

@@ -42,7 +42,7 @@ const MiniProjectCard = ({ project, index }) => {
       custom={index}
       className="group relative h-full"
     >
-      <div className="relative bg-black rounded-2xl overflow-hidden border border-white/[0.1] hover:border-white/[0.3] transition-all duration-500 shadow-lg hover:shadow-2xl h-full">
+      <div className="relative bg-black rounded-2xl overflow-hidden border border-white/[0.12] hover:border-white/[0.25] transition-all duration-500 shadow-lg hover:shadow-2xl hover:shadow-accent1/10 h-full">
         <div className={`relative overflow-hidden ${index === 0 ? 'aspect-[9/14]' : 'aspect-[9/16]'}`}>
           {/* Thumbnail */}
           {project.image ? (
@@ -62,63 +62,64 @@ const MiniProjectCard = ({ project, index }) => {
           )}
 
           {/* Gradient Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/30 to-black/80 opacity-60 group-hover:opacity-75 transition-opacity duration-300" />
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/40 to-black/90 opacity-70 group-hover:opacity-80 transition-opacity duration-300" />
 
           {/* Play overlay */}
           {hasVideo && (
-            <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
+            <div className="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
               <motion.div
                 initial={{ scale: 0.8 }}
-                whileHover={{ scale: 1.15 }}
-                className="w-12 h-12 bg-white/30 backdrop-blur-lg rounded-full flex items-center justify-center border border-white/40 shadow-xl shadow-white/15"
+                whileHover={{ scale: 1.2 }}
+                className="w-14 h-14 bg-white/30 backdrop-blur-lg rounded-full flex items-center justify-center border border-white/50 shadow-2xl shadow-white/20 hover:bg-white/40 hover:border-white transition-all"
               >
-                <HiPlay className="text-white text-lg ml-0.5 fill-white" />
+                <HiPlay className="text-white text-xl ml-1 fill-white" />
               </motion.div>
             </div>
           )}
 
           {/* Platform badge */}
           {hasVideo && (
-            <div className="absolute top-3 left-3 z-10">
-              <div className="w-8 h-8 bg-black/60 backdrop-blur-md rounded-full flex items-center justify-center border border-white/30 hover:border-white/60 transition-all">
+            <div className="absolute top-4 left-4 z-10">
+              <div className="w-9 h-9 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center border border-white/40 hover:border-white/70 transition-all hover:bg-white/30 shadow-lg">
                 <PlatformIcon className="text-white text-sm" />
               </div>
             </div>
           )}
 
           {/* Like button */}
-          <div className="absolute right-3 bottom-16 z-10">
+          <div className="absolute right-3 bottom-20 z-10">
             <motion.button
-              whileTap={{ scale: 1.4 }}
+              whileTap={{ scale: 1.3 }}
               onClick={(e) => { e.preventDefault(); setLiked(!liked); }}
               className="flex flex-col items-center gap-0.5"
             >
               <motion.div 
-                className={`w-9 h-9 rounded-full flex items-center justify-center backdrop-blur-md border transition-all ${
-                  liked ? 'bg-red-500/40 text-red-400 border-red-500/60' : 'bg-white/15 text-white/70 border-white/20 hover:border-white/40'
+                className={`w-10 h-10 rounded-full flex items-center justify-center backdrop-blur-md border transition-all ${
+                  liked ? 'bg-red-500/50 text-red-300 border-red-500/70' : 'bg-white/20 text-white/80 border-white/30 hover:border-white/60 hover:bg-white/30'
                 }`}
-                whileHover={{ scale: 1.1 }}
+                whileHover={{ scale: 1.15 }}
               >
-                <HiHeart className={`text-base ${liked ? 'fill-red-400' : ''}`} />
+                <HiHeart className={`text-lg ${liked ? 'fill-red-300' : ''}`} />
               </motion.div>
               {project.likes > 0 && (
-                <span className="text-[9px] text-white/50 font-medium">{project.likes + (liked ? 1 : 0)}</span>
+                <span className="text-[10px] text-white/60 font-semibold">{project.likes + (liked ? 1 : 0)}</span>
               )}
             </motion.button>
           </div>
 
           {/* Bottom info */}
-          <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/95 via-black/70 to-transparent">
-            <div className="flex items-center gap-2 mb-2">
-              <span className={`px-2 py-0.5 ${hasVideo ? 'bg-gradient-to-r from-accent2 to-accent1' : 'bg-blue-500/70'} text-white text-[8px] font-bold rounded-full uppercase tracking-wider`}>
-                {hasVideo ? '▶ Video' : '◆ Design'}
+          <div className="absolute bottom-0 left-0 right-0 p-5 bg-gradient-to-t from-black via-black/85 to-transparent">
+            <div className="flex items-center gap-2 mb-3">
+              <span className={`px-3 py-1 ${hasVideo ? 'bg-gradient-to-r from-accent2 to-accent1' : 'bg-blue-500/60'} text-white text-[9px] font-bold rounded-lg uppercase tracking-wider`}>
+                {hasVideo ? 'Video' : 'Design'}
               </span>
             </div>
-            <h3 className="text-white font-semibold text-sm leading-tight truncate">{project.title}</h3>
-            <p className="text-white/50 text-xs mt-1 truncate flex items-center gap-1">
-              <span className="w-0.5 h-0.5 bg-accent1 rounded-full"></span> 
-              {project.category}
-            </p>
+            <h3 className="text-white font-bold text-base leading-snug truncate mb-2">{project.title}</h3>
+            {project.category && (
+              <p className="text-white/60 text-xs font-medium truncate">
+                {project.category}
+              </p>
+            )}
           </div>
         </div>
       </div>

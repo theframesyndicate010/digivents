@@ -1,4 +1,3 @@
-const { AllowedActions } = require("@strapi/strapi/admin");
 module.exports = ({ env }) => ({
   auth: {
     secret: env('ADMIN_JWT_SECRET'),

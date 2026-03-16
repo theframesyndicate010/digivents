@@ -6,7 +6,7 @@ import { useRef } from 'react';
 import { fadeInUp, fadeInRight, staggerContainer } from '../animations';
 
 const stats = [
-  { value: '15+', label: 'Years of Experience' },
+  { value: '4', label: 'Years of Experience' },
   { value: '200+', label: 'Repeated Clients' },
   { value: '478', label: 'Completed Projects' },
   { value: '350+', label: 'Happy Clients' },
@@ -68,7 +68,7 @@ const About = () => {
                 transition={{ delay: 1 }}
                 className="text-4xl font-bold text-white"
               >
-                15+
+                4
               </motion.span>
               <p className="text-white/70 text-sm font-medium mt-1">Years of<br />Experience</p>
             </motion.div>
@@ -96,10 +96,10 @@ const About = () => {
               About Our Agency
             </motion.h2>
             <motion.p variants={fadeInRight} custom={2} className="text-white/60 leading-relaxed mb-4">
-              Established in 2015, we have dedicated ourselves to crafting captivating visual narratives defined by creativity, innovation, and an unwavering commitment to excellence in video production.
+              Founded in 2022, DigiVents is a digital marketing and event management agency based in Birtamode, Jhapa. The company specializes in social media marketing, branding, corporate events, musical concerts, and live experiences.
             </motion.p>
             <motion.p variants={fadeInRight} custom={3} className="text-white/50 leading-relaxed mb-8">
-              Our mission is clear: to transform ideas into compelling visual stories. We believe that every project is an opportunity to create something extraordinary.
+              By combining creativity, strategy, and technology, DigiVents helps businesses grow their online presence while delivering impactful events. Since its launch, the agency has successfully organized various events and live performances, creating engaging experiences.
             </motion.p>
 
             <motion.div

@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { HiChevronDown } from 'react-icons/hi';
 
 const faqs = [
-  { question: 'What services do you offer?', answer: 'We offer a comprehensive range of video production services including corporate videos, documentaries, commercials, social media content, event coverage, animation, VFX, and full post-production editing.' },
+  { question: 'What services do you offer?', answer: 'We offer a comprehensive range of video production services including corporate videos, documentaries, commercials, social media content, event coverage, and full post-production editing.' },
   { question: 'How much does video production cost?', answer: 'Our pricing varies based on project scope, complexity, and requirements. We offer flexible packages starting from basic promotional videos to full-scale productions. Contact us for a custom quote tailored to your needs.' },
   { question: 'How long does it take to produce a video?', answer: 'Production timelines depend on the project complexity. A simple promotional video may take 2-3 weeks, while a full-scale production could take 4-8 weeks from pre-production to final delivery.' },
   { question: 'Can you help with scriptwriting and storyboarding?', answer: 'Absolutely! Our creative team includes experienced scriptwriters and storyboard artists who can help bring your vision to life from concept to completion.' },

@@ -45,7 +45,7 @@ export const fetchStats = async () => {
       apiFetch('/workers?pagination[limit]=1&pagination[withCount]=true'),
     ]);
     return [
-      { id: 1, value: '15+', label: 'Years of Experience' },
+      { id: 1, value: '4', label: 'Years of Experience' },
       { id: 2, value: `${clientsRes.meta?.pagination?.total || 0}+`, label: 'Repeated Clients' },
       { id: 3, value: `${projectsRes.meta?.pagination?.total || 0}`, label: 'Completed Projects' },
       { id: 4, value: `${clientsRes.meta?.pagination?.total || 0}+`, label: 'Happy Clients' },
@@ -53,7 +53,7 @@ export const fetchStats = async () => {
   } catch (error) {
     console.error('Failed to fetch stats:', error);
     return [
-      { id: 1, value: '15+', label: 'Years of Experience' },
+      { id: 1, value: '4', label: 'Years of Experience' },
       { id: 2, value: '200+', label: 'Repeated Clients' },
       { id: 3, value: '478', label: 'Completed Projects' },
       { id: 4, value: '350+', label: 'Happy Clients' },

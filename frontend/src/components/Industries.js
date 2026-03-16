@@ -5,11 +5,9 @@ import { staggerContainer } from '../animations';
 const industries = [
   { title: 'Corporate Videos', description: "Enhance your brand's impact with our corporate video expertise. We create engaging content for businesses, from promotions to training materials.", image: 'https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=600&q=80' },
   { title: 'Documentaries', description: 'We bring real-life stories to life. Our documentaries inform, entertain, and educate on diverse subjects.', image: 'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=600&q=80' },
-  { title: 'Entertainment & Narrative Films', description: "Immerse your audience in captivating stories. Our creative team brings your visions to life.", image: 'https://images.unsplash.com/photo-1485846234645-a62644f84728?w=600&q=80' },
   { title: 'Commercials & Advertisements', description: 'Make a memorable impression. Our short, attention-grabbing videos showcase your products effectively.', image: 'https://images.unsplash.com/photo-1559028012-481c04fa702d?w=600&q=80' },
   { title: 'Shorts & Reels', description: 'Stay on-trend and engage your audience with our dynamic social media content designed for maximum impact.', image: 'https://images.unsplash.com/photo-1611162616475-46b635cb6868?w=600&q=80' },
-  { title: 'Event & Live Streaming', description: 'Capture and share the excitement of live events with multi-camera setups and post-event editing.', image: 'https://images.unsplash.com/photo-1505236858219-8359eb29e329?w=600&q=80' },
-  { title: 'Animation & VFX', description: 'Elevate your content with stunning visuals using cutting-edge tech for breathtaking effects.', image: 'https://images.unsplash.com/photo-1535016120720-40c646be5580?w=600&q=80' },
+  { title: 'Event', description: 'Capture and share the excitement of events with multi-camera setups and post-event editing.', image: 'https://images.unsplash.com/photo-1505236858219-8359eb29e329?w=600&q=80' },
 ];
 
 const itemVariants = {

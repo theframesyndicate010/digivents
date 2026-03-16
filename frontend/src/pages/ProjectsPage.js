@@ -180,7 +180,7 @@ const ProjectsPage = () => {
                     variants={staggerContainer}
                     initial="hidden"
                     animate="visible"
-                    className="flex flex-col gap-6"
+                    className="grid grid-cols-2 gap-6"
                   >
                     {loading && (
                       Array.from({ length: 4 }).map((_, index) => (
@@ -321,7 +321,7 @@ const ProjectsPage = () => {
                     variants={staggerContainer}
                     initial="hidden"
                     animate="visible"
-                    className="flex flex-col gap-6"
+                    className="grid grid-cols-2 gap-6"
                   >
                     {loading && (
                       Array.from({ length: 4 }).map((_, index) => (

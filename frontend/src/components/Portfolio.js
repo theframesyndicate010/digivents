@@ -29,7 +29,7 @@ const getProjectPlatform = (project) => {
   return null;
 };
 
-/* ── Professional Project Card - Reference Design ────────────────────────────── */
+/* ── Mini TikTok Card for homepage ────────────────────────────── */
 const MiniProjectCard = ({ project, index }) => {
   const [liked, setLiked] = useState(false);
   const platform = getProjectPlatform(project);
@@ -40,127 +40,89 @@ const MiniProjectCard = ({ project, index }) => {
     <motion.div
       variants={fadeInUp}
       custom={index}
-      className="group h-full"
+      className="group relative h-full"
     >
-      <Link to="/projects">
-        <div className="relative h-full rounded-2xl overflow-hidden bg-dark shadow-lg hover:shadow-2xl transition-all duration-500 border border-white/5 hover:border-white/10 cursor-pointer aspect-[3/4] flex items-end">
-          {/* Full-Bleed Background Image */}
-          <div className="absolute inset-0">
-            {project.image ? (
-              <img
-                src={project.image}
-                alt={project.title}
-                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                loading="lazy"
-              />
-            ) : (
-              <div className="w-full h-full bg-gradient-to-br from-slate-800 via-slate-700 to-slate-900 flex items-center justify-center">
-                <div className="text-white/30 flex flex-col items-center gap-3">
-                  <HiPlay className="text-5xl" />
-                  <span className="text-xs uppercase tracking-wider font-medium">No Preview</span>
-                </div>
+      <div className="relative bg-black rounded-2xl overflow-hidden border border-white/[0.12] hover:border-white/[0.25] transition-all duration-500 shadow-lg hover:shadow-2xl hover:shadow-accent1/10 h-full">
+        <div className={`relative overflow-hidden ${index === 0 ? 'aspect-[9/14]' : 'aspect-[9/16]'}`}>
+          {/* Thumbnail */}
+          {project.image ? (
+            <img
+              src={project.image}
+              alt={project.title}
+              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+              loading="lazy"
+            />
+          ) : (
+            <div className="w-full h-full bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
+              <div className="text-white/30 flex flex-col items-center gap-2">
+                <HiPlay className="text-3xl" />
+                <span className="text-xs uppercase tracking-wider opacity-50">No Preview</span>
               </div>
-            )}
-          </div>
+            </div>
+          )}
 
-          {/* Play Button Overlay (Center) - For Videos */}
+          {/* Gradient Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/40 to-black/90 opacity-70 group-hover:opacity-80 transition-opacity duration-300" />
+
+          {/* Play overlay */}
           {hasVideo && (
-            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 z-20">
+            <div className="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
               <motion.div
                 initial={{ scale: 0.8 }}
-                whileHover={{ scale: 1.15 }}
-                className="w-16 h-16 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center border border-white/50 shadow-2xl hover:bg-white/30"
+                whileHover={{ scale: 1.2 }}
+                className="w-14 h-14 bg-white/30 backdrop-blur-lg rounded-full flex items-center justify-center border border-white/50 shadow-2xl shadow-white/20 hover:bg-white/40 hover:border-white transition-all"
               >
-                <HiPlay className="text-white text-2xl ml-1 fill-white" />
+                <HiPlay className="text-white text-xl ml-1 fill-white" />
               </motion.div>
             </div>
           )}
 
-          {/* Gradient Overlay - Bottom Heavy */}
-          <div className="absolute inset-0 bg-gradient-to-t from-dark via-dark/70 to-transparent opacity-90 group-hover:opacity-95 transition-opacity duration-300 z-10" />
-
-          {/* Content Section - Overlaid on Image */}
-          <div className="relative z-20 w-full p-6 flex flex-col">
-            {/* Type Badge */}
-            {hasVideo && (
-              <motion.div 
-                initial={{ opacity: 0, y: 10 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                className="inline-flex w-fit items-center gap-2 px-3 py-1 rounded-full bg-blue-500/40 border border-blue-400/60 backdrop-blur-sm mb-3"
-              >
-                <span className="w-2 h-2 bg-blue-300 rounded-full"></span>
-                <span className="text-xs font-semibold text-blue-100">Video</span>
-              </motion.div>
-            )}
-
-            {/* Tagline/Subtitle */}
-            <motion.p
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              transition={{ delay: 0.1 }}
-              className="text-white/70 text-xs uppercase tracking-widest font-medium mb-2"
-            >
-              {hasVideo ? 'Video Production' : 'Graphic Design'}
-            </motion.p>
-
-            {/* Main Title */}
-            <motion.h3
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              transition={{ delay: 0.15 }}
-              className="text-white font-bold text-lg lg:text-xl leading-snug mb-2 line-clamp-3"
-            >
-              {project.title}
-            </motion.h3>
-
-            {/* Description */}
-            {project.category && (
-              <motion.p
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 1 }}
-                transition={{ delay: 0.2 }}
-                className="text-white/60 text-xs leading-relaxed mb-4 line-clamp-2"
-              >
-                {project.category}
-              </motion.p>
-            )}
-
-            {/* Footer Metadata */}
-            <div className="flex items-center justify-between pt-3 border-t border-white/10">
-              <motion.button
-                whileTap={{ scale: 1.2 }}
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  setLiked(!liked);
-                }}
-                className="flex items-center gap-1"
-              >
-                <motion.div
-                  className={`text-lg transition-all ${
-                    liked ? 'text-red-400 scale-110' : 'text-white/40 hover:text-red-400'
-                  }`}
-                  whileHover={{ scale: 1.2 }}
-                >
-                  <HiHeart className={liked ? 'fill-current' : ''} />
-                </motion.div>
-                {(project.likes || 0) > 0 && (
-                  <span className="text-xs text-white/40 font-medium">
-                    {(project.likes || 0) + (liked ? 1 : 0)}
-                  </span>
-                )}
-              </motion.button>
-
-              <motion.span
-                whileHover={{ x: 2 }}
-                className="text-xs text-accent1 font-semibold cursor-pointer"
-              >
-                View →
-              </motion.span>
+          {/* Platform badge */}
+          {hasVideo && (
+            <div className="absolute top-4 left-4 z-10">
+              <div className="w-9 h-9 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center border border-white/40 hover:border-white/70 transition-all hover:bg-white/30 shadow-lg">
+                <PlatformIcon className="text-white text-sm" />
+              </div>
             </div>
+          )}
+
+          {/* Like button */}
+          <div className="absolute right-3 bottom-20 z-10">
+            <motion.button
+              whileTap={{ scale: 1.3 }}
+              onClick={(e) => { e.preventDefault(); setLiked(!liked); }}
+              className="flex flex-col items-center gap-0.5"
+            >
+              <motion.div 
+                className={`w-10 h-10 rounded-full flex items-center justify-center backdrop-blur-md border transition-all ${
+                  liked ? 'bg-red-500/50 text-red-300 border-red-500/70' : 'bg-white/20 text-white/80 border-white/30 hover:border-white/60 hover:bg-white/30'
+                }`}
+                whileHover={{ scale: 1.15 }}
+              >
+                <HiHeart className={`text-lg ${liked ? 'fill-red-300' : ''}`} />
+              </motion.div>
+              {project.likes > 0 && (
+                <span className="text-[10px] text-white/60 font-semibold">{project.likes + (liked ? 1 : 0)}</span>
+              )}
+            </motion.button>
+          </div>
+
+          {/* Bottom info */}
+          <div className="absolute bottom-0 left-0 right-0 p-5 bg-gradient-to-t from-black via-black/85 to-transparent">
+            <div className="flex items-center gap-2 mb-3">
+              <span className={`px-3 py-1 ${hasVideo ? 'bg-gradient-to-r from-accent2 to-accent1' : 'bg-blue-500/60'} text-white text-[9px] font-bold rounded-lg uppercase tracking-wider`}>
+                {hasVideo ? 'Video' : 'Design'}
+              </span>
+            </div>
+            <h3 className="text-white font-bold text-base leading-snug truncate mb-2">{project.title}</h3>
+            {project.category && (
+              <p className="text-white/60 text-xs font-medium truncate">
+                {project.category}
+              </p>
+            )}
           </div>
         </div>
-      </Link>
+      </div>
     </motion.div>
   );
 };
@@ -177,14 +139,14 @@ const Portfolio = ({ limit }) => {
   }, [limit]);
 
   return (
-    <section className="section-padding bg-gradient-to-b from-dark to-dark/95">
+    <section className="section-padding bg-dark">
       <div className="max-w-7xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-16"
+          className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-12"
         >
           <div>
             <motion.span
@@ -192,25 +154,24 @@ const Portfolio = ({ limit }) => {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.2 }}
-              className="text-white/50 text-sm uppercase tracking-widest font-medium inline-flex items-center gap-3"
+              className="text-white/50 text-sm uppercase tracking-widest font-medium inline-flex items-center gap-2"
             >
-              <SiInstagram className="text-lg" />
-              <SiTiktok className="text-lg" />
-              <span>Featured Portfolio</span>
+              <SiInstagram className="text-base" />
+              <SiTiktok className="text-base" /> Portfolio
             </motion.span>
             <motion.h2
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.3, duration: 0.6 }}
-              className="section-title mt-4"
+              className="section-title mt-3"
             >
-              Our Latest<br />Projects
+              Our Latest<br />Video Projects
             </motion.h2>
           </div>
           <motion.div whileHover={{ scale: 1.05, x: 5 }} whileTap={{ scale: 0.95 }}>
             <Link to="/projects" className="btn-outline text-sm shrink-0">
-              Explore All <HiArrowRight />
+              See All Projects <HiArrowRight />
             </Link>
           </motion.div>
         </motion.div>
@@ -220,21 +181,18 @@ const Portfolio = ({ limit }) => {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: '-100px' }}
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8"
+          className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4"
         >
           {loading
             ? Array.from({ length: limit || 4 }).map((_, i) => (
-                <div key={i} className="rounded-2xl overflow-hidden bg-darkGray border border-white/[0.05] animate-pulse">
-                  <div className="aspect-[3/4] bg-dark" />
-                  <div className="p-6 space-y-3">
-                    <div className="h-2 bg-white/10 rounded w-1/3"></div>
-                    <div className="h-4 bg-white/10 rounded w-4/5"></div>
-                    <div className="h-3 bg-white/5 rounded w-1/2"></div>
-                  </div>
+                <div key={i} className="rounded-2xl overflow-hidden bg-[#121212] border border-white/[0.06] animate-pulse">
+                  <div className="aspect-[9/16] bg-white/[0.03]" />
                 </div>
               ))
             : items.map((project, index) => (
-                <MiniProjectCard key={project.id || index} project={project} index={index} />
+                <Link to="/projects" key={project.id || index}>
+                  <MiniProjectCard project={project} index={index} />
+                </Link>
               ))}
         </motion.div>
       </div>

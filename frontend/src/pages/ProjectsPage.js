@@ -164,17 +164,17 @@ const ProjectsPage = () => {
         <main>
           <AnimatePresence mode="wait">
               <motion.div 
-                key={filterType} // Add key to trigger re-animation on filter change
+                key={filterType}
                 variants={staggerContainer}
                 initial="hidden"
                 animate="visible"
-                className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6"
+                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8"
               >
                 {loading && (
                   Array.from({ length: 8 }).map((_, index) => (
                     <div
                       key={`skeleton-${index}`}
-                      className="bg-darkGray rounded-xl overflow-hidden aspect-[9/16] border border-white/5 animate-pulse"
+                      className="rounded-2xl overflow-hidden aspect-[3/4] bg-darkGray border border-white/5 animate-pulse"
                     >
                       <div className="w-full h-full bg-white/5" />
                     </div>
@@ -190,65 +190,97 @@ const ProjectsPage = () => {
                   <motion.div 
                     key={project.id} 
                     variants={fadeInUp}
-                    className="group relative bg-darkGray rounded-2xl overflow-hidden aspect-[9/16] cursor-pointer border border-white/10 hover:border-white/30 shadow-lg hover:shadow-2xl transition-all duration-500 h-full"
+                    className="group relative rounded-2xl overflow-hidden aspect-[3/4] cursor-pointer bg-dark border border-white/5 hover:border-white/10 shadow-lg hover:shadow-2xl transition-all duration-500 h-full flex flex-col"
                     onClick={() => setSelectedProject(project)}
                   >
-                    {imageSrc ? (
-                      <img 
-                        src={imageSrc}
-                        alt={project.title} 
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                        onError={(e) => {
-                          e.target.style.display = 'none';
-                          e.target.nextSibling.style.display = 'flex'; // Show placeholder
-                        }}
-                      />
-                    ) : (
-                      <div className="w-full h-full bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center group-hover:scale-110 transition-transform duration-700">
-                         {/* Placeholder if no image */}
-                         <div className="text-white/30 flex flex-col items-center gap-3">
-                            {projectType === 'video' ? <PlayCircle size={56} strokeWidth={1.5} /> : <Search size={56} strokeWidth={1.5} />}
-                            <span className="text-xs uppercase tracking-widest font-bold opacity-60">No Preview</span>
-                         </div>
+                    {/* Image Container */}
+                    <div className="relative flex-1 overflow-hidden bg-slate-900">
+                      {imageSrc ? (
+                        <img 
+                          src={imageSrc}
+                          alt={project.title} 
+                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                          onError={(e) => {
+                            e.target.style.display = 'none';
+                            e.target.parentElement.querySelector('[data-placeholder]').style.display = 'flex';
+                          }}
+                        />
+                      ) : null}
+                      
+                      {/* Placeholder if no image */}
+                      <div data-placeholder className="hidden w-full h-full absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 items-center justify-center">
+                        <div className="text-white/30 flex flex-col items-center gap-3">
+                           {projectType === 'video' ? <PlayCircle size={48} strokeWidth={1.5} /> : <Search size={48} strokeWidth={1.5} />}
+                           <span className="text-xs uppercase tracking-widest font-bold opacity-60">No Preview</span>
+                        </div>
                       </div>
-                    )}
-                    
-                    {/* Fallback Placeholder (Hidden by default, shown on error) */}
-                    <div className="hidden absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 items-center justify-center group-hover:scale-110 transition-transform duration-700">
-                         <div className="text-white/30 flex flex-col items-center gap-3">
-                            {projectType === 'video' ? <PlayCircle size={56} strokeWidth={1.5} /> : <Search size={56} strokeWidth={1.5} />}
-                            <span className="text-xs uppercase tracking-widest font-bold opacity-60">No Preview</span>
-                         </div>
-                    </div>
 
-                    {/* Gradient Overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/40 to-black/90 opacity-50 group-hover:opacity-70 transition-opacity duration-300" />
+                      {/* Gradient Overlay */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-dark via-dark/50 to-transparent opacity-80 group-hover:opacity-90 transition-opacity duration-300" />
 
-                    {/* Play Button (Center) */}
-                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
-                        <motion.div
-                          initial={{ scale: 0.8 }}
-                          whileHover={{ scale: 1.2 }}
-                          className="w-14 h-14 bg-white/25 backdrop-blur-xl rounded-full flex items-center justify-center text-white border border-white/40 shadow-xl shadow-white/20"
+                      {/* Play Button (Center) - Only for videos */}
+                      {projectType === 'video' && (
+                        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
+                            <motion.div
+                              initial={{ scale: 0.8 }}
+                              whileHover={{ scale: 1.15 }}
+                              className="w-16 h-16 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center border border-white/50 shadow-2xl hover:bg-white/30 transition-all"
+                            >
+                               <PlayCircle size={32} fill="currentColor" className="text-white" />
+                            </motion.div>
+                        </div>
+                      )}
+
+                      {/* Type Badge */}
+                      <div className="absolute top-4 left-4 z-10">
+                        <motion.span 
+                          initial={{ opacity: 0, y: -10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: 0.2 }}
+                          className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold backdrop-blur-md ${
+                            projectType === 'video'
+                              ? 'bg-blue-500/30 border border-blue-400/50 text-blue-100'
+                              : 'bg-purple-500/30 border border-purple-400/50 text-purple-100'
+                          }`}
                         >
-                           <PlayCircle size={28} fill="currentColor" />
-                        </motion.div>
+                          {projectType === 'video' ? 'Video Project' : 'Graphic Design'}
+                        </motion.span>
+                      </div>
                     </div>
 
-                    {/* Content (Bottom) */}
-                    <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/95 via-black/60 to-transparent transform translate-y-1 group-hover:translate-y-0 transition-transform duration-300">
-                      <div className="flex items-center gap-2 mb-3">
-                        <span className={`px-3 py-1 ${projectType === 'video' ? 'bg-gradient-to-r from-accent2 to-accent1' : 'bg-blue-500/70'} text-white text-[10px] font-bold rounded-full uppercase tracking-wider shadow-lg`}>
-                           {projectType === 'video' ? '▶ Reel' : '◆ Design'}
-                        </span>
-                      </div>
-                      <h3 className="font-bold text-white text-sm md:text-base leading-tight line-clamp-2 mb-2">
+                    {/* Content Overlay at Bottom */}
+                    <div className="absolute bottom-0 left-0 right-0 p-5 z-20">
+                      {/* Tagline */}
+                      <p className="text-white/60 text-xs uppercase tracking-wider font-medium mb-2">
+                        {projectType === 'video' ? 'Video Production' : 'Design Work'}
+                      </p>
+
+                      {/* Main Title */}
+                      <h3 className="font-bold text-white text-base lg:text-lg leading-snug line-clamp-2 mb-2 group-hover:text-accent1 transition-colors">
                         {project.title}
                       </h3>
-                      <p className="text-white/70 text-xs font-medium truncate flex items-center gap-1">
-                        <span className="w-1 h-1 bg-accent1 rounded-full"></span>
+
+                      {/* Client/Creator */}
+                      <p className="text-white/50 text-xs mb-4 line-clamp-1">
                         {project.client || project.category || 'Client'} • {creator}
                       </p>
+
+                      {/* Footer Actions */}
+                      <div className="flex items-center justify-between pt-3 border-t border-white/10">
+                        <span className={`text-xs font-semibold px-2.5 py-1 rounded-md ${
+                          projectType === 'video'
+                            ? 'bg-blue-500/20 text-blue-300'
+                            : 'bg-purple-500/20 text-purple-300'
+                        }`}>
+                          {projectType === 'video' ? 'Video' : 'Graphic'}
+                        </span>
+                        <motion.span
+                          whileHover={{ x: 3 }}
+                          className="text-xs text-accent1 font-semibold group-hover:text-accent2 transition-colors cursor-pointer flex items-center gap-1"
+                        >
+                          View <PlayCircle size={12} />
+                        </motion.span>
+                      </div>
                     </div>
                   </motion.div>
                 )})}

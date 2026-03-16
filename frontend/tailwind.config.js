@@ -1,7 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: ["./src/**/*.{js,jsx,ts,tsx}"],
-  darkMode: 'class',
   theme: {
     extend: {
       colors: {
@@ -13,10 +12,6 @@ module.exports = {
         darkGray: '#141414',
         mediumGray: '#1a1a1a',
         lightGray: '#2a2a2a',
-        light: '#f5f5f5',
-        lightGrayBg: '#e8e8e8',
-        lightCard: '#ffffff',
-        lightCardAlt: '#f9f9f9',
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],

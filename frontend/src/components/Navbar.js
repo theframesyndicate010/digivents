@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { HiMenuAlt3, HiX, HiSun, HiMoon } from 'react-icons/hi';
-import { useTheme } from './ThemeContext';
+import { HiMenuAlt3, HiX } from 'react-icons/hi';
 import logo from '../assets/logo.png';
 
 const navLinks = [
@@ -31,7 +30,6 @@ const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
-  const { isDark, toggleTheme } = useTheme();
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);
@@ -50,13 +48,9 @@ const Navbar = () => {
       transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
       className={`fixed top-0 left-0 w-full z-50 transition-all duration-500 ${
         scrolled
-          ? isDark 
-            ? 'bg-dark/80 backdrop-blur-xl border-b border-white/10 shadow-lg shadow-black/20'
-            : 'bg-white/80 backdrop-blur-xl border-b border-gray-200 shadow-lg shadow-black/5'
-          : isDark 
-            ? 'bg-dark/30 backdrop-blur-md'
-            : 'bg-white/30 backdrop-blur-md'
-      } dark:${scrolled ? 'bg-dark/80 border-white/10' : 'bg-dark/30'}`}
+          ? 'bg-dark/80 backdrop-blur-xl border-b border-white/10 shadow-lg shadow-black/20'
+          : 'bg-dark/30 backdrop-blur-md'
+      }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
@@ -80,9 +74,7 @@ const Navbar = () => {
                   className={`text-sm font-medium tracking-wide transition-colors inline-block ${
                     location.pathname === link.path
                       ? 'text-accent1'
-                      : isDark 
-                        ? 'text-white/60 hover:text-white'
-                        : 'text-gray-600 hover:text-gray-900'
+                      : 'text-white/60 hover:text-white'
                   }`}
                 >
                   {link.name}
@@ -99,21 +91,7 @@ const Navbar = () => {
           </div>
 
           {/* CTA Button */}
-          <div className="hidden lg:flex items-center gap-4">
-            {/* Theme Toggle */}
-            <motion.button
-              whileTap={{ scale: 0.9 }}
-              onClick={toggleTheme}
-              className={`p-2.5 rounded-lg transition-all duration-300 border ${
-                isDark
-                  ? 'bg-white/10 hover:bg-white/20 text-white border-white/20 hover:border-white/40'
-                  : 'bg-black/10 hover:bg-black/20 text-gray-800 border-black/20 hover:border-black/40'
-              }`}
-              title={isDark ? 'Light mode' : 'Dark mode'}
-            >
-              {isDark ? <HiSun className="text-lg" /> : <HiMoon className="text-lg" />}
-            </motion.button>
-
+          <div className="hidden lg:flex items-center">
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Link
                 to="/contact"
@@ -128,7 +106,7 @@ const Navbar = () => {
           <motion.button
             whileTap={{ scale: 0.9 }}
             onClick={() => setIsOpen(!isOpen)}
-            className={`lg:hidden text-2xl relative z-50 ${isDark ? 'text-white' : 'text-gray-900'}`}
+            className="lg:hidden text-white text-2xl relative z-50"
           >
             <AnimatePresence mode="wait">
               {isOpen ? (
@@ -147,45 +125,17 @@ const Navbar = () => {
         {/* Mobile Menu */}
         <AnimatePresence>
           {isOpen && (
-            <motion.div variants={menuVariants} initial="closed" animate="open" exit="closed" className={`lg:hidden overflow-hidden backdrop-blur-xl rounded-b-2xl ${
-              isDark 
-                ? 'bg-dark/98 border-t border-white/10'
-                : 'bg-white/95 border-t border-gray-200'
-            }`}>
+            <motion.div variants={menuVariants} initial="closed" animate="open" exit="closed" className="lg:hidden overflow-hidden bg-dark/98 backdrop-blur-xl border-t border-white/10 rounded-b-2xl">
               <div className="py-4">
                 {navLinks.map((link, i) => (
                   <motion.div key={link.name} variants={linkVariants} custom={i} initial="closed" animate="open">
-                    <Link to={link.path} className={`block px-6 py-3 text-sm tracking-wide transition-colors ${
-                      location.pathname === link.path 
-                        ? isDark
-                          ? 'text-accent1 bg-white/5'
-                          : 'text-accent1 bg-black/5'
-                        : isDark
-                          ? 'text-white/50 hover:text-white hover:bg-white/5'
-                          : 'text-gray-600 hover:text-gray-900 hover:bg-black/5'
-                    }`}>
+                    <Link to={link.path} className={`block px-6 py-3 text-sm tracking-wide transition-colors ${location.pathname === link.path ? 'text-accent1 bg-white/5' : 'text-white/50 hover:text-white hover:bg-white/5'}`}>
                       {link.name}
                     </Link>
                   </motion.div>
                 ))}
-                <motion.div variants={linkVariants} custom={navLinks.length} initial="closed" animate="open" className="px-4 pt-2 pb-4 flex items-center gap-3">
-                  <Link to="/contact" className={`flex-1 font-semibold text-sm px-6 py-2.5 rounded-full transition-all duration-300 inline-flex items-center gap-2 justify-center ${
-                    isDark
-                      ? 'bg-white text-dark hover:bg-white/90'
-                      : 'bg-gray-900 text-white hover:bg-gray-800'
-                  }`}>Get in Touch</Link>
-                  <motion.button
-                    whileTap={{ scale: 0.9 }}
-                    onClick={toggleTheme}
-                    className={`p-2.5 rounded-lg transition-all duration-300 border ${
-                      isDark
-                        ? 'bg-white/10 hover:bg-white/20 text-white border-white/20 hover:border-white/40'
-                        : 'bg-black/10 hover:bg-black/20 text-gray-800 border-black/20 hover:border-black/40'
-                    }`}
-                    title={isDark ? 'Light mode' : 'Dark mode'}
-                  >
-                    {isDark ? <HiSun className="text-lg" /> : <HiMoon className="text-lg" />}
-                  </motion.button>
+                <motion.div variants={linkVariants} custom={navLinks.length} initial="closed" animate="open" className="px-4 pt-4">
+                  <Link to="/contact" className="bg-white text-dark font-semibold text-sm px-6 py-2.5 rounded-full hover:bg-white/90 transition-all duration-300 inline-flex items-center gap-2 w-full justify-center">Get in Touch</Link>
                 </motion.div>
               </div>
             </motion.div>

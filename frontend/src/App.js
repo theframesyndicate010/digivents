@@ -2,7 +2,6 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import { ScrollToTop } from './animations';
-import { ThemeProvider } from './components/ThemeContext';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import HomePage from './pages/HomePage';
@@ -28,16 +27,14 @@ const AnimatedRoutes = () => {
 
 function App() {
   return (
-    <ThemeProvider>
-      <Router>
-        <ScrollToTop />
-        <div className="bg-dark dark:bg-light min-h-screen transition-colors duration-300">
-          <Navbar />
-          <AnimatedRoutes />
-          <Footer />
-        </div>
-      </Router>
-    </ThemeProvider>
+    <Router>
+      <ScrollToTop />
+      <div className="bg-dark min-h-screen">
+        <Navbar />
+        <AnimatedRoutes />
+        <Footer />
+      </div>
+    </Router>
   );
 }
 

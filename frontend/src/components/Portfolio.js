@@ -29,7 +29,7 @@ const getProjectPlatform = (project) => {
   return null;
 };
 
-/* ── Professional Project Card with Reference Design ────────────────────────────── */
+/* ── Professional Project Card - Reference Design ────────────────────────────── */
 const MiniProjectCard = ({ project, index }) => {
   const [liked, setLiked] = useState(false);
   const platform = getProjectPlatform(project);
@@ -43,14 +43,14 @@ const MiniProjectCard = ({ project, index }) => {
       className="group h-full"
     >
       <Link to="/projects">
-        <div className="relative h-full rounded-2xl overflow-hidden bg-dark shadow-lg hover:shadow-2xl transition-all duration-500 border border-white/5 hover:border-white/10 cursor-pointer">
-          {/* Full-Bleed Image Container */}
-          <div className="relative overflow-hidden bg-gray-900 aspect-[3/4]">
+        <div className="relative h-full rounded-2xl overflow-hidden bg-dark shadow-lg hover:shadow-2xl transition-all duration-500 border border-white/5 hover:border-white/10 cursor-pointer aspect-[3/4] flex items-end">
+          {/* Full-Bleed Background Image */}
+          <div className="absolute inset-0">
             {project.image ? (
               <img
                 src={project.image}
                 alt={project.title}
-                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                 loading="lazy"
               />
             ) : (
@@ -61,115 +61,102 @@ const MiniProjectCard = ({ project, index }) => {
                 </div>
               </div>
             )}
+          </div>
 
-            {/* Gradient Overlay - More Elegant */}
-            <div className="absolute inset-0 bg-gradient-to-t from-dark via-dark/50 to-transparent opacity-80 group-hover:opacity-90 transition-opacity duration-300" />
-
-            {/* Play Button Overlay for Videos */}
-            {hasVideo && (
-              <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
-                <motion.div
-                  initial={{ scale: 0.8 }}
-                  whileHover={{ scale: 1.15 }}
-                  className="w-16 h-16 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center border border-white/50 shadow-2xl hover:bg-white/30"
-                >
-                  <HiPlay className="text-white text-2xl ml-1 fill-white" />
-                </motion.div>
-              </div>
-            )}
-
-            {/* Top Badge */}
-            <div className="absolute top-4 left-4 z-10">
-              <motion.span 
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
-                className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold backdrop-blur-md ${
-                  hasVideo 
-                    ? 'bg-blue-500/30 border border-blue-400/50 text-blue-100' 
-                    : 'bg-purple-500/30 border border-purple-400/50 text-purple-100'
-                }`}
+          {/* Play Button Overlay (Center) - For Videos */}
+          {hasVideo && (
+            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 z-20">
+              <motion.div
+                initial={{ scale: 0.8 }}
+                whileHover={{ scale: 1.15 }}
+                className="w-16 h-16 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center border border-white/50 shadow-2xl hover:bg-white/30"
               >
-                {hasVideo ? 'Video Project' : 'Graphic Design'}
-              </motion.span>
+                <HiPlay className="text-white text-2xl ml-1 fill-white" />
+              </motion.div>
             </div>
+          )}
 
-            {/* Platform Icon */}
+          {/* Gradient Overlay - Bottom Heavy */}
+          <div className="absolute inset-0 bg-gradient-to-t from-dark via-dark/70 to-transparent opacity-90 group-hover:opacity-95 transition-opacity duration-300 z-10" />
+
+          {/* Content Section - Overlaid on Image */}
+          <div className="relative z-20 w-full p-6 flex flex-col">
+            {/* Type Badge */}
             {hasVideo && (
-              <div className="absolute top-4 right-4 z-10">
-                <div className="w-9 h-9 bg-white/20 backdrop-blur-md rounded-lg flex items-center justify-center border border-white/30">
-                  <PlatformIcon className="text-white text-sm" />
-                </div>
-              </div>
+              <motion.div 
+                initial={{ opacity: 0, y: 10 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                className="inline-flex w-fit items-center gap-2 px-3 py-1 rounded-full bg-blue-500/40 border border-blue-400/60 backdrop-blur-sm mb-3"
+              >
+                <span className="w-2 h-2 bg-blue-300 rounded-full"></span>
+                <span className="text-xs font-semibold text-blue-100">Video</span>
+              </motion.div>
             )}
 
-            {/* Content Overlay at Bottom */}
-            <div className="absolute bottom-0 left-0 right-0 p-6 z-20">
-              {/* Tagline */}
-              <motion.p 
+            {/* Tagline/Subtitle */}
+            <motion.p
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              transition={{ delay: 0.1 }}
+              className="text-white/70 text-xs uppercase tracking-widest font-medium mb-2"
+            >
+              {hasVideo ? 'Video Production' : 'Graphic Design'}
+            </motion.p>
+
+            {/* Main Title */}
+            <motion.h3
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              transition={{ delay: 0.15 }}
+              className="text-white font-bold text-lg lg:text-xl leading-snug mb-2 line-clamp-3"
+            >
+              {project.title}
+            </motion.h3>
+
+            {/* Description */}
+            {project.category && (
+              <motion.p
                 initial={{ opacity: 0 }}
                 whileInView={{ opacity: 1 }}
-                transition={{ delay: 0.1 }}
-                className="text-white/60 text-xs uppercase tracking-wider font-medium mb-2"
+                transition={{ delay: 0.2 }}
+                className="text-white/60 text-xs leading-relaxed mb-4 line-clamp-2"
               >
-                {hasVideo ? 'Video Production' : 'Design Work'}
+                {project.category}
               </motion.p>
+            )}
 
-              {/* Main Title */}
-              <motion.h3 
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 1 }}
-                transition={{ delay: 0.15 }}
-                className="text-white font-bold text-lg lg:text-xl leading-snug mb-2 line-clamp-2 group-hover:text-accent1 transition-colors"
+            {/* Footer Metadata */}
+            <div className="flex items-center justify-between pt-3 border-t border-white/10">
+              <motion.button
+                whileTap={{ scale: 1.2 }}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setLiked(!liked);
+                }}
+                className="flex items-center gap-1"
               >
-                {project.title}
-              </motion.h3>
-
-              {/* Category/Description */}
-              {project.category && (
-                <motion.p 
-                  initial={{ opacity: 0 }}
-                  whileInView={{ opacity: 1 }}
-                  transition={{ delay: 0.2 }}
-                  className="text-white/50 text-xs leading-relaxed line-clamp-1 mb-4"
+                <motion.div
+                  className={`text-lg transition-all ${
+                    liked ? 'text-red-400 scale-110' : 'text-white/40 hover:text-red-400'
+                  }`}
+                  whileHover={{ scale: 1.2 }}
                 >
-                  {project.category}
-                </motion.p>
-              )}
+                  <HiHeart className={liked ? 'fill-current' : ''} />
+                </motion.div>
+                {(project.likes || 0) > 0 && (
+                  <span className="text-xs text-white/40 font-medium">
+                    {(project.likes || 0) + (liked ? 1 : 0)}
+                  </span>
+                )}
+              </motion.button>
 
-              {/* Bottom Actions Bar */}
-              <div className="flex items-center justify-between pt-4 border-t border-white/10">
-                <motion.button
-                  whileTap={{ scale: 1.2 }}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    setLiked(!liked);
-                  }}
-                  className="flex items-center gap-1.5"
-                >
-                  <motion.div 
-                    className={`text-lg transition-all ${
-                      liked ? 'text-red-400 scale-110' : 'text-white/40 hover:text-red-400'
-                    }`}
-                    whileHover={{ scale: 1.2 }}
-                  >
-                    <HiHeart className={liked ? 'fill-current' : ''} />
-                  </motion.div>
-                  {(project.likes || 0) > 0 && (
-                    <span className="text-xs text-white/40 font-medium">
-                      {(project.likes || 0) + (liked ? 1 : 0)}
-                    </span>
-                  )}
-                </motion.button>
-
-                <motion.span
-                  whileHover={{ x: 3 }}
-                  className="text-xs text-accent1 font-semibold flex items-center gap-1 group-hover:text-accent2 transition-colors cursor-pointer"
-                >
-                  View More <HiArrowRight className="text-sm" />
-                </motion.span>
-              </div>
+              <motion.span
+                whileHover={{ x: 2 }}
+                className="text-xs text-accent1 font-semibold cursor-pointer"
+              >
+                View →
+              </motion.span>
             </div>
           </div>
         </div>

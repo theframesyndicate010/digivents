@@ -190,16 +190,16 @@ const ProjectsPage = () => {
                   <motion.div 
                     key={project.id} 
                     variants={fadeInUp}
-                    className="group relative rounded-2xl overflow-hidden aspect-[3/4] cursor-pointer bg-dark border border-white/5 hover:border-white/10 shadow-lg hover:shadow-2xl transition-all duration-500 h-full flex flex-col"
+                    className="group relative rounded-2xl overflow-hidden cursor-pointer bg-dark border border-white/5 hover:border-white/10 shadow-lg hover:shadow-2xl transition-all duration-500 aspect-[3/4] flex items-end"
                     onClick={() => setSelectedProject(project)}
                   >
-                    {/* Image Container */}
-                    <div className="relative flex-1 overflow-hidden bg-slate-900">
+                    {/* Full-Bleed Background Image */}
+                    <div className="absolute inset-0">
                       {imageSrc ? (
                         <img 
                           src={imageSrc}
                           alt={project.title} 
-                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                           onError={(e) => {
                             e.target.style.display = 'none';
                             e.target.parentElement.querySelector('[data-placeholder]').style.display = 'flex';
@@ -208,77 +208,91 @@ const ProjectsPage = () => {
                       ) : null}
                       
                       {/* Placeholder if no image */}
-                      <div data-placeholder className="hidden w-full h-full absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 items-center justify-center">
+                      <div data-placeholder className="hidden w-full h-full bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 items-center justify-center">
                         <div className="text-white/30 flex flex-col items-center gap-3">
                            {projectType === 'video' ? <PlayCircle size={48} strokeWidth={1.5} /> : <Search size={48} strokeWidth={1.5} />}
                            <span className="text-xs uppercase tracking-widest font-bold opacity-60">No Preview</span>
                         </div>
                       </div>
-
-                      {/* Gradient Overlay */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-dark via-dark/50 to-transparent opacity-80 group-hover:opacity-90 transition-opacity duration-300" />
-
-                      {/* Play Button (Center) - Only for videos */}
-                      {projectType === 'video' && (
-                        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
-                            <motion.div
-                              initial={{ scale: 0.8 }}
-                              whileHover={{ scale: 1.15 }}
-                              className="w-16 h-16 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center border border-white/50 shadow-2xl hover:bg-white/30 transition-all"
-                            >
-                               <PlayCircle size={32} fill="currentColor" className="text-white" />
-                            </motion.div>
-                        </div>
-                      )}
-
-                      {/* Type Badge */}
-                      <div className="absolute top-4 left-4 z-10">
-                        <motion.span 
-                          initial={{ opacity: 0, y: -10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: 0.2 }}
-                          className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold backdrop-blur-md ${
-                            projectType === 'video'
-                              ? 'bg-blue-500/30 border border-blue-400/50 text-blue-100'
-                              : 'bg-purple-500/30 border border-purple-400/50 text-purple-100'
-                          }`}
-                        >
-                          {projectType === 'video' ? 'Video Project' : 'Graphic Design'}
-                        </motion.span>
-                      </div>
                     </div>
 
-                    {/* Content Overlay at Bottom */}
-                    <div className="absolute bottom-0 left-0 right-0 p-5 z-20">
+                    {/* Play Button (Center) - Only for videos */}
+                    {projectType === 'video' && (
+                      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 z-20">
+                          <motion.div
+                            initial={{ scale: 0.8 }}
+                            whileHover={{ scale: 1.15 }}
+                            className="w-16 h-16 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center border border-white/50 shadow-2xl hover:bg-white/30 transition-all"
+                          >
+                             <PlayCircle size={32} fill="currentColor" className="text-white" />
+                          </motion.div>
+                      </div>
+                    )}
+
+                    {/* Gradient Overlay - Bottom Heavy */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-dark via-dark/70 to-transparent opacity-90 group-hover:opacity-95 transition-opacity duration-300 z-10" />
+
+                    {/* Content Section - Overlaid on Image */}
+                    <div className="relative z-20 w-full p-6 flex flex-col">
+                      {/* Type Badge */}
+                      {projectType === 'video' && (
+                        <motion.div 
+                          initial={{ opacity: 0, y: 10 }}
+                          whileInView={{ opacity: 1, y: 0 }}
+                          className="inline-flex w-fit items-center gap-2 px-3 py-1 rounded-full bg-blue-500/40 border border-blue-400/60 backdrop-blur-sm mb-3"
+                        >
+                          <span className="w-2 h-2 bg-blue-300 rounded-full"></span>
+                          <span className="text-xs font-semibold text-blue-100">Video</span>
+                        </motion.div>
+                      )}
+                      {projectType === 'graphic' && (
+                        <motion.div 
+                          initial={{ opacity: 0, y: 10 }}
+                          whileInView={{ opacity: 1, y: 0 }}
+                          className="inline-flex w-fit items-center gap-2 px-3 py-1 rounded-full bg-purple-500/40 border border-purple-400/60 backdrop-blur-sm mb-3"
+                        >
+                          <span className="w-2 h-2 bg-purple-300 rounded-full"></span>
+                          <span className="text-xs font-semibold text-purple-100">Graphic</span>
+                        </motion.div>
+                      )}
+
                       {/* Tagline */}
-                      <p className="text-white/60 text-xs uppercase tracking-wider font-medium mb-2">
+                      <motion.p
+                        initial={{ opacity: 0 }}
+                        whileInView={{ opacity: 1 }}
+                        transition={{ delay: 0.1 }}
+                        className="text-white/70 text-xs uppercase tracking-widest font-medium mb-2"
+                      >
                         {projectType === 'video' ? 'Video Production' : 'Design Work'}
-                      </p>
+                      </motion.p>
 
                       {/* Main Title */}
-                      <h3 className="font-bold text-white text-base lg:text-lg leading-snug line-clamp-2 mb-2 group-hover:text-accent1 transition-colors">
+                      <motion.h3
+                        initial={{ opacity: 0 }}
+                        whileInView={{ opacity: 1 }}
+                        transition={{ delay: 0.15 }}
+                        className="text-white font-bold text-lg lg:text-xl leading-snug mb-2 line-clamp-3"
+                      >
                         {project.title}
-                      </h3>
+                      </motion.h3>
 
-                      {/* Client/Creator */}
-                      <p className="text-white/50 text-xs mb-4 line-clamp-1">
+                      {/* Description */}
+                      <motion.p
+                        initial={{ opacity: 0 }}
+                        whileInView={{ opacity: 1 }}
+                        transition={{ delay: 0.2 }}
+                        className="text-white/60 text-xs leading-relaxed mb-4 line-clamp-1"
+                      >
                         {project.client || project.category || 'Client'} • {creator}
-                      </p>
+                      </motion.p>
 
-                      {/* Footer Actions */}
+                      {/* Footer Metadata */}
                       <div className="flex items-center justify-between pt-3 border-t border-white/10">
-                        <span className={`text-xs font-semibold px-2.5 py-1 rounded-md ${
-                          projectType === 'video'
-                            ? 'bg-blue-500/20 text-blue-300'
-                            : 'bg-purple-500/20 text-purple-300'
-                        }`}>
-                          {projectType === 'video' ? 'Video' : 'Graphic'}
-                        </span>
                         <motion.span
-                          whileHover={{ x: 3 }}
-                          className="text-xs text-accent1 font-semibold group-hover:text-accent2 transition-colors cursor-pointer flex items-center gap-1"
+                          whileHover={{ x: 2 }}
+                          className="text-xs text-accent1 font-semibold cursor-pointer"
                         >
-                          View <PlayCircle size={12} />
+                          View →
                         </motion.span>
                       </div>
                     </div>

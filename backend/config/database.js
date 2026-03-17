@@ -3,9 +3,10 @@ module.exports = ({ env }) => {
   const databaseUrl = env('DATABASE_URL');
   const useLocal = env('USE_LOCAL_DB') === 'true';
   const isRailway = env('RAILWAY_ENVIRONMENT_NAME');
+  const databaseClient = env('DATABASE_CLIENT', 'sqlite');
 
-  // Use local SQLite for local development only
-  if (useLocal && !isRailway && env('NODE_ENV') === 'development') {
+  // Use local SQLite for local development only when explicitly set
+  if (useLocal && !isRailway && env('NODE_ENV') === 'development' && databaseClient === 'sqlite') {
     return {
       connection: {
         client: 'sqlite',
@@ -17,15 +18,26 @@ module.exports = ({ env }) => {
     };
   }
 
-  // Railway PostgreSQL connection (preferred)
-  if (databaseUrl) {
+  // PostgreSQL connection (Railway or Supabase)
+  if (databaseClient === 'postgres' || databaseUrl) {
+    const connectionConfig = databaseUrl ? {
+      connectionString: databaseUrl,
+      ssl: env('DATABASE_SSL', 'true') === 'true' ? { rejectUnauthorized: false } : false,
+    } : {
+      host: env('DATABASE_HOST', '127.0.0.1'),
+      port: env.int('DATABASE_PORT', 5432),
+      database: env('DATABASE_NAME', 'postgres'),
+      user: env('DATABASE_USERNAME', 'username'),
+      password: env('DATABASE_PASSWORD', 'password'),
+      ssl: env('DATABASE_SSL', 'true') === 'true' ? { rejectUnauthorized: false } : false,
+    };
+
     return {
       connection: {
         client: 'postgres',
         connection: {
-          connectionString: databaseUrl,
-          ssl: isProduction ? { rejectUnauthorized: false } : false,
-          // Railway handles connection pooling well
+          ...connectionConfig,
+          // Connection timeouts
           connectionTimeoutMillis: 60000,
           statement_timeout: 60000,
           query_timeout: 60000,
@@ -33,45 +45,29 @@ module.exports = ({ env }) => {
           schema: env('DATABASE_SCHEMA', 'public'),
         },
         pool: {
-          min: isRailway ? 0 : 2, // Railway prefers 0 min connections
-          max: isRailway ? 10 : 10,
+          min: isRailway ? 0 : 1, // Railway prefers 0 min connections
+          max: isRailway ? 10 : 5, // Reduced max connections to prevent pool exhaustion
           acquireTimeoutMillis: 60000,
           idleTimeoutMillis: 30000,
           reapIntervalMillis: 10000,
           createTimeoutMillis: 30000,
           destroyTimeoutMillis: 5000,
+          // Add these for better connection management
+          propagateCreateError: false,
         },
-        debug: false,
+        debug: env('NODE_ENV') === 'development' ? false : false,
       },
     };
   }
 
-  // Fallback configuration (should not be used on Railway)
+  // Fallback to SQLite if no other configuration
   return {
     connection: {
-      client: 'postgres',
+      client: 'sqlite',
       connection: {
-        host: env('DATABASE_HOST', '127.0.0.1'),
-        port: env.int('DATABASE_PORT', 5432),
-        database: env('DATABASE_NAME', 'digivents'),
-        user: env('DATABASE_USERNAME', 'username'),
-        password: env('DATABASE_PASSWORD', 'password'),
-        ssl: isProduction ? { rejectUnauthorized: false } : false,
-        connectionTimeoutMillis: 30000,
-        statement_timeout: 30000,
-        query_timeout: 30000,
-        schema: env('DATABASE_SCHEMA', 'public'),
+        filename: env('DATABASE_FILENAME', '.tmp/data.db'),
       },
-      pool: {
-        min: 0,
-        max: 10,
-        acquireTimeoutMillis: 60000,
-        idleTimeoutMillis: 30000,
-        reapIntervalMillis: 10000,
-        createTimeoutMillis: 30000,
-        destroyTimeoutMillis: 5000,
-      },
-      debug: false,
+      useNullAsDefault: true,
     },
   };
 };

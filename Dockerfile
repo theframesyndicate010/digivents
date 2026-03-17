@@ -6,8 +6,8 @@ WORKDIR /app/backend
 # Copy package files
 COPY backend/package*.json ./
 
-# Install dependencies
-RUN npm ci --only=production && \
+# Install all dependencies (including devDependencies for build)
+RUN npm ci && \
     npm cache clean --force
 
 # Copy source code
@@ -30,20 +30,20 @@ COPY --from=builder /app/backend/package*.json ./
 COPY backend/config ./config
 COPY backend/src ./src
 COPY backend/public ./public
+COPY backend/.env.example ./.env.example
 
 # Set environment variables
 ENV NODE_ENV=production
-ENV NODE_OPTIONS="--max-old-space-size=4096"
 
-# Expose port
+# Expose port (Railway dynamically assigns PORT)
 EXPOSE 1337
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
-  CMD node -e "require('http').get('http://localhost:1337', (r) => {if (r.statusCode !== 200) throw new Error(r.statusCode)})"
+# Health check (flexible for dynamic ports)
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=5 \
+  CMD node -e "require('http').get('http://localhost:' + (process.env.PORT || 1337), (r) => {if (r.statusCode !== 200) throw new Error(r.statusCode)})"
 
 # Use dumb-init to handle signals properly
 ENTRYPOINT ["dumb-init", "--"]
 
-# Start Strapi
-CMD ["npm", "run", "develop"]
+# Start Strapi in production mode
+CMD ["npm", "run", "start"]

@@ -38,9 +38,9 @@ ENV NODE_ENV=production
 # Expose port (Railway dynamically assigns PORT)
 EXPOSE 1337
 
-# Health check (flexible for dynamic ports)
+# Health check - uses the PORT environment variable if available
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=5 \
-  CMD node -e "require('http').get('http://localhost:' + (process.env.PORT || 1337), (r) => {if (r.statusCode !== 200) throw new Error(r.statusCode)})"
+  CMD node -e "require('http').get('http://localhost:' + (process.env.PORT || 1337), (r) => {if (r.statusCode !== 200) throw new Error(r.statusCode)}).on('error', (e) => {throw e})"
 
 # Use dumb-init to handle signals properly
 ENTRYPOINT ["dumb-init", "--"]

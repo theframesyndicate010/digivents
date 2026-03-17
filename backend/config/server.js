@@ -3,7 +3,8 @@ module.exports = ({ env }) => ({
   port: env.int('PORT', 1337),
   proxy: {
     enabled: true,
-    trust: ['127.0.0.1', 'loopback', 'linklocal', 'uniquelocal'],
+    // Trust Railway's proxy headers
+    trust: ['127.0.0.1', 'loopback', 'linklocal', 'uniquelocal', '::1', '::ffff:127.0.0.1'],
   },
   app: {
     keys: env.array('APP_KEYS'),

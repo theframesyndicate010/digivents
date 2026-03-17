@@ -1,8 +1,23 @@
 module.exports = ({ env }) => {
   const isProduction = env('NODE_ENV') === 'production';
   const databaseUrl = env('DATABASE_URL');
+  const useLocal = env('USE_LOCAL_DB') === 'true';
+  const isRailway = env('RAILWAY_ENVIRONMENT_NAME');
 
-  // Parse DATABASE_URL if provided (Railway format: postgresql://user:password@host:port/database)
+  // Use local SQLite for local development only
+  if (useLocal && !isRailway && env('NODE_ENV') === 'development') {
+    return {
+      connection: {
+        client: 'sqlite',
+        connection: {
+          filename: env('DATABASE_FILENAME', '.tmp/data.db'),
+        },
+        useNullAsDefault: true,
+      },
+    };
+  }
+
+  // Railway PostgreSQL connection (preferred)
   if (databaseUrl) {
     return {
       connection: {
@@ -10,20 +25,28 @@ module.exports = ({ env }) => {
         connection: {
           connectionString: databaseUrl,
           ssl: isProduction ? { rejectUnauthorized: false } : false,
+          // Railway handles connection pooling well
+          connectionTimeoutMillis: 60000,
+          statement_timeout: 60000,
+          query_timeout: 60000,
+          acquireConnectionTimeout: 60000,
           schema: env('DATABASE_SCHEMA', 'public'),
         },
         pool: {
-          min: 2,
-          max: 10,
-          acquireTimeoutMillis: 30000,
+          min: isRailway ? 0 : 2, // Railway prefers 0 min connections
+          max: isRailway ? 10 : 10,
+          acquireTimeoutMillis: 60000,
           idleTimeoutMillis: 30000,
-          reapIntervalMillis: 1000,
+          reapIntervalMillis: 10000,
+          createTimeoutMillis: 30000,
+          destroyTimeoutMillis: 5000,
         },
+        debug: false,
       },
     };
   }
 
-  // Fallback to individual environment variables
+  // Fallback configuration (should not be used on Railway)
   return {
     connection: {
       client: 'postgres',
@@ -33,16 +56,22 @@ module.exports = ({ env }) => {
         database: env('DATABASE_NAME', 'digivents'),
         user: env('DATABASE_USERNAME', 'username'),
         password: env('DATABASE_PASSWORD', 'password'),
-        ssl: env.bool('DATABASE_SSL', isProduction),
+        ssl: isProduction ? { rejectUnauthorized: false } : false,
+        connectionTimeoutMillis: 30000,
+        statement_timeout: 30000,
+        query_timeout: 30000,
         schema: env('DATABASE_SCHEMA', 'public'),
       },
       pool: {
-        min: 2,
+        min: 0,
         max: 10,
-        acquireTimeoutMillis: 30000,
+        acquireTimeoutMillis: 60000,
         idleTimeoutMillis: 30000,
-        reapIntervalMillis: 1000,
+        reapIntervalMillis: 10000,
+        createTimeoutMillis: 30000,
+        destroyTimeoutMillis: 5000,
       },
+      debug: false,
     },
   };
 };

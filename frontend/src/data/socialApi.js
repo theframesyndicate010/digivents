@@ -16,9 +16,9 @@ const socialIconMap = {
 
 // Default fallback social links
 const defaultSocialLinks = [
-  { id: 1, icon: <FiFacebook />, href: 'https://facebook.com', label: 'Facebook' },
-  { id: 2, icon: <FiInstagram />, href: 'https://instagram.com', label: 'Instagram' },
-  { id: 3, icon: <FiYoutube />, href: 'https://youtube.com', label: 'YouTube' },
+  { id: 1, icon: <FiFacebook />, href: 'https://www.facebook.com/digiventsbirtamode', label: 'Facebook' },
+  { id: 2, icon: <FiInstagram />, href: 'https://www.instagram.com/digi.vents/', label: 'Instagram' },
+  { id: 3, icon: <FiYoutube />, href: 'https://www.youtube.com/@digivents', label: 'YouTube' },
   { id: 4, icon: <FaTiktok />, href: 'https://tiktok.com', label: 'TikTok' },
 ];
 

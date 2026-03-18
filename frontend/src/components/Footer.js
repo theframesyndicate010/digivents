@@ -37,7 +37,7 @@ const Footer = () => {
         viewport={{ once: true }}
         className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16"
       >
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-10">
           <motion.div variants={fadeInUp} className="lg:col-span-1">
             <Link to="/" className="flex items-center gap-2 mb-5">
               <motion.img
@@ -121,6 +121,42 @@ const Footer = () => {
           </motion.div>
 
           <motion.div variants={fadeInUp} custom={3}>
+            <h4 className="text-white font-semibold mb-5 text-sm uppercase tracking-wider">Contact</h4>
+            <ul className="space-y-4">
+              <motion.li
+                initial={{ opacity: 0, x: -15 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.3 }}
+              >
+                <motion.a
+                  href="mailto:digivents02@gmail.com"
+                  whileHover={{ x: 5, color: '#ffffff' }}
+                  className="text-white/40 text-sm block transition-colors"
+                >
+                  <p className="font-medium text-white text-xs mb-1">Email</p>
+                  <span>digivents02@gmail.com</span>
+                </motion.a>
+              </motion.li>
+              <motion.li
+                initial={{ opacity: 0, x: -15 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.35 }}
+              >
+                <motion.a
+                  href="tel:+977985-2623936"
+                  whileHover={{ x: 5, color: '#ffffff' }}
+                  className="text-white/40 text-sm block transition-colors"
+                >
+                  <p className="font-medium text-white text-xs mb-1">Phone</p>
+                  <span>+977 985-2623936</span>
+                </motion.a>
+              </motion.li>
+            </ul>
+          </motion.div>
+
+          <motion.div variants={fadeInUp} custom={4}>
             <h4 className="text-white font-semibold mb-5 text-sm uppercase tracking-wider">Newsletter</h4>
             <p className="text-white/40 text-sm mb-4">Get the latest updates delivered to your inbox.</p>
             <form className="flex flex-col sm:flex-row gap-2" onSubmit={(e) => e.preventDefault()}>

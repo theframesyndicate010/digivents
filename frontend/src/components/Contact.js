@@ -49,28 +49,38 @@ const Contact = () => {
             </motion.div>
 
             <div className="space-y-5 mt-8">
-              {contactInfo.map((info, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, x: -30 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: 0.3 + index * 0.12, duration: 0.5 }}
-                  whileHover={{ x: 8, transition: { duration: 0.2 } }}
-                  className="flex items-start gap-4 group cursor-pointer"
-                >
-                  <motion.span
-                    whileHover={{ scale: 1.2, rotate: 10 }}
-                    className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center text-white shrink-0 group-hover:bg-white/15 transition-colors"
+              {contactInfo.map((info, index) => {
+                let href = '#';
+                if (info.label === 'Email') {
+                  href = `mailto:${info.value}`;
+                } else if (info.label === 'Phone') {
+                  href = `tel:${info.value.replace(/\s/g, '')}`;
+                }
+                
+                return (
+                  <motion.a
+                    key={index}
+                    href={href}
+                    initial={{ opacity: 0, x: -30 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 0.3 + index * 0.12, duration: 0.5 }}
+                    whileHover={{ x: 8, transition: { duration: 0.2 } }}
+                    className="flex items-start gap-4 group cursor-pointer"
                   >
-                    {info.icon}
-                  </motion.span>
-                  <div>
-                    <h4 className="text-white font-medium text-sm">{info.label}</h4>
-                    <p className="text-white/40 text-sm">{info.value}</p>
-                  </div>
-                </motion.div>
-              ))}
+                    <motion.span
+                      whileHover={{ scale: 1.2, rotate: 10 }}
+                      className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center text-white shrink-0 group-hover:bg-white/15 transition-colors"
+                    >
+                      {info.icon}
+                    </motion.span>
+                    <div>
+                      <h4 className="text-white font-medium text-sm">{info.label}</h4>
+                      <p className="text-white/40 text-sm">{info.value}</p>
+                    </div>
+                  </motion.a>
+                );
+              })}
             </div>
           </motion.div>
 

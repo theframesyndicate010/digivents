@@ -1,0 +1,29 @@
+# Digivents - robots.txt
+# https://digivents.com/robots.txt
+
+User-Agent: *
+Allow: /
+Disallow: /api/
+Disallow: /admin/
+Disallow: /*.json$
+Disallow: /static/js/*.map$
+
+# Google
+User-Agent: Googlebot
+Allow: /
+Crawl-delay: 1
+
+# Google Image
+User-Agent: Googlebot-Image
+Allow: /
+
+# Bing
+User-Agent: Bingbot
+Allow: /
+Crawl-delay: 2
+
+# Sitemap
+Sitemap: https://digivents.com/sitemap.xml
+
+# Host
+Host: https://digivents.com

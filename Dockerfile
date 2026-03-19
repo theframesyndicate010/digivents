@@ -13,8 +13,12 @@ RUN addgroup -g 1001 -S nodejs && \
 # Copy package files
 COPY backend/package*.json ./
 
-# Install production dependencies only
-RUN npm ci --only=production && \
+# Copy environment variables
+COPY backend/.env ./
+
+
+# Install production dependencies safely
+RUN npm ci --omit=dev && \
     npm cache clean --force
 
 # Copy application code

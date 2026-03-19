@@ -13,8 +13,8 @@ services:
     ports:
       - "3307:3306"
     volumes:
-      - ./mysql_data:/var/lib/mysql
-      - ./backend/supabase/migrations:/docker-entrypoint-initdb.d
+      - mysql_data:/var/lib/mysql
+      - ./backend/migrations:/docker-entrypoint-initdb.d
     networks:
       - digivents_network
     healthcheck:
@@ -88,6 +88,4 @@ networks:
     driver: bridge
 
 volumes:
-  volumes:
-  - mysql_data:/var/lib/mysql
-  - ./backend/public/uploads:/app/public/uploads
+  mysql_data:

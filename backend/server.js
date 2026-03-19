@@ -27,23 +27,52 @@ process.on('unhandledRejection', (reason, promise) => {
 app.use(helmet());
 
 // 2. CORS: Restrict to allowed origins only
-const allowedOrigins = (process.env.ALLOWED_ORIGINS || 'http://localhost,http://localhost:3000,http://localhost:80').split(',');
+const allowedOrigins = (process.env.ALLOWED_ORIGINS || 'http://localhost,http://localhost:3000,http://163.47.151.246:3000/admin')
+    .split(',')
+    .map((origin) => origin.trim())
+    .filter(Boolean);
+
+const normalizeOrigin = (origin) => {
+    if (!origin) return '';
+    return origin.trim().replace(/\/$/, '').toLowerCase();
+};
+
+const allowedOriginSet = new Set(allowedOrigins.map(normalizeOrigin));
+const isDevelopment = process.env.NODE_ENV !== 'production';
+
+const isLoopbackOrigin = (origin) => {
+    try {
+        const parsed = new URL(origin);
+        return ['localhost', '127.0.0.1', '[::1]'].includes(parsed.hostname.toLowerCase());
+    } catch {
+        return false;
+    }
+};
+
 const corsOptions = {
     origin: function (origin, callback) {
         // Allow requests with no origin (like mobile apps or curl requests)
         if (!origin) return callback(null, true);
-        
-        if (allowedOrigins.includes(origin)) {
-    callback(null, true);
-    } else {
-        callback(new Error("Not allowed by CORS"));
-    }
+
+        const normalizedOrigin = normalizeOrigin(origin);
+
+        if (allowedOriginSet.has(normalizedOrigin)) {
+            return callback(null, true);
+        }
+
+        // In dev, allow localhost/loopback from any port to reduce setup friction.
+        if (isDevelopment && isLoopbackOrigin(origin)) {
+            return callback(null, true);
+        }
+
+        return callback(new Error(`Not allowed by CORS: ${origin}`));
     },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
 };
 app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
 
 // 3. Rate Limiting: Prevent brute force attacks on auth endpoints
 const loginLimiter = rateLimit({

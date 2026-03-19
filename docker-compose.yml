@@ -1,84 +1,71 @@
 version: '3.8'
 
 services:
-  # PostgreSQL Database
-  postgres:
-    image: postgres:15-alpine
-    container_name: digivents_db
-    environment:
-      POSTGRES_USER: ${DATABASE_USERNAME:-postgres}
-      POSTGRES_PASSWORD: ${DATABASE_PASSWORD:-password}
-      POSTGRES_DB: ${DATABASE_NAME:-postgres}
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    networks:
-      - digivents_network
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DATABASE_USERNAME:-postgres}"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    restart: unless-stopped
-
-  # Strapi Backend
+  # Backend1 - Node.js/Express API Server
   backend:
     build:
       context: .
       dockerfile: Dockerfile
     container_name: digivents_backend
-    depends_on:
-      postgres:
-        condition: service_healthy
     environment:
-      # Server
+      # Server Configuration
       NODE_ENV: production
       HOST: 0.0.0.0
-      PORT: 1337
+      PORT: 3000
+      CLIENT_URL: ${CLIENT_URL:-http://localhost}
       
-      # Database
+      # Authentication
+      ACCESS_TOKEN_SECRET: ${ACCESS_TOKEN_SECRET}
+      REFRESH_TOKEN_SECRET: ${REFRESH_TOKEN_SECRET}
+      
+      # Admin Credentials
+      ADMIN_USERNAME: ${ADMIN_USERNAME:-admin@digivents.com}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      
+      # Database - Supabase PostgreSQL
       DATABASE_CLIENT: ${DATABASE_CLIENT:-postgres}
-      DATABASE_HOST: postgres
+      DATABASE_URL: ${DATABASE_URL}
+      DATABASE_HOST: ${DATABASE_HOST}
       DATABASE_PORT: ${DATABASE_PORT:-5432}
-      DATABASE_NAME: ${DATABASE_NAME:-postgres}
-      DATABASE_USERNAME: ${DATABASE_USERNAME:-postgres}
-      DATABASE_PASSWORD: ${DATABASE_PASSWORD:-password}
-      DATABASE_SSL: ${DATABASE_SSL:-false}
+      DATABASE_NAME: ${DATABASE_NAME}
+      DATABASE_USERNAME: ${DATABASE_USERNAME}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD}
+      DATABASE_SSL: ${DATABASE_SSL:-true}
+      DATABASE_SSL_REJECT_UNAUTHORIZED: ${DATABASE_SSL_REJECT_UNAUTHORIZED:-false}
       USE_LOCAL_DB: false
+      DATABASE_SCHEMA: ${DATABASE_SCHEMA:-public}
       
-      # Secrets
-      APP_KEYS: ${APP_KEYS}
-      API_TOKEN_SALT: ${API_TOKEN_SALT}
-      ADMIN_JWT_SECRET: ${ADMIN_JWT_SECRET}
-      TRANSFER_TOKEN_SALT: ${TRANSFER_TOKEN_SALT}
-      JWT_SECRET: ${JWT_SECRET}
-      ENCRYPTION_KEY: ${ENCRYPTION_KEY}
+      # CORS Configuration
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-http://localhost,http://digivents.com.np}
+      
+      # Rate Limiting
+      RATE_LIMIT_LOGIN_MAX: ${RATE_LIMIT_LOGIN_MAX:-5}
+      RATE_LIMIT_LOGIN_WINDOW: ${RATE_LIMIT_LOGIN_WINDOW:-900000}
       
       # Supabase
       SUPABASE_API_URL: ${SUPABASE_API_URL}
-      SUPABASE_API_KEY: ${SUPABASE_API_KEY}
       SUPABASE_ANON_KEY: ${SUPABASE_ANON_KEY}
-      SUPABASE_BUCKET: ${SUPABASE_BUCKET}
-      SUPABASE_DIRECTORY: ${SUPABASE_DIRECTORY}
+      SUPABASE_API_KEY: ${SUPABASE_API_KEY}
+      SUPABASE_BUCKET: ${SUPABASE_BUCKET:-supabase}
+      SUPABASE_DIRECTORY: ${SUPABASE_DIRECTORY:-uploads}
       
       # ImageKit
       IMAGEKIT_PUBLIC_KEY: ${IMAGEKIT_PUBLIC_KEY}
       IMAGEKIT_PRIVATE_KEY: ${IMAGEKIT_PRIVATE_KEY}
       IMAGEKIT_URL_ENDPOINT: ${IMAGEKIT_URL_ENDPOINT}
       
-      # Client URL
-      CLIENT_URL: ${CLIENT_URL:-http://localhost:3000}
+      # JWT
+      JWT_SECRET: ${JWT_SECRET}
     ports:
-      - "1337:1337"
+      - "3000:3000"
     volumes:
-      - ./backend/public:/app/backend/public
+      - ./backend/public/uploads:/app/public/uploads
     networks:
       - digivents_network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
     restart: unless-stopped
-
-volumes:
-  postgres_data:
-    driver: local
-
-networks:
-  digivents_network:
-    driver: bridge

@@ -1,0 +1,81 @@
+<%- include('layout', { 
+    title: 'Clients', 
+    page: 'clients',
+    body: `
+        <div class="bg-white rounded-lg shadow">
+            <div class="p-4 md:p-6 border-b flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                <h3 class="text-lg font-semibold">Client Management</h3>
+                <button class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 w-full sm:w-auto">
+                    <i class="fas fa-plus mr-2"></i>Add Client
+                </button>
+            </div>
+            
+            <div class="p-4 md:p-6">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+                    <div class="border rounded-lg p-6 hover:shadow-md transition-shadow">
+                        <div class="flex items-center space-x-4 mb-4">
+                            <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-building text-blue-600"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-gray-900">TechCorp Inc.</h4>
+                                <p class="text-sm text-gray-500">Technology Company</p>
+                            </div>
+                        </div>
+                        <div class="space-y-2 text-sm">
+                            <p><span class="font-medium">Contact:</span> John Smith</p>
+                            <p><span class="font-medium">Email:</span> john@techcorp.com</p>
+                            <p><span class="font-medium">Projects:</span> 3 active</p>
+                        </div>
+                        <div class="mt-4 flex space-x-2">
+                            <button class="flex-1 bg-blue-600 text-white py-2 rounded text-sm hover:bg-blue-700">View</button>
+                            <button class="flex-1 border border-gray-300 py-2 rounded text-sm hover:bg-gray-50">Edit</button>
+                        </div>
+                    </div>
+                    
+                    <div class="border rounded-lg p-6 hover:shadow-md transition-shadow">
+                        <div class="flex items-center space-x-4 mb-4">
+                            <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-store text-green-600"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-gray-900">RetailPlus</h4>
+                                <p class="text-sm text-gray-500">E-commerce</p>
+                            </div>
+                        </div>
+                        <div class="space-y-2 text-sm">
+                            <p><span class="font-medium">Contact:</span> Sarah Johnson</p>
+                            <p><span class="font-medium">Email:</span> sarah@retailplus.com</p>
+                            <p><span class="font-medium">Projects:</span> 1 active</p>
+                        </div>
+                        <div class="mt-4 flex space-x-2">
+                            <button class="flex-1 bg-blue-600 text-white py-2 rounded text-sm hover:bg-blue-700">View</button>
+                            <button class="flex-1 border border-gray-300 py-2 rounded text-sm hover:bg-gray-50">Edit</button>
+                        </div>
+                    </div>
+                    
+                    <div class="border rounded-lg p-6 hover:shadow-md transition-shadow">
+                        <div class="flex items-center space-x-4 mb-4">
+                            <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-user text-purple-600"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-gray-900">John Designer</h4>
+                                <p class="text-sm text-gray-500">Freelancer</p>
+                            </div>
+                        </div>
+                        <div class="space-y-2 text-sm">
+                            <p><span class="font-medium">Contact:</span> John Doe</p>
+                            <p><span class="font-medium">Email:</span> john@designer.com</p>
+                            <p><span class="font-medium">Projects:</span> 2 completed</p>
+                        </div>
+                        <div class="mt-4 flex space-x-2">
+                            <button class="flex-1 bg-blue-600 text-white py-2 rounded text-sm hover:bg-blue-700">View</button>
+                            <button class="flex-1 border border-gray-300 py-2 rounded text-sm hover:bg-gray-50">Edit</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `
+}) %>

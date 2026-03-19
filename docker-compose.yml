@@ -1,12 +1,39 @@
 version: '3.8'
 
 services:
-  # Backend1 - Node.js/Express API Server
+  # MySQL Database
+  mysql:
+    image: mysql:8.0
+    container_name: digivents_mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpassword}
+      MYSQL_DATABASE: ${DATABASE_NAME:-digivents}
+      MYSQL_USER: ${DATABASE_USERNAME:-digivents_user}
+      MYSQL_PASSWORD: ${DATABASE_PASSWORD:-digivents_password}
+    ports:
+      - "3307:3306"
+    volumes:
+      - ./mysql_data:/var/lib/mysql
+      - ./backend/supabase/migrations:/docker-entrypoint-initdb.d
+    networks:
+      - digivents_network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+      start_period: 30s
+    restart: unless-stopped
+
+  # Backend - Node.js/Express API Server
   backend:
     build:
       context: .
       dockerfile: Dockerfile
     container_name: digivents_backend
+    depends_on:
+      mysql:
+        condition: service_healthy
     environment:
       # Server Configuration
       NODE_ENV: production
@@ -22,18 +49,13 @@ services:
       ADMIN_USERNAME: ${ADMIN_USERNAME:-admin@digivents.com}
       ADMIN_PASSWORD: ${ADMIN_PASSWORD}
       
-      # Database - Supabase PostgreSQL
-      DATABASE_CLIENT: ${DATABASE_CLIENT:-postgres}
-      DATABASE_URL: ${DATABASE_URL}
-      DATABASE_HOST: ${DATABASE_HOST}
-      DATABASE_PORT: ${DATABASE_PORT:-5432}
-      DATABASE_NAME: ${DATABASE_NAME}
-      DATABASE_USERNAME: ${DATABASE_USERNAME}
-      DATABASE_PASSWORD: ${DATABASE_PASSWORD}
-      DATABASE_SSL: ${DATABASE_SSL:-true}
-      DATABASE_SSL_REJECT_UNAUTHORIZED: ${DATABASE_SSL_REJECT_UNAUTHORIZED:-false}
-      USE_LOCAL_DB: false
-      DATABASE_SCHEMA: ${DATABASE_SCHEMA:-public}
+      # Database - MySQL (Local)
+      DATABASE_CLIENT: ${DATABASE_CLIENT:-mysql}
+      DATABASE_HOST: ${DATABASE_HOST:-mysql}
+      DATABASE_PORT: ${DATABASE_PORT:-3306}
+      DATABASE_NAME: ${DATABASE_NAME:-digivents}
+      DATABASE_USERNAME: ${DATABASE_USERNAME:-digivents_user}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD:-digivents_password}
       
       # CORS Configuration
       ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-http://localhost,http://digivents.com.np}
@@ -42,17 +64,8 @@ services:
       RATE_LIMIT_LOGIN_MAX: ${RATE_LIMIT_LOGIN_MAX:-5}
       RATE_LIMIT_LOGIN_WINDOW: ${RATE_LIMIT_LOGIN_WINDOW:-900000}
       
-      # Supabase
-      SUPABASE_API_URL: ${SUPABASE_API_URL}
-      SUPABASE_ANON_KEY: ${SUPABASE_ANON_KEY}
-      SUPABASE_API_KEY: ${SUPABASE_API_KEY}
-      SUPABASE_BUCKET: ${SUPABASE_BUCKET:-supabase}
-      SUPABASE_DIRECTORY: ${SUPABASE_DIRECTORY:-uploads}
-      
-      # ImageKit
-      IMAGEKIT_PUBLIC_KEY: ${IMAGEKIT_PUBLIC_KEY}
-      IMAGEKIT_PRIVATE_KEY: ${IMAGEKIT_PRIVATE_KEY}
-      IMAGEKIT_URL_ENDPOINT: ${IMAGEKIT_URL_ENDPOINT}
+      # Storage (Local Disk)
+      UPLOAD_DIR: ${UPLOAD_DIR:-./public/uploads}
       
       # JWT
       JWT_SECRET: ${JWT_SECRET}
@@ -69,3 +82,12 @@ services:
       retries: 3
       start_period: 10s
     restart: unless-stopped
+
+networks:
+  digivents_network:
+    driver: bridge
+
+volumes:
+  volumes:
+  - mysql_data:/var/lib/mysql
+  - ./backend/public/uploads:/app/public/uploads

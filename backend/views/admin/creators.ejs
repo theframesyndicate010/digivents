@@ -1,0 +1,123 @@
+<%- include('layout', { title: 'Creators', currentPage: 'creators', body: `
+<div class="bg-white rounded-lg shadow">
+    <div class="p-4 md:p-6 border-b border-gray-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+        <h3 class="text-lg font-semibold text-gray-800">Creators Management</h3>
+        <a href="/admin/add-creator" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium">
+            <i class="fas fa-plus mr-2"></i>Add Creator
+        </a>
+    </div>
+    
+    <div class="p-4 md:p-6">
+        <!-- Desktop Table View -->
+        <div class="hidden md:block overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Creator</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date Created</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="creatorsTableBody" class="bg-white divide-y divide-gray-200">
+                    <!-- Loaded via JS -->
+                </tbody>
+            </table>
+            <div id="emptyMessage" class="hidden text-center py-8 text-gray-500">
+                <i class="fas fa-user-pen text-4xl mb-2"></i>
+                <p>No creators found.</p>
+            </div>
+        </div>
+
+        <!-- Mobile Card View -->
+        <div id="mobileView" class="md:hidden space-y-4">
+            <!-- Loaded via JS -->
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', loadCreators);
+
+    async function loadCreators() {
+        try {
+            const response = await fetch('/api/creators');
+            const result = await response.json();
+            
+            if (result.success && result.data) {
+                renderCreators(result.data);
+            } else {
+                showEmptyState();
+            }
+        } catch (error) {
+            console.error('Error loading creators:', error);
+            showEmptyState();
+        }
+    }
+
+    function renderCreators(creators) {
+        const tableBody = document.getElementById('creatorsTableBody');
+        const mobileView = document.getElementById('mobileView');
+        const emptyMessage = document.getElementById('emptyMessage');
+        
+        if (creators.length === 0) {
+            tableBody.innerHTML = '';
+            mobileView.innerHTML = '';
+            emptyMessage.classList.remove('hidden');
+            return;
+        }
+
+        emptyMessage.classList.add('hidden');
+
+        // Desktop
+        tableBody.innerHTML = creators.map(creator => \`
+            <tr>
+                <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="flex items-center">
+                        <div class="h-10 w-10 flex-shrink-0">
+                            \${creator.photo ? 
+                                \`<img class="h-10 w-10 rounded-full object-cover" src="\${creator.photo}" alt="">\` : 
+                                \`<div class="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-500"><i class="fas fa-user"></i></div>\`}
+                        </div>
+                        <div class="ml-4">
+                            <div class="text-sm font-medium text-gray-900">\${creator.name}</div>
+                            <div class="text-xs text-gray-500">ID: \${creator.id}</div>
+                        </div>
+                    </div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    \${new Date(creator.created_at).toLocaleDateString()}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <button class="text-indigo-600 hover:text-indigo-900 mr-3">Edit</button>
+                    <button class="text-red-600 hover:text-red-900">Delete</button>
+                </td>
+            </tr>
+        \`).join('');
+
+        // Mobile
+        mobileView.innerHTML = creators.map(creator => \`
+            <div class="bg-white shadow rounded-lg p-4">
+                <div class="flex items-center space-x-4 mb-4">
+                    \${creator.photo ? 
+                        \`<img class="h-12 w-12 rounded-full object-cover" src="\${creator.photo}" alt="">\` : 
+                        \`<div class="h-12 w-12 rounded-full bg-gray-200 flex items-center justify-center text-gray-500"><i class="fas fa-user"></i></div>\`}
+                    <div>
+                        <h3 class="text-lg font-medium text-gray-900">\${creator.name}</h3>
+                        <p class="text-xs text-gray-500">Created: \${new Date(creator.created_at).toLocaleDateString()}</p>
+                    </div>
+                </div>
+                <div class="flex justify-end space-x-3 border-t pt-3">
+                    <button class="text-indigo-600 font-medium text-sm">Edit</button>
+                    <button class="text-red-600 font-medium text-sm">Delete</button>
+                </div>
+            </div>
+        \`).join('');
+    }
+
+    function showEmptyState() {
+        document.getElementById('creatorsTableBody').innerHTML = '';
+        document.getElementById('mobileView').innerHTML = '';
+        document.getElementById('emptyMessage').classList.remove('hidden');
+    }
+</script>
+`}) %>

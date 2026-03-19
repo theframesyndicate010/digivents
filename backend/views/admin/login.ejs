@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %> - Admin Panel</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .login-container {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .login-card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 400px;
+            padding: 40px;
+        }
+        .login-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .login-header h1 {
+            font-size: 28px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        .login-header p {
+            color: #666;
+            font-size: 14px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+            font-size: 14px;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        .btn-login {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+        .btn-login:active {
+            transform: translateY(0);
+        }
+        .error-alert {
+            background-color: #fee;
+            color: #c33;
+            padding: 12px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border-left: 4px solid #c33;
+            font-size: 14px;
+        }
+        .success-alert {
+            background-color: #efe;
+            color: #3a3;
+            padding: 12px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border-left: 4px solid #3a3;
+            font-size: 14px;
+        }
+        .loading-spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 8px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .btn-login:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <h1><i class="fas fa-lock"></i></h1>
+                <h1>Admin Login</h1>
+                <p>Enter your credentials to access the admin panel</p>
+            </div>
+
+            <% if (error) { %>
+                <div class="error-alert">
+                    <i class="fas fa-exclamation-circle"></i> <%= error %>
+                </div>
+            <% } %>
+
+            <% if (message) { %>
+                <div class="success-alert">
+                    <i class="fas fa-check-circle"></i> <%= message %>
+                </div>
+            <% } %>
+
+            <form id="loginForm" method="POST" action="/auth/login" onsubmit="handleSubmit(event)">
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input 
+                        type="email" 
+                        id="email" 
+                        name="email" 
+                        placeholder="Enter your email"
+                        required
+                        autocomplete="email"
+                    />
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input 
+                        type="password" 
+                        id="password" 
+                        name="password" 
+                        placeholder="Enter your password"
+                        required
+                        autocomplete="current-password"
+                    />
+                </div>
+
+                <button type="submit" class="btn-login" id="submitBtn">
+                    <span id="btnText">Sign In</span>
+                </button>
+            </form>
+
+            <div style="margin-top: 20px; text-align: center; color: #666; font-size: 14px;">
+                <p>Don't have an account? Contact your administrator.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function handleSubmit(e) {
+            e.preventDefault();
+            const form = document.getElementById('loginForm');
+            const submitBtn = document.getElementById('submitBtn');
+            const btnText = document.getElementById('btnText');
+            const originalText = btnText.innerHTML;
+
+            // Disable button and show loading state
+            submitBtn.disabled = true;
+            btnText.innerHTML = '<span class="loading-spinner"></span>Signing in...';
+
+            // Submit form after a brief delay for UX
+            setTimeout(() => {
+                form.submit();
+            }, 300);
+        }
+    </script>
+</body>
+</html>

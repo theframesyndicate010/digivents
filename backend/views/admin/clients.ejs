@@ -1,0 +1,130 @@
+<%- include('layout', { title: 'Clients', currentPage: 'clients', body: `
+<div class="bg-white rounded-lg shadow">
+    <div class="p-4 md:p-6 border-b border-gray-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+        <h3 class="text-lg font-semibold text-gray-800">Clients Management</h3>
+        <a href="/admin/add-client" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium">
+            <i class="fas fa-plus mr-2"></i>Add Client
+        </a>
+    </div>
+    
+    <div class="p-4 md:p-6">
+        <!-- Desktop Table View -->
+        <div class="hidden md:block overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Client Name</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Website</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Social Media</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created At</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="clientsTableBody" class="bg-white divide-y divide-gray-200">
+                    <!-- Loaded via JS -->
+                </tbody>
+            </table>
+            <div id="emptyMessage" class="hidden text-center py-8 text-gray-500">
+                <i class="fas fa-briefcase text-4xl mb-2"></i>
+                <p>No clients found.</p>
+            </div>
+        </div>
+
+        <!-- Mobile Card View -->
+        <div id="mobileView" class="md:hidden space-y-4">
+            <!-- Loaded via JS -->
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', loadClients);
+
+    async function loadClients() {
+        try {
+            const response = await fetch('/api/clients');
+            const result = await response.json();
+            
+            if (result.success && result.data) {
+                renderClients(result.data);
+            } else {
+                showEmptyState();
+            }
+        } catch (error) {
+            console.error('Error loading clients:', error);
+            showEmptyState();
+        }
+    }
+
+    function renderClients(clients) {
+        const tableBody = document.getElementById('clientsTableBody');
+        const mobileView = document.getElementById('mobileView');
+        const emptyMessage = document.getElementById('emptyMessage');
+        
+        if (clients.length === 0) {
+            tableBody.innerHTML = '';
+            mobileView.innerHTML = '';
+            emptyMessage.classList.remove('hidden');
+            return;
+        }
+
+        emptyMessage.classList.add('hidden');
+
+        // Desktop
+        tableBody.innerHTML = clients.map(client => \`
+            <tr>
+                <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm font-medium text-gray-900">\${client.name}</div>
+                    <div class="text-xs text-gray-500">ID: \${client.id}</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-600">
+                    \${client.website ? \`<a href="\${client.website}" target="_blank" class="hover:underline">\${client.website}</a>\` : '-'}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="flex space-x-3 text-lg">
+                        \${client.instagram_link ? \`<a href="\${client.instagram_link}" target="_blank" class="text-pink-600"><i class="fab fa-instagram"></i></a>\` : ''}
+                        \${client.facebook_link ? \`<a href="\${client.facebook_link}" target="_blank" class="text-blue-600"><i class="fab fa-facebook"></i></a>\` : ''}
+                        \${client.tiktok_link ? \`<a href="\${client.tiktok_link}" target="_blank" class="text-black"><i class="fab fa-tiktok"></i></a>\` : ''}
+                        \${!client.instagram_link && !client.facebook_link && !client.tiktok_link ? '<span class="text-sm text-gray-400">-</span>' : ''}
+                    </div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    \${new Date(client.created_at).toLocaleDateString()}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <button class="text-indigo-600 hover:text-indigo-900 mr-3">Edit</button>
+                    <button class="text-red-600 hover:text-red-900">Delete</button>
+                </td>
+            </tr>
+        \`).join('');
+
+        // Mobile
+        mobileView.innerHTML = clients.map(client => \`
+            <div class="bg-white shadow rounded-lg p-4">
+                <div class="flex justify-between items-start mb-2">
+                    <h3 class="text-lg font-medium text-gray-900">\${client.name}</h3>
+                    <span class="text-xs text-gray-500">\${new Date(client.created_at).toLocaleDateString()}</span>
+                </div>
+                <div class="mb-3 text-sm">
+                    \${client.website ? \`<a href="\${client.website}" target="_blank" class="text-blue-600 block mb-1">\${client.website}</a>\` : ''}
+                </div>
+                <div class="flex space-x-4 mb-4">
+                     \${client.instagram_link ? \`<a href="\${client.instagram_link}" target="_blank" class="text-pink-600"><i class="fab fa-instagram fa-lg"></i></a>\` : ''}
+                     \${client.facebook_link ? \`<a href="\${client.facebook_link}" target="_blank" class="text-blue-600"><i class="fab fa-facebook fa-lg"></i></a>\` : ''}
+                     \${client.tiktok_link ? \`<a href="\${client.tiktok_link}" target="_blank" class="text-black"><i class="fab fa-tiktok fa-lg"></i></a>\` : ''}
+                </div>
+                <div class="flex justify-end space-x-3 border-t pt-3">
+                    <button class="text-indigo-600 font-medium text-sm">Edit</button>
+                    <button class="text-red-600 font-medium text-sm">Delete</button>
+                </div>
+            </div>
+        \`).join('');
+    }
+
+    function showEmptyState() {
+        document.getElementById('clientsTableBody').innerHTML = '';
+        document.getElementById('mobileView').innerHTML = '';
+        document.getElementById('emptyMessage').classList.remove('hidden');
+    }
+</script>
+`}) %>

@@ -1,0 +1,138 @@
+<div class="bg-white rounded-lg shadow">
+    <div class="p-4 md:p-6 border-b border-gray-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+        <h3 class="text-lg font-semibold text-gray-800">Graphics Gallery</h3>
+        <a href="/admin/add-graphic" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium">
+            <i class="fas fa-plus mr-2"></i>Add Graphic
+        </a>
+    </div>
+
+    <div class="p-4 md:p-6">
+        <div class="hidden md:block overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Preview</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="graphicsTableBody" class="bg-white divide-y divide-gray-200">
+                    <!-- Loaded via JS -->
+                </tbody>
+            </table>
+        </div>
+
+        <div id="graphicsMobileCards" class="md:hidden space-y-4"></div>
+
+        <div id="emptyMessage" class="hidden text-center py-12 text-gray-500">
+            <i class="fas fa-images text-4xl mb-2"></i>
+            <p>No graphics found.</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', loadGraphics);
+
+    async function loadGraphics() {
+        try {
+            const response = await fetch('/api/graphics');
+            const result = await response.json();
+
+            if (result.success && result.data) {
+                renderGraphics(result.data);
+            } else {
+                showEmptyState();
+            }
+        } catch (error) {
+            console.error('Error loading graphics:', error);
+            showEmptyState();
+        }
+    }
+
+    function renderGraphics(graphics) {
+        const tableBody = document.getElementById('graphicsTableBody');
+        const mobileCards = document.getElementById('graphicsMobileCards');
+        const emptyMessage = document.getElementById('emptyMessage');
+
+        if (graphics.length === 0) {
+            tableBody.innerHTML = '';
+            mobileCards.innerHTML = '';
+            emptyMessage.classList.remove('hidden');
+            return;
+        }
+
+        emptyMessage.classList.add('hidden');
+
+        tableBody.innerHTML = graphics.map(function (graphic) {
+            return `
+                <tr>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <img src="${graphic.photo}" alt="${graphic.name}" class="w-14 h-14 object-cover rounded-md border border-gray-200">
+                    </td>
+                    <td class="px-6 py-4">
+                        <p class="text-sm font-medium text-gray-900">${graphic.name || '-'}</p>
+                    </td>
+                    <td class="px-6 py-4">
+                        <p class="text-sm text-gray-600 max-w-sm truncate">${graphic.description || '-'}</p>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        ${graphic.created_at ? new Date(graphic.created_at).toLocaleDateString() : '-'}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm">
+                        <button class="text-red-600 hover:text-red-800" onclick="deleteGraphic(${graphic.id})">
+                            <i class="fas fa-trash mr-1"></i>Delete
+                        </button>
+                    </td>
+                </tr>
+            `;
+        }).join('');
+
+        mobileCards.innerHTML = graphics.map(function (graphic) {
+            return `
+                <div class="border border-gray-200 rounded-lg p-4">
+                    <div class="flex gap-3">
+                        <img src="${graphic.photo}" alt="${graphic.name}" class="w-16 h-16 object-cover rounded-md border border-gray-200">
+                        <div class="flex-1 min-w-0">
+                            <p class="font-semibold text-gray-900 truncate">${graphic.name || '-'}</p>
+                            <p class="text-sm text-gray-600 truncate">${graphic.description || '-'}</p>
+                            <p class="text-xs text-gray-500 mt-1">${graphic.created_at ? new Date(graphic.created_at).toLocaleDateString() : '-'}</p>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <button class="text-red-600 hover:text-red-800 text-sm" onclick="deleteGraphic(${graphic.id})">
+                            <i class="fas fa-trash mr-1"></i>Delete
+                        </button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    function showEmptyState() {
+        document.getElementById('graphicsTableBody').innerHTML = '';
+        document.getElementById('graphicsMobileCards').innerHTML = '';
+        document.getElementById('emptyMessage').classList.remove('hidden');
+    }
+
+    async function deleteGraphic(id) {
+        if (!confirm('Delete this graphic?')) return;
+
+        try {
+            const response = await fetch(`/api/graphics/${id}`, { method: 'DELETE' });
+            const result = await response.json();
+
+            if (!result.success) {
+                alert(result.message || 'Failed to delete graphic');
+                return;
+            }
+
+            loadGraphics();
+        } catch (error) {
+            console.error('Error deleting graphic:', error);
+            alert('Failed to delete graphic');
+        }
+    }
+</script>

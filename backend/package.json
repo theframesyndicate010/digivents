@@ -1,44 +1,35 @@
 {
-  "name": "digivents",
-  "version": "0.1.0",
-  "private": true,
-  "description": "A Strapi application",
+  "name": "backend1",
+  "version": "1.0.0",
+  "description": "",
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "main": "server.js",
   "scripts": {
-    "build": "NODE_OPTIONS='--max-old-space-size=4096' strapi build",
-    "console": "strapi console",
-    "deploy": "strapi deploy",
-    "dev": "strapi develop",
-    "develop": "NODE_OPTIONS='--max-old-space-size=4096' strapi develop",
-    "seed:example": "node ./scripts/seed.js",
-    "start": "strapi start",
-    "railway:build": "NODE_OPTIONS='--max-old-space-size=4096' npm run build",
-    "railway:start": "npm run start",
-    "strapi": "strapi",
-    "upgrade": "npx @strapi/upgrade latest",
-    "upgrade:dry": "npx @strapi/upgrade latest --dry"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon server.js",
+    "dev": "nodemon server.js"
   },
   "dependencies": {
-    "@strapi/plugin-cloud": "5.36.1",
-    "@strapi/plugin-users-permissions": "5.36.1",
-    "@strapi/strapi": "5.36.1",
-    "better-sqlite3": "^12.8.0",
-    "fs-extra": "^10.0.0",
-    "mime-types": "^2.1.27",
-    "pg": "^8.16.3",
-    "react": "^18.0.0",
-    "react-dom": "^18.0.0",
-    "react-router-dom": "^6.0.0",
-    "strapi-plugin-imagekit": "^1.0.2",
-    "strapi-provider-upload-imagekit": "^5.11.11",
-    "strapi-provider-upload-supabase": "^1.0.0",
-    "styled-components": "^6.0.0"
+    "bcrypt": "^6.0.0",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.6",
+    "dotenv": "^17.3.1",
+    "ejs": "^3.1.10",
+    "express": "^5.2.1",
+    "express-rate-limit": "^7.1.5",
+    "helmet": "^8.1.0",
+    "hsts": "^2.2.0",
+    "jsonwebtoken": "^9.0.3",
+    "knex": "^3.1.0",
+    "multer": "^1.4.5-lts.1",
+    "nodemailer": "^6.9.7",
+    "mysql2": "^3.6.5",
+    "sqlite3": "^6.0.1"
   },
-  "engines": {
-    "node": ">=18 <=22",
-    "npm": ">=6.0.0"
-  },
-  "strapi": {
-    "uuid": "67f630e6-ff65-483e-8792-3e82c8a12758",
-    "installId": "da3615be749139a95dc35f8f11614f4ebbc7ae3815d10b40cadf621c18515213"
+  "devDependencies": {
+    "nodemon": "^3.1.14",
+    "supabase": "^2.81.3"
   }
 }

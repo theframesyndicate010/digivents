@@ -1,0 +1,113 @@
+
+<div class="bg-white rounded-lg shadow">
+    <div class="p-4 md:p-6 border-b border-gray-200">
+        <h3 class="text-lg font-semibold text-gray-800">Contact Messages</h3>
+    </div>
+    
+    <div class="p-4 md:p-6">
+        <% if (messages && messages.length > 0) { %>
+            <div class="space-y-4">
+                <% messages.forEach(msg => { %>
+                    <div class="border border-gray-200 rounded-lg p-4 md:p-6 hover:shadow-md transition-shadow">
+                        <div class="flex flex-col gap-4">
+                            <div class="flex-1">
+                                <div class="flex flex-wrap items-center gap-2 md:gap-3 mb-2">
+                                    <h4 class="font-semibold text-gray-900"><%= msg.name %></h4>
+                                    <span class="px-2 py-1 text-xs font-medium <%= msg.statusColor %> rounded-full">
+                                        <%= msg.statusDisplay %>
+                                    </span>
+                                </div>
+                                <p class="text-sm text-gray-600 mb-2 break-all"><%= msg.email %></p>
+                                <p class="text-sm text-gray-500 mb-3">Subject: <%= msg.subject || 'No subject' %></p>
+                                <p class="text-sm md:text-base text-gray-700"><%= msg.messagePreview %></p>
+                                <p class="text-xs text-gray-500 mt-3">Received: <%= msg.relativeTime %></p>
+                            </div>
+                            <div class="flex flex-wrap gap-2">
+                                <button class="flex-1 sm:flex-none bg-blue-600 text-white px-3 py-2 rounded text-sm hover:bg-blue-700" onclick="replyToMessage('<%= msg.email %>', '<%= (msg.subject || 'No subject').replace(/'/g, '&#39;') %>')">Reply</button>
+                                <button class="flex-1 sm:flex-none bg-green-600 text-white px-3 py-2 rounded text-sm hover:bg-green-700 whitespace-nowrap" onclick="markMessageRead(<%= msg.id %>)">Mark Read</button>
+                                <button class="sm:flex-none text-red-600 hover:text-red-800 px-3 py-2" onclick="deleteMessage(<%= msg.id %>)">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                <% }); %>
+            </div>
+
+            <!-- Pagination -->
+            <div class="mt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div class="text-sm text-gray-700">
+                    Showing <%= (pagination.page - 1) * pagination.perPage + 1 %> to <%= Math.min(pagination.page * pagination.perPage, pagination.total) %> of <%= pagination.total %> messages
+                </div>
+                <div class="flex flex-wrap gap-2 justify-center">
+                    <% if (pagination.hasPrevPage) { %>
+                        <a href="/admin/messages?page=<%= pagination.page - 1 %>" class="px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50">Previous</a>
+                    <% } %>
+                    
+                    <% for (let i = 1; i <= pagination.totalPages; i++) { %>
+                        <% if (i === pagination.page) { %>
+                            <button class="px-3 py-2 text-sm bg-blue-600 text-white rounded-lg"><%= i %></button>
+                        <% } else { %>
+                            <a href="/admin/messages?page=<%= i %>" class="px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50"><%= i %></a>
+                        <% } %>
+                    <% } %>
+                    
+                    <% if (pagination.hasNextPage) { %>
+                        <a href="/admin/messages?page=<%= pagination.page + 1 %>" class="px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-50">Next</a>
+                    <% } %>
+                </div>
+            </div>
+        <% } else { %>
+            <div class="text-center py-12">
+                <i class="fas fa-inbox text-4xl text-gray-300 mb-4"></i>
+                <p class="text-gray-500 text-lg">No messages yet.</p>
+                <p class="text-gray-400 text-sm mt-2">Contact messages will appear here as soon as someone submits the contact form.</p>
+            </div>
+        <% } %>
+    </div>
+</div>
+
+<script>
+    function replyToMessage(email, subject) {
+        const safeSubject = subject || 'Message reply';
+        window.location.href = 'mailto:' + email + '?subject=Re: ' + encodeURIComponent(safeSubject);
+    }
+
+    async function markMessageRead(id) {
+        if (!id) return;
+        try {
+            const response = await fetch('/api/messages/' + id, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status: 'read' })
+            });
+            const result = await response.json();
+            if (!result.success) {
+                alert(result.message || 'Failed to update message');
+                return;
+            }
+            window.location.reload();
+        } catch (error) {
+            console.error('Error marking message as read:', error);
+            alert('Failed to update message');
+        }
+    }
+
+    async function deleteMessage(id) {
+        if (!id) return;
+        if (!confirm('Delete this message?')) return;
+
+        try {
+            const response = await fetch('/api/messages/' + id, { method: 'DELETE' });
+            const result = await response.json();
+            if (!result.success) {
+                alert(result.message || 'Failed to delete message');
+                return;
+            }
+            window.location.reload();
+        } catch (error) {
+            console.error('Error deleting message:', error);
+            alert('Failed to delete message');
+        }
+    }
+</script>

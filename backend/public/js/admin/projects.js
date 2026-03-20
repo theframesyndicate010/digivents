@@ -56,7 +56,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     '<td class="px-6 py-4"><div class="flex items-center"><div class="h-10 w-10 flex-shrink-0">' + coverHtml + '</div><div class="ml-4"><div class="text-sm font-medium text-gray-900">' + name + '</div><div class="text-xs text-gray-500">' + tag + '</div></div></div></td>' +
                     '<td class="px-6 py-4 whitespace-nowrap">' + statusBadge(project.status) + '</td>' +
                     '<td class="px-6 py-4 text-sm text-gray-500">' + contact + '</td>' +
-                    '<td class="px-6 py-4 text-sm"><a href="/admin/edit-project/' + id + '" class="text-indigo-600 mr-3">Edit</a><button onclick="deleteProject(\'' + id + '\')" class="text-red-600">Delete</button></td>' +
+                    '<td class="px-6 py-4 text-sm"><a href="/admin/edit-project/' + id + '" class="text-indigo-600 mr-3">Edit</a><button class="text-red-600" type="button" data-delete-project-id="' + id + '">Delete</button></td>' +
                 '</tr>';
             }).join('');
         }
@@ -77,10 +77,25 @@ document.addEventListener('DOMContentLoaded', function () {
                 return '<div class="border border-gray-200 rounded-lg p-4 bg-white">' +
                     '<div class="flex items-center gap-4 mb-3"><div class="h-12 w-12 flex-shrink-0">' + coverHtml + '</div><div class="flex-1"><h4 class="font-medium text-gray-900">' + name + '</h4><p class="text-xs text-gray-500">' + tag + '</p></div></div>' +
                     '<div class="flex justify-between items-center text-sm mb-3">' + statusBadge(project.status) + contact + '</div>' +
-                    '<div class="flex justify-end gap-3 border-t pt-2"><a href="/admin/edit-project/' + id + '" class="text-indigo-600 text-sm">Edit</a><button onclick="deleteProject(\'' + id + '\')" class="text-red-600 text-sm">Delete</button></div>' +
+                    '<div class="flex justify-end gap-3 border-t pt-2"><a href="/admin/edit-project/' + id + '" class="text-indigo-600 text-sm">Edit</a><button class="text-red-600 text-sm" type="button" data-delete-project-id="' + id + '">Delete</button></div>' +
                 '</div>';
             }).join('');
         }
+        // Wire up delete handlers for project delete buttons
+        function wireDeleteHandlers() {
+            document.querySelectorAll('[data-delete-project-id]').forEach(function (btn) {
+                if (btn.dataset.bound === '1') return;
+                btn.dataset.bound = '1';
+                btn.addEventListener('click', function () {
+                    const id = btn.getAttribute('data-delete-project-id') || '';
+                    if (!id) return;
+                    deleteProject(id);
+                });
+            });
+        }
+
+        // Call after rendering
+        setTimeout(wireDeleteHandlers, 0);
     }
 
     window.deleteProject = async function deleteProject(id) {
@@ -90,9 +105,16 @@ document.addEventListener('DOMContentLoaded', function () {
                 method: 'DELETE',
                 credentials: 'include'
             });
-            loadProjects();
+            ui.showElement('projectsError', 'Project deleted successfully!', 'mb-4 rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700');
+            setTimeout(() => {
+                ui.hideElement('projectsError');
+                // Force reload to ensure UI updates
+                window.location.reload();
+            }, 1200);
         } catch (error) {
-            ui.showElement('projectsError', error.message || 'Failed to delete project');
+            ui.showElement('projectsError', error.message || 'Failed to delete project', 'mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700');
+            setTimeout(() => ui.hideElement('projectsError'), 4000);
         }
     };
 });
+

@@ -73,7 +73,7 @@
 
     async function loadProjects() {
         try {
-            const response = await fetch('/api/projects');
+            const response = await fetch('/projects');
             const result = await response.json();
             
             if (result.success && result.data) {
@@ -105,11 +105,6 @@
 
         // Desktop table
         tableBody.innerHTML = projects.map(project => {
-            const mediaHtml = '<div class="flex gap-2">' +
-                (project.graphics && project.graphics.length > 0 ? '<span class="text-green-600"><i class="fas fa-image"></i> ' + project.graphics.length + '</span>' : '<span class="text-gray-400">-</span>') +
-                (project.youtubeLink || project.instagramLink || project.tiktokLink || project.facebookLink ? '<span class="text-red-600"><i class="fas fa-video"></i></span>' : '') +
-                '</div>';
-            
             return '<tr>' +
                 '<td class="px-6 py-4 whitespace-nowrap">' +
                     '<div class="flex items-center">' +
@@ -129,15 +124,11 @@
                 '<td class="px-6 py-4 whitespace-nowrap">' +
                     '<span class="px-2 py-1 text-xs font-medium rounded-full ' + getStatusColor(project.status) + '">' + formatStatus(project.status) + '</span>' +
                 '</td>' +
-                '<td class="px-6 py-4 whitespace-nowrap text-sm">' + mediaHtml + '</td>' +
             '</tr>';
         }).join('');
 
         // Mobile cards
         mobileView.innerHTML = projects.map(project => {
-            const mediaHtml = (project.graphics && project.graphics.length > 0 ? '<span class="px-2 py-1 text-xs bg-green-100 text-green-800 rounded"><i class="fas fa-image mr-1"></i>' + project.graphics.length + ' images</span>' : '') +
-                (project.youtubeLink || project.instagramLink || project.tiktokLink || project.facebookLink ? '<span class="px-2 py-1 text-xs bg-red-100 text-red-800 rounded"><i class="fas fa-video mr-1"></i>Videos</span>' : '');
-            
             return '<div class="bg-gray-50 rounded-lg p-4 border border-gray-200">' +
                 '<div class="flex items-start justify-between mb-3">' +
                     '<div class="flex-1">' +
@@ -159,7 +150,6 @@
                         '<span class="font-medium">' + formatStatus(project.status) + '</span>' +
                     '</div>' +
                 '</div>' +
-                '<div class="mb-3 flex gap-2">' + mediaHtml + '</div>' +
             '</div>';
         }).join('');
     }
@@ -216,4 +206,20 @@
         mobileView.innerHTML = '';
         emptyMessage.classList.remove('hidden');
     }
+
+    window.deleteProject = async function(id) {
+        if (!confirm('Delete this project?')) return;
+        try {
+            const res = await fetch('/api/projects/' + encodeURIComponent(id), { method: 'DELETE', credentials: 'include' });
+            const data = await res.json();
+            if (res.ok && data.success) {
+                alert('Project deleted successfully!');
+                window.location.reload();
+            } else {
+                alert(data.message || 'Failed to delete project');
+            }
+        } catch (err) {
+            alert('Failed to delete project');
+        }
+    };
 </script>

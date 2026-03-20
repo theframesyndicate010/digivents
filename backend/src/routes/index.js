@@ -1,6 +1,7 @@
 const express = require('express');
 router = express.Router();
 const messagesRoutes = require('./messages.routes');
+const contactsRoutes = require('./contacts.routes');
 const projectsRoutes = require('./projects.routes');
 const creatorsRoutes = require('./creators.routes');
 const { requireApiAdmin } = require('../middlewares/auth.middleware');
@@ -8,6 +9,7 @@ const adminStatsController = require('../controllers/adminStatsController');
 
 // Mount routes
 router.use('/messages', messagesRoutes);
+router.use('/contacts', contactsRoutes);
 router.use('/projects', projectsRoutes);
 router.use('/creators', creatorsRoutes);
 router.use('/clients', require('./clients.routes'));

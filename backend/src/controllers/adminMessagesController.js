@@ -1,6 +1,6 @@
 exports.getMessages = async (req, res) => {
     try {
-        res.render('admin/contacts', {
+        res.render('admin/messages', {
             title: 'Messages',
             currentPage: 'contacts',
             user: req.user
@@ -8,7 +8,7 @@ exports.getMessages = async (req, res) => {
 
     } catch (error) {
         console.error('[MESSAGES] Error:', error.message);
-        res.render('admin/contacts', {
+        res.render('admin/messages', {
             title: 'Messages',
             currentPage: 'contacts',
             user: req.user,

@@ -423,8 +423,30 @@ router.get('/stats', async (req, res) => {
 router.get('/projects', async (req, res) => {
     try {
         await ensureProjectsTable();
-        const projects = await db('projects').select('*').orderBy('created_at', 'desc');
-        return res.json({ success: true, data: projects.map(normalizeProject) });
+        const page = Math.max(1, parseInt(req.query.page, 10) || 1);
+        const limit = Math.max(1, Math.min(100, parseInt(req.query.limit, 10) || 20));
+        const offset = (page - 1) * limit;
+
+        // Get total count
+        const [{ count }] = await db('projects').count('* as count');
+
+        // Get paginated results
+        const projects = await db('projects')
+            .select('*')
+            .orderBy('created_at', 'desc')
+            .limit(limit)
+            .offset(offset);
+
+        return res.json({
+            success: true,
+            data: projects.map(normalizeProject),
+            pagination: {
+                page,
+                limit,
+                total: Number(count),
+                totalPages: Math.ceil(Number(count) / limit)
+            }
+        });
     } catch (error) {
         console.error('Error fetching projects:', error);
         return res.status(500).json({ success: false, message: error.message || 'Failed to fetch projects' });

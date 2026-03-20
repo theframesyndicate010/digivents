@@ -46,7 +46,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     '<td class="px-6 py-4 whitespace-nowrap text-sm">' + website + '</td>' +
                     '<td class="px-6 py-4 whitespace-nowrap"><div class="flex space-x-3 text-lg">' + socialLinks(client) + '</div></td>' +
                     '<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">' + ui.escapeHtml(ui.formatDate(client.created_at)) + '</td>' +
-                    '<td class="px-6 py-4 whitespace-nowrap text-sm font-medium"><a class="text-indigo-600 hover:text-indigo-900 mr-3" href="/admin/edit-client/' + id + '">Edit</a><button class="text-red-600 hover:text-red-900" onclick="deleteClient(\'' + id + '\')">Delete</button></td>' +
+                    '<td class="px-6 py-4 whitespace-nowrap text-sm font-medium"><a class="text-indigo-600 hover:text-indigo-900 mr-3" href="/admin/edit-client/' + id + '">Edit</a><button class="text-red-600 hover:text-red-900" type="button" data-delete-client-id="' + id + '">Delete</button></td>' +
                 '</tr>';
             }).join('');
         }
@@ -60,22 +60,53 @@ document.addEventListener('DOMContentLoaded', function () {
                     '<div class="flex justify-between items-start mb-2"><h3 class="text-lg font-medium text-gray-900">' + name + '</h3><span class="text-xs text-gray-500">' + ui.escapeHtml(ui.formatDate(client.created_at)) + '</span></div>' +
                     '<div class="mb-3 text-sm">' + website + '</div>' +
                     '<div class="flex space-x-4 mb-4 text-lg">' + socialLinks(client) + '</div>' +
-                    '<div class="flex justify-end space-x-3 border-t pt-3"><a class="text-indigo-600 font-medium text-sm" href="/admin/edit-client/' + id + '">Edit</a><button class="text-red-600 font-medium text-sm" onclick="deleteClient(\'' + id + '\')">Delete</button></div>' +
+                    '<div class="flex justify-end space-x-3 border-t pt-3"><a class="text-indigo-600 font-medium text-sm" href="/admin/edit-client/' + id + '">Edit</a><button class="text-red-600 font-medium text-sm" type="button" data-delete-client-id="' + id + '">Delete</button></div>' +
                 '</div>';
             }).join('');
         }
+        // Wire up delete handlers for client delete buttons
+        function wireDeleteHandlers() {
+            document.querySelectorAll('[data-delete-client-id]').forEach(function (btn) {
+                if (btn.dataset.bound === '1') return;
+                btn.dataset.bound = '1';
+                btn.addEventListener('click', function () {
+                    const id = btn.getAttribute('data-delete-client-id') || '';
+                    if (!id) return;
+                    deleteClient(id);
+                });
+            });
+        }
+
+        // Call after rendering
+        setTimeout(wireDeleteHandlers, 0);
     }
 
     window.deleteClient = async function deleteClient(id) {
         if (!confirm('Are you sure you want to delete this client?')) return;
+        // Find the button and disable it during the request
+        const btn = document.querySelector('[data-delete-client-id="' + id + '"]');
+        if (btn) {
+            btn.disabled = true;
+            btn.textContent = 'Deleting...';
+        }
         try {
             await ui.apiRequest('/api/clients/' + encodeURIComponent(id), {
                 method: 'DELETE',
                 credentials: 'include'
             });
-            loadClients();
+            ui.showElement('clientsError', 'Client deleted successfully!', 'mb-4 rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700');
+            setTimeout(() => {
+                ui.hideElement('clientsError');
+                loadClients();
+            }, 1000);
         } catch (error) {
-            ui.showElement('clientsError', error.message || 'Failed to delete client');
+            ui.showElement('clientsError', error.message || 'Failed to delete client', 'mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700');
+            setTimeout(() => ui.hideElement('clientsError'), 3000);
+        } finally {
+            if (btn) {
+                btn.disabled = false;
+                btn.textContent = 'Delete';
+            }
         }
     };
 });

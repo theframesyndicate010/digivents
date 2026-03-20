@@ -88,7 +88,7 @@ export const sendMessage = async (formData) => {
 
     console.log('[Contact API] Prepared payload:', JSON.stringify(payload, null, 2));
 
-    const response = await apiFetch('/contacts', {
+    const response = await apiFetch('/api/messages', {
       method: 'POST',
       body: JSON.stringify(payload),
     });

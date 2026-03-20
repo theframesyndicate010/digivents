@@ -1,3 +1,5 @@
+<div id="dashboardError" class="hidden mb-6 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"></div>
+
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
     <div class="bg-white rounded-lg shadow p-6">
         <div class="flex items-center">
@@ -6,7 +8,7 @@
             </div>
             <div class="ml-4">
                 <h3 class="text-lg font-semibold text-gray-700">Projects</h3>
-                <p class="text-2xl font-bold text-gray-900"><%= stats.projects %></p>
+                <p id="stats-projects" class="text-2xl font-bold text-gray-900">--</p>
             </div>
         </div>
     </div>
@@ -18,7 +20,7 @@
             </div>
             <div class="ml-4">
                 <h3 class="text-lg font-semibold text-gray-700">Clients</h3>
-                <p class="text-2xl font-bold text-gray-900"><%= stats.clients %></p>
+                <p id="stats-clients" class="text-2xl font-bold text-gray-900">--</p>
             </div>
         </div>
     </div>
@@ -26,11 +28,11 @@
     <div class="bg-white rounded-lg shadow p-6">
         <div class="flex items-center">
             <div class="p-3 rounded-full bg-yellow-100 text-yellow-600">
-                <i class="fas fa-comments text-xl"></i>
+                <i class="fas fa-user-pen text-xl"></i>
             </div>
             <div class="ml-4">
-                <h3 class="text-lg font-semibold text-gray-700">Feedback</h3>
-                <p class="text-2xl font-bold text-gray-900"><%= stats.feedback %></p>
+                <h3 class="text-lg font-semibold text-gray-700">Creators</h3>
+                <p id="stats-creators" class="text-2xl font-bold text-gray-900">--</p>
             </div>
         </div>
     </div>
@@ -42,7 +44,7 @@
             </div>
             <div class="ml-4">
                 <h3 class="text-lg font-semibold text-gray-700">Messages</h3>
-                <p class="text-2xl font-bold text-gray-900"><%= stats.contacts %></p>
+                <p id="stats-messages" class="text-2xl font-bold text-gray-900">--</p>
             </div>
         </div>
     </div>
@@ -54,23 +56,8 @@
             <h3 class="text-lg font-semibold text-gray-800">Recent Projects</h3>
         </div>
         <div class="p-6">
-            <% if (recentProjects && recentProjects.length > 0) { %>
-                <div class="space-y-4">
-                    <% recentProjects.forEach(project => { %>
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <p class="font-medium text-gray-900"><%= project.title %></p>
-                                <p class="text-sm text-gray-500">Updated <%= project.relativeTime %></p>
-                            </div>
-                            <span class="px-2 py-1 text-xs font-medium <%= project.statusColor %> rounded-full">
-                                <%= project.statusDisplay %>
-                            </span>
-                        </div>
-                    <% }); %>
-                </div>
-            <% } else { %>
-                <p class="text-gray-500 text-center py-8">No projects yet. Create your first project to get started.</p>
-            <% } %>
+            <p id="recentProjectsLoading" class="text-sm text-gray-500">Loading projects...</p>
+            <div id="recentProjectsList" class="space-y-4"></div>
         </div>
     </div>
 
@@ -79,24 +66,10 @@
             <h3 class="text-lg font-semibold text-gray-800">Recent Messages</h3>
         </div>
         <div class="p-6">
-            <% if (recentMessages && recentMessages.length > 0) { %>
-                <div class="space-y-4">
-                    <% recentMessages.forEach(message => { %>
-                        <div class="flex items-start space-x-3">
-                            <div class="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center flex-shrink-0">
-                                <i class="fas fa-user text-gray-600 text-sm"></i>
-                            </div>
-                            <div class="flex-1 min-w-0">
-                                <p class="font-medium text-gray-900"><%= message.name %></p>
-                                <p class="text-sm text-gray-600 truncate"><%= message.subject || message.message %></p>
-                                <p class="text-xs text-gray-500 mt-1"><%= message.relativeTime %></p>
-                            </div>
-                        </div>
-                    <% }); %>
-                </div>
-            <% } else { %>
-                <p class="text-gray-500 text-center py-8">No messages yet. Contact messages will appear here.</p>
-            <% } %>
+            <p id="recentMessagesLoading" class="text-sm text-gray-500">Loading messages...</p>
+            <div id="recentMessagesList" class="space-y-4"></div>
         </div>
     </div>
 </div>
+
+<script src="/js/admin/dashboard.js"></script>

@@ -5,6 +5,7 @@
     </div>
     
     <div class="p-4 md:p-6">
+        <div id="formAlert" class="hidden mb-4 rounded-lg px-4 py-3 text-sm"></div>
         <form id="addClientForm" class="space-y-6">
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">Client Name *</label>
@@ -55,48 +56,5 @@
     </div>
 </div>
 
-<script>
-    document.getElementById('addClientForm').addEventListener('submit', async function(e) {
-        e.preventDefault();
-        
-        const formData = {
-            name: this.name.value,
-            website: this.website.value,
-            instagramLink: this.instagramLink.value,
-            facebookLink: this.facebookLink.value,
-            tiktokLink: this.tiktokLink.value
-        };
-        
-        const submitBtn = this.querySelector('button[type="submit"]');
-        const originalText = submitBtn.innerText;
-        
-        try {
-            submitBtn.disabled = true;
-            submitBtn.innerText = 'Adding...';
-            
-            const response = await fetch('/api/clients', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(formData)
-            });
-            
-            const result = await response.json();
-            
-            if (result.success) {
-                alert('Client added successfully!');
-                window.location.href = '/admin/clients';
-            } else {
-                alert('Error: ' + result.message);
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            alert('Failed to add client');
-        } finally {
-            submitBtn.disabled = false;
-            submitBtn.innerText = originalText;
-        }
-    });
-</script>
+<script src="/js/admin/add-client.js"></script>
 `}) %>

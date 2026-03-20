@@ -21,8 +21,8 @@ const transformClient = (client) => {
 // Fetch all clients from Strapi
 export const fetchAllClients = async () => {
   try {
-    const data = await apiFetch('/clients?populate=*&sort=createdAt:asc');
-    return (data.data || []).map(transformClient);
+    const data = await apiFetch('/api/clients');
+    return (data.data || data || []).map(transformClient);
   } catch (error) {
     console.error('Failed to fetch clients:', error);
     return [];
@@ -32,8 +32,8 @@ export const fetchAllClients = async () => {
 // Fetch limited clients for homepage
 export const fetchFeaturedClients = async (limit = 6) => {
   try {
-    const data = await apiFetch(`/clients?populate=*&sort=createdAt:asc&pagination[limit]=${limit}`);
-    return (data.data || []).map(transformClient);
+    const data = await apiFetch('/api/clients');
+    return (data.data || data || []).slice(0, limit).map(transformClient);
   } catch (error) {
     console.error('Failed to fetch featured clients:', error);
     return [];
@@ -43,8 +43,8 @@ export const fetchFeaturedClients = async (limit = 6) => {
 // Fetch feedbacks/testimonials with client info
 export const fetchTestimonials = async () => {
   try {
-    const data = await apiFetch('/feedbacks?populate=*&sort=createdAt:desc');
-    return (data.data || []).map((feedback) => {
+    const data = await apiFetch('/api/feedback');
+    return (data.data || data || []).map((feedback) => {
       const attrs = feedback;
       return {
         id: feedback.id,

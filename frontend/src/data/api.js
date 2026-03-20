@@ -3,7 +3,7 @@
 const getApiUrl = () => {
   // Development: explicit localhost URL or environment variable
   if (process.env.NODE_ENV === 'development') {
-    return process.env.REACT_APP_API_URL || 'http://localhost:1337';
+    return process.env.REACT_APP_API_URL || 'http://localhost:3000';
   }
   
   // Production: use environment variable OR assume backend is on same domain
@@ -18,6 +18,8 @@ const getApiUrl = () => {
   return `${protocol}//${hostname}${port}`;
 };
 
+
+export const API_BASE = '';
 const API_URL = getApiUrl();
 
 console.log('[API Config] Using API URL:', API_URL);
@@ -39,7 +41,9 @@ export const getImageUrl = (media) => {
  * Handles errors and returns parsed JSON
  */
 export const apiFetch = async (endpoint, options = {}) => {
-  const url = `${API_URL}/api${endpoint}`;
+  // endpoint should start with '/'
+  // API_BASE now includes '/api', so avoid double /api
+  const url = `${API_URL}${API_BASE}${endpoint}`;
   try {
     console.log('[API] Fetching:', url);
     console.log('[API] Request body:', options.body);
@@ -98,7 +102,7 @@ export const apiFetch = async (endpoint, options = {}) => {
  * Browser will set Content-Type: multipart/form-data automatically
  */
 export const uploadFile = async (endpoint, formData, options = {}) => {
-  const url = `${API_URL}/api${endpoint}`;
+  const url = `${API_URL}${API_BASE}${endpoint}`;
   try {
     const response = await fetch(url, {
       method: 'POST',

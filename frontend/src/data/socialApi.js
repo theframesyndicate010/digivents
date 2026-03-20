@@ -26,27 +26,9 @@ const defaultSocialLinks = [
  * Fetch social links from Strapi Global settings or project social links.
  * Falls back to default links if the API doesn't have social fields.
  */
+// PATCHED: No /global endpoint, always use static fallback
 export const fetchSocialLinks = async () => {
-  try {
-    const data = await apiFetch('/global?populate=*');
-    const attrs = data.data;
-
-    // If global settings has socialLinks array, use it
-    if (attrs?.socialLinks && Array.isArray(attrs.socialLinks)) {
-      return attrs.socialLinks.map((link, i) => ({
-        id: i + 1,
-        icon: socialIconMap[link.platform?.toLowerCase()] || <FiGlobe />,
-        href: link.url || '#',
-        label: link.platform || 'Link',
-      }));
-    }
-
-    // Fallback to defaults
-    return defaultSocialLinks.map((s) => ({ ...s }));
-  } catch (error) {
-    console.error('Failed to fetch social links:', error);
-    return defaultSocialLinks.map((s) => ({ ...s }));
-  }
+  return defaultSocialLinks.map((s) => ({ ...s }));
 };
 
 export default defaultSocialLinks;

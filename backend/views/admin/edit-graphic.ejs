@@ -1,0 +1,34 @@
+<%- include('layout', { title: 'Edit Graphic', currentPage: 'graphics', body: `
+<div class="bg-white rounded-lg shadow max-w-2xl mx-auto">
+    <div class="p-6 border-b border-gray-200">
+        <h3 class="text-lg font-semibold text-gray-800">Edit Graphic</h3>
+    </div>
+
+    <div class="p-6">
+        <div id="formAlert" class="hidden mb-4 rounded-lg px-4 py-3 text-sm"></div>
+        <form id="editGraphicForm" class="space-y-6">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Graphic Name *</label>
+                <input type="text" name="name" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                <textarea name="description" rows="3" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"></textarea>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Replace Image</label>
+                <input type="file" name="photo" accept="image/*" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+            </div>
+
+            <div class="flex justify-end gap-3 pt-4">
+                <a href="/admin/graphics" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 font-medium">Cancel</a>
+                <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium">Save Changes</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="/js/admin/edit-graphic.js"></script>
+`}) %>

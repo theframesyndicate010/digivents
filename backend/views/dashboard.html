@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Admin HTML Dashboard</title>
+	<style>
+		:root { --bg:#f6f7fb; --panel:#fff; --ink:#1f2937; --muted:#6b7280; --line:#e5e7eb; --primary:#2563eb; }
+		* { box-sizing: border-box; }
+		body { margin:0; font-family: Arial, sans-serif; background:var(--bg); color:var(--ink); }
+		.layout { display:grid; grid-template-columns:220px 1fr; min-height:100vh; }
+		.side { background:#111827; color:#fff; padding:16px; }
+		.side a { display:block; color:#d1d5db; text-decoration:none; padding:8px; border-radius:8px; margin-bottom:6px; }
+		.side a.active, .side a:hover { background:#1f2937; color:#fff; }
+		.main { padding:18px; }
+		.grid { display:grid; grid-template-columns:repeat(4,minmax(160px,1fr)); gap:12px; }
+		.card { background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:14px; }
+		.label { color:var(--muted); font-size:12px; }
+		.value { font-size:28px; font-weight:700; margin-top:6px; }
+		@media (max-width: 900px) { .layout{grid-template-columns:1fr;} .grid{grid-template-columns:repeat(2,minmax(120px,1fr));} }
+	</style>
+</head>
+<body>
+<div class="layout">
+	<aside class="side">
+		<h2>Admin HTML</h2>
+		<a class="active" href="/admin/html/dashboard">Dashboard</a>
+		<a href="/admin/html/client">Clients</a>
+		<a href="/admin/html/project">Projects</a>
+		<a href="/admin/html/creator">Creators</a>
+		<a href="/admin/html/graphics">Graphics</a>
+		<a href="/admin/html/message">Messages</a>
+	</aside>
+	<main class="main">
+		<h1>Dashboard</h1>
+		<p id="error" style="color:#b91c1c"></p>
+		<section class="grid">
+			<div class="card"><div class="label">Projects</div><div id="projects" class="value">-</div></div>
+			<div class="card"><div class="label">Clients</div><div id="clients" class="value">-</div></div>
+			<div class="card"><div class="label">Creators</div><div id="creators" class="value">-</div></div>
+			<div class="card"><div class="label">Messages</div><div id="messages" class="value">-</div></div>
+		</section>
+	</main>
+</div>
+<script>
+async function getCount(url) {
+	const res = await fetch(url, { credentials: 'include' });
+	const json = await res.json();
+	if (!res.ok || json.success === false) throw new Error(json.message || 'Request failed');
+	const data = json.data;
+	if (Array.isArray(data)) return data.length;
+	if (data && Array.isArray(data.messages)) return data.messages.length;
+	if (data && typeof data.totalMessages === 'number') return data.totalMessages;
+	if (data && typeof data.total === 'number') return data.total;
+	return 0;
+}
+(async function init() {
+	try {
+		const [p, c, r, m] = await Promise.all([
+			getCount('/api/projects'),
+			getCount('/api/clients'),
+			getCount('/api/creators'),
+			getCount('/api/messages?perPage=100')
+		]);
+		document.getElementById('projects').textContent = p;
+		document.getElementById('clients').textContent = c;
+		document.getElementById('creators').textContent = r;
+		document.getElementById('messages').textContent = m;
+	} catch (e) {
+		document.getElementById('error').textContent = e.message;
+	}
+})();
+</script>
+</body>
+</html>

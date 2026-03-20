@@ -91,8 +91,8 @@ const transformProject = (project) => {
 // Fetch all projects from Strapi
 export const fetchAllProjects = async () => {
   try {
-    const data = await apiFetch('/projects?populate=*&sort=createdAt:desc');
-    return (data.data || []).map(transformProject);
+    const data = await apiFetch('/api/projects');
+    return (data.data || data || []).map(transformProject);
   } catch (error) {
     console.error('Failed to fetch projects:', error);
     return [];
@@ -102,8 +102,8 @@ export const fetchAllProjects = async () => {
 // Fetch limited projects for homepage portfolio
 export const fetchFeaturedProjects = async (limit = 5) => {
   try {
-    const data = await apiFetch(`/projects?populate=*&sort=createdAt:desc&pagination[limit]=${limit}`);
-    return (data.data || []).map(transformProject);
+    const data = await apiFetch('/api/projects');
+    return (data.data || data || []).slice(0, limit).map(transformProject);
   } catch (error) {
     console.error('Failed to fetch featured projects:', error);
     return [];
@@ -113,8 +113,8 @@ export const fetchFeaturedProjects = async (limit = 5) => {
 // Fetch single project by documentId
 export const fetchProjectById = async (id) => {
   try {
-    const data = await apiFetch(`/projects/${id}?populate=*`);
-    return transformProject(data.data);
+    const data = await apiFetch(`/api/projects/${id}`);
+    return transformProject(data.data || data);
   } catch (error) {
     console.error('Failed to fetch project:', error);
     throw new Error('Project not found');
@@ -124,8 +124,8 @@ export const fetchProjectById = async (id) => {
 // Fetch single project by slug
 export const fetchProjectBySlug = async (slug) => {
   try {
-    const data = await apiFetch(`/projects?filters[slug][$eq]=${slug}&populate=*`);
-    const projects = data.data || [];
+    const data = await apiFetch('/api/projects');
+    const projects = (data.data || data || []).filter((p) => p.slug === slug);
     if (projects.length === 0) throw new Error('Project not found');
     return transformProject(projects[0]);
   } catch (error) {

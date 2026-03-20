@@ -1,30 +1,30 @@
-# Backend - Node.js/Express Server
+
+# Backend - Node.js/Express Server (Production Ready)
 FROM node:20-alpine
 
+# Set working directory
 WORKDIR /app
 
-# Install dumb-init for proper signal handling
-RUN apk add --no-cache dumb-init
+# Install native build prerequisites for npm modules
+RUN apk add --no-cache dumb-init python3 make g++
 
 # Create non-root user for security
 RUN addgroup -g 1001 -S nodejs && \
     adduser -S nodejs -u 1001
 
-# Copy package files
+# Copy package files first for better layer caching
 COPY backend/package*.json ./
 
-# Copy environment variables
-COPY backend/.env ./
+# Install only production dependencies
+RUN npm ci --omit=dev && npm cache clean --force
 
-
-# Install production dependencies safely
-RUN npm ci --omit=dev && \
-    npm cache clean --force
-
-# Copy application code
+# Copy application code (after dependencies for better cache)
 COPY backend ./
 
-# Create uploads directory for file uploads
+# Copy environment variables (if present)
+COPY backend/.env ./
+
+# Create uploads directory for file uploads and set permissions
 RUN mkdir -p public/uploads && \
     chown -R nodejs:nodejs /app
 
@@ -38,6 +38,10 @@ ENV PORT=3000
 
 # Expose port
 EXPOSE 3000
+
+# Use dumb-init for proper signal handling and run with node (not nodemon)
+ENTRYPOINT ["dumb-init", "--"]
+CMD ["node", "server.js"]
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=5 \

@@ -42,12 +42,11 @@ services:
       CLIENT_URL: ${CLIENT_URL:-http://localhost}
       
       # Authentication
-      ACCESS_TOKEN_SECRET: ${ACCESS_TOKEN_SECRET}
-      REFRESH_TOKEN_SECRET: ${REFRESH_TOKEN_SECRET}
+      # ACCESS_TOKEN_SECRET and REFRESH_TOKEN_SECRET are loaded from backend/.env inside container
       
       # Admin Credentials
       ADMIN_USERNAME: ${ADMIN_USERNAME:-admin@digivents.com}
-      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      # ADMIN_PASSWORD is loaded from backend/.env inside container
       
       # Database - MySQL (Local)
       DATABASE_CLIENT: ${DATABASE_CLIENT:-mysql}
@@ -58,7 +57,7 @@ services:
       DATABASE_PASSWORD: ${DATABASE_PASSWORD:-digivents_password}
       
       # CORS Configuration
-      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-http://localhost,http://digivents.com.np}
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-http://localhost,http://localhost:3000,http://localhost:3001,http://127.0.0.1:3000,http://163.47.151.246:3000,http://digivents.com.np,https://digivents.com.np,null}
       
       # Rate Limiting
       RATE_LIMIT_LOGIN_MAX: ${RATE_LIMIT_LOGIN_MAX:-5}
@@ -68,7 +67,7 @@ services:
       UPLOAD_DIR: ${UPLOAD_DIR:-./public/uploads}
       
       # JWT
-      JWT_SECRET: ${JWT_SECRET}
+      # JWT_SECRET is loaded from backend/.env inside container
     ports:
       - "3000:3000"
     volumes:

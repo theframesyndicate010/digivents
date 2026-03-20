@@ -5,6 +5,7 @@
     </div>
     
     <div class="p-4 md:p-6">
+        <div id="formAlert" class="hidden mb-4 rounded-lg px-4 py-3 text-sm"></div>
         <form id="addProjectForm" class="space-y-6">
             <!-- Basic Info -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -99,38 +100,5 @@
     </div>
 </div>
 
-<script>
-    document.getElementById('addProjectForm').addEventListener('submit', async function(e) {
-        e.preventDefault();
-        
-        const formData = new FormData(this);
-        const submitBtn = this.querySelector('button[type="submit"]');
-        const originalText = submitBtn.innerText;
-        
-        try {
-            submitBtn.disabled = true;
-            submitBtn.innerText = 'Creating...';
-            
-            const response = await fetch('/api/projects', {
-                method: 'POST',
-                body: formData
-            });
-            
-            const result = await response.json();
-            
-            if (result.success) {
-                alert('Project created successfully!');
-                window.location.href = '/admin/projects';
-            } else {
-                alert('Error: ' + result.message);
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            alert('Failed to create project');
-        } finally {
-            submitBtn.disabled = false;
-            submitBtn.innerText = originalText;
-        }
-    });
-</script>
+<script src="/js/admin/add-project.js"></script>
 `}) %>

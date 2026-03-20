@@ -5,9 +5,11 @@ const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
+const bootstrapDatabase = require('./scripts/bootstrapDatabase');
 const app = express();
 
 const PORT = process.env.PORT || 3000;
+app.use(express.static(path.join(__dirname, 'public')));
 
 process.on('exit', (code) => {
     console.log(`About to exit with code: ${code}`);
@@ -27,18 +29,24 @@ process.on('unhandledRejection', (reason, promise) => {
 app.use(helmet());
 
 // 2. CORS: Restrict to allowed origins only
-const allowedOrigins = (process.env.ALLOWED_ORIGINS || 'http://localhost,http://localhost:3000,http://163.47.151.246:3000/admin')
+const allowedOrigins = (process.env.ALLOWED_ORIGINS || 'http://localhost,http://localhost:3000/admin,http://163.47.151.246:3000/admin')
     .split(',')
     .map((origin) => origin.trim())
     .filter(Boolean);
 
 const normalizeOrigin = (origin) => {
     if (!origin) return '';
-    return origin.trim().replace(/\/$/, '').toLowerCase();
+    const sanitized = origin.trim().toLowerCase();
+    try {
+        const parsed = new URL(sanitized);
+        return `${parsed.protocol}//${parsed.host}`;
+    } catch {
+        // Fallback for non-URL strings.
+        return sanitized.replace(/\/$/, '');
+    }
 };
 
 const allowedOriginSet = new Set(allowedOrigins.map(normalizeOrigin));
-const isDevelopment = process.env.NODE_ENV !== 'production';
 
 const isLoopbackOrigin = (origin) => {
     try {
@@ -52,7 +60,7 @@ const isLoopbackOrigin = (origin) => {
 const corsOptions = {
     origin: function (origin, callback) {
         // Allow requests with no origin (like mobile apps or curl requests)
-        if (!origin) return callback(null, true);
+        if (!origin || origin === 'null') return callback(null, true);
 
         const normalizedOrigin = normalizeOrigin(origin);
 
@@ -60,19 +68,19 @@ const corsOptions = {
             return callback(null, true);
         }
 
-        // In dev, allow localhost/loopback from any port to reduce setup friction.
-        if (isDevelopment && isLoopbackOrigin(origin)) {
+        // Allow localhost/loopback from any port for local access patterns.
+        if (isLoopbackOrigin(origin)) {
             return callback(null, true);
         }
 
-        return callback(new Error(`Not allowed by CORS: ${origin}`));
+        // Block unknown origins without crashing request processing.
+        return callback(null, false);
     },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
 };
 app.use(cors(corsOptions));
-app.options('*', cors(corsOptions));
 
 // 3. Rate Limiting: Prevent brute force attacks on auth endpoints
 const loginLimiter = rateLimit({
@@ -98,9 +106,12 @@ app.set('views', path.join(__dirname, 'views'));
 // Routes
 app.use('/auth/login', loginLimiter); // Apply rate limiting to login
 app.use('/auth/verify-otp', loginLimiter); // Apply rate limiting to OTP verification
-app.use('/auth', require('./api/routes/auth'));
-app.use('/admin', require('./api/routes/admin'));
-app.use('/api', require('./api/routes/api'));
+// Refactored Modular API Routes (Strangler Fig pattern: handles matching routes before falling back to old ones)
+app.use('/api', require('./src/routes'));
+
+app.use('/auth', require('./src/routes/auth.routes'));
+app.use('/admin', require('./src/routes/admin.routes'));
+// app.use('/api', require('./src/routes/legacyApi.routes'));
 
 // Root route - redirect to admin (which will handle auth authentication)
 app.get('/', (req, res) => {
@@ -117,17 +128,20 @@ app.use((req, res) => {
     res.status(404).json({ error: 'Route not found' });
 });
 
-// Error handler
-app.use((err, req, res, next) => {
-    console.error('[ERROR]', err.stack || err);
-    const message = err.message || 'Something went wrong!';
-    
-    res.status(500).json({ 
-        error: message,
-        ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
-    });
-});
+// Centralized Error handler
+const errorHandler = require('./src/middlewares/error.middleware');
+app.use(errorHandler);
 
-app.listen(PORT, () => {
-    console.log(`Server listening on port ${PORT}!`);
-});
+const startServer = async () => {
+    try {
+        await bootstrapDatabase();
+        app.listen(PORT, () => {
+            console.log(`Server listening on port ${PORT}!`);
+        });
+    } catch (error) {
+        console.error('[STARTUP] Failed to initialize application:', error);
+        process.exit(1);
+    }
+};
+
+startServer();

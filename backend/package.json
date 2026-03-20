@@ -21,11 +21,12 @@
     "express-rate-limit": "^7.1.5",
     "helmet": "^8.1.0",
     "hsts": "^2.2.0",
+    "joi": "^18.0.2",
     "jsonwebtoken": "^9.0.3",
     "knex": "^3.1.0",
     "multer": "^1.4.5-lts.1",
-    "nodemailer": "^6.9.7",
     "mysql2": "^3.6.5",
+    "nodemailer": "^6.9.7",
     "sqlite3": "^6.0.1"
   },
   "devDependencies": {

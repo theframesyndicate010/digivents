@@ -20,10 +20,11 @@ const transformWorker = (worker) => {
 };
 
 // Fetch all team members from Strapi
+// PATCHED: No /workers endpoint in backend, use /api/creators as team equivalent
 export const fetchTeam = async () => {
   try {
-    const data = await apiFetch('/workers?populate=*&sort=createdAt:asc');
-    return (data.data || []).map(transformWorker);
+    const data = await apiFetch('/api/creators');
+    return (data.data || data || []).map(transformWorker);
   } catch (error) {
     console.error('Failed to fetch team:', error);
     return [];
@@ -32,23 +33,20 @@ export const fetchTeam = async () => {
 
 // Fetch stats from Strapi Global settings
 // Stats are part of the global single type or can be hardcoded as fallback
+// PATCHED: No /global or /workers endpoints, fallback to static stats or count from /api endpoints
 export const fetchStats = async () => {
   try {
-    const data = await apiFetch('/global?populate=*');
-    const attrs = data.data;
-    // If global has stats fields, use them; otherwise return defaults
-    if (attrs?.stats) return attrs.stats;
     // Fallback: derive stats from actual data counts
-    const [projectsRes, clientsRes, workersRes] = await Promise.all([
-      apiFetch('/projects?pagination[limit]=1&pagination[withCount]=true'),
-      apiFetch('/clients?pagination[limit]=1&pagination[withCount]=true'),
-      apiFetch('/workers?pagination[limit]=1&pagination[withCount]=true'),
+    const [projectsRes, clientsRes, creatorsRes] = await Promise.all([
+      apiFetch('/api/projects'),
+      apiFetch('/api/clients'),
+      apiFetch('/api/creators'),
     ]);
     return [
       { id: 1, value: '4', label: 'Years of Experience' },
-      { id: 2, value: `${clientsRes.meta?.pagination?.total || 0}+`, label: 'Repeated Clients' },
-      { id: 3, value: `${projectsRes.meta?.pagination?.total || 0}`, label: 'Completed Projects' },
-      { id: 4, value: `${clientsRes.meta?.pagination?.total || 0}+`, label: 'Happy Clients' },
+      { id: 2, value: `${(clientsRes.length || clientsRes.data?.length || 0)}+`, label: 'Repeated Clients' },
+      { id: 3, value: `${projectsRes.length || projectsRes.data?.length || 0}`, label: 'Completed Projects' },
+      { id: 4, value: `${(clientsRes.length || clientsRes.data?.length || 0)}+`, label: 'Happy Clients' },
     ];
   } catch (error) {
     console.error('Failed to fetch stats:', error);
@@ -63,35 +61,13 @@ export const fetchStats = async () => {
 
 // Fetch company values — these are typically static content
 // Could be extended to fetch from About single type's blocks
+// PATCHED: No /about endpoint, fallback to static values
 export const fetchValues = async () => {
-  try {
-    const data = await apiFetch('/about?populate[blocks][populate]=*');
-    const attrs = data.data;
-    // Check if about has values in its blocks
-    if (attrs?.blocks) {
-      const richTextBlocks = attrs.blocks.filter((b) => b.__component === 'shared.rich-text');
-      if (richTextBlocks.length > 0) {
-        return richTextBlocks.map((block, i) => ({
-          id: i + 1,
-          title: block.title || `Value ${i + 1}`,
-          description: block.body || '',
-        }));
-      }
-    }
-    // Fallback values
-    return [
-      { id: 1, title: 'Creativity', description: 'We push boundaries and think outside the box to deliver unique visual experiences.' },
-      { id: 2, title: 'Excellence', description: 'Every frame, every cut, every effect meets our highest quality standards.' },
-      { id: 3, title: 'Innovation', description: 'We embrace cutting-edge technology and techniques to stay ahead of the curve.' },
-      { id: 4, title: 'Collaboration', description: 'We work closely with our clients to bring their vision to life authentically.' },
-    ];
-  } catch (error) {
-    console.error('Failed to fetch values:', error);
-    return [
-      { id: 1, title: 'Creativity', description: 'We push boundaries and think outside the box to deliver unique visual experiences.' },
-      { id: 2, title: 'Excellence', description: 'Every frame, every cut, every effect meets our highest quality standards.' },
-      { id: 3, title: 'Innovation', description: 'We embrace cutting-edge technology and techniques to stay ahead of the curve.' },
-      { id: 4, title: 'Collaboration', description: 'We work closely with our clients to bring their vision to life authentically.' },
-    ];
-  }
+  // Return static company values or fetch from a valid endpoint if available
+  return [
+    { id: 1, title: 'Collaboration', description: 'We work closely with our clients to bring their vision to life authentically.' },
+    { id: 2, title: 'Creativity', description: 'We deliver unique and creative solutions for every project.' },
+    { id: 3, title: 'Quality', description: 'We are committed to delivering high-quality results.' },
+  ];
 };
+  // Fallback values removed; file ends cleanly

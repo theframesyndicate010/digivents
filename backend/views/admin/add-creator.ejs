@@ -5,6 +5,7 @@
     </div>
     
     <div class="p-4 md:p-6">
+        <div id="formAlert" class="hidden mb-4 rounded-lg px-4 py-3 text-sm"></div>
         <form id="addCreatorForm" class="space-y-6 max-w-lg">
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">Creator Name *</label>
@@ -31,38 +32,5 @@
     </div>
 </div>
 
-<script>
-    document.getElementById('addCreatorForm').addEventListener('submit', async function(e) {
-        e.preventDefault();
-        
-        const formData = new FormData(this);
-        const submitBtn = this.querySelector('button[type="submit"]');
-        const originalText = submitBtn.innerText;
-        
-        try {
-            submitBtn.disabled = true;
-            submitBtn.innerText = 'Adding...';
-            
-            const response = await fetch('/api/creators', {
-                method: 'POST',
-                body: formData
-            });
-            
-            const result = await response.json();
-            
-            if (result.success) {
-                alert('Creator added successfully!');
-                window.location.href = '/admin/creators';
-            } else {
-                alert('Error: ' + result.message);
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            alert('Failed to add creator');
-        } finally {
-            submitBtn.disabled = false;
-            submitBtn.innerText = originalText;
-        }
-    });
-</script>
+<script src="/js/admin/add-creator.js"></script>
 `}) %>

@@ -43,26 +43,8 @@ const formFields = {
 
 // Fetch contact info — from Global settings or fallback
 export const fetchContactInfo = async () => {
-  try {
-    const data = await apiFetch('/global?populate=*');
-    const attrs = data.data;
-
-    // If global has contactInfo, use it
-    if (attrs?.contactInfo && Array.isArray(attrs.contactInfo)) {
-      return attrs.contactInfo.map((info, i) => ({
-        id: i + 1,
-        icon: getIconForLabel(info.label),
-        label: info.label || '',
-        value: info.value || '',
-      }));
-    }
-
-    // Fallback to defaults
-    return [...defaultContactInfo];
-  } catch (error) {
-    console.error('Failed to fetch contact info:', error);
-    return [...defaultContactInfo];
-  }
+  // PATCHED: No /global endpoint, always use static fallback
+  return defaultContactInfo;
 };
 
 // Fetch form field configuration

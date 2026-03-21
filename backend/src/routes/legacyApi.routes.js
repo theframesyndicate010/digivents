@@ -1,61 +1,19 @@
 const express = require('express');
 const router = express.Router();
-const multer = require('multer');
+const { uploadMiddleware, uploadHandler } = require('../middlewares/upload.middleware');
 const path = require('path');
 const fs = require('fs');
 const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 const db = require('../config/db');
 
-const MAX_UPLOAD_SIZE = parseInt(process.env.MAX_FILE_SIZE || String(5 * 1024 * 1024), 10);
-const DEFAULT_UPLOAD_ROOT = path.resolve(__dirname, '../../public/uploads');
-const isRunningInDocker = fs.existsSync('/.dockerenv');
-const configuredUploadDir = process.env.UPLOAD_DIR || '';
 
-const uploadRoot = (() => {
-    if (path.isAbsolute(configuredUploadDir)) {
-        // `/app` is valid in container, but not when running directly on host machine.
-        if (!isRunningInDocker && configuredUploadDir.startsWith('/app/')) {
-            return DEFAULT_UPLOAD_ROOT;
-        }
-        return configuredUploadDir;
-    }
-    return DEFAULT_UPLOAD_ROOT;
-})();
-
-function sanitizeFilenamePart(value) {
-    return String(value || '')
-        .toLowerCase()
-        .replace(/[^a-z0-9_-]/g, '-')
-        .replace(/-+/g, '-')
-        .replace(/^-|-$/g, '')
-        .slice(0, 80) || 'file';
-}
-
-function sanitizeFolder(value) {
-    return sanitizeFilenamePart(value || 'misc') || 'misc';
-}
-
-function ensureDirectory(dirPath) {
-    if (!fs.existsSync(dirPath)) {
-        fs.mkdirSync(dirPath, { recursive: true, mode: 0o755 });
-    }
-}
-
+// Utility to get relative URL for uploaded files
 function relativeUploadUrl(absolutePath) {
-    const normalizedRoot = path.resolve(uploadRoot);
+    const normalizedRoot = path.resolve(__dirname, '../../public/uploads');
     const normalizedFile = path.resolve(absolutePath);
     const rel = path.relative(normalizedRoot, normalizedFile).replace(/\\/g, '/');
     return `/uploads/${rel}`;
-}
-
-function getUploadSubfolder(req) {
-    const explicitFolder = req.body.folder || req.query.folder;
-    if (explicitFolder) return sanitizeFolder(explicitFolder);
-    if (req.path.includes('/projects')) return 'projects';
-    if (req.path.includes('/creators')) return 'creators';
-    if (req.path.includes('/graphics')) return 'graphics';
-    return 'misc';
 }
 
 function requireApiAdmin(req, res, next) {
@@ -89,34 +47,7 @@ function requireApiAdmin(req, res, next) {
     }
 }
 
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        const target = path.join(uploadRoot, getUploadSubfolder(req));
-        ensureDirectory(target);
-        cb(null, target);
-    },
-    filename: function (req, file, cb) {
-        const ext = path.extname(file.originalname || '').toLowerCase();
-        const baseName = sanitizeFilenamePart(path.basename(file.originalname || 'file', ext));
-        const uniqueSuffix = `${Date.now()}-${crypto.randomBytes(4).toString('hex')}`;
-        cb(null, `${baseName}-${uniqueSuffix}${ext}`);
-    }
-});
 
-const upload = multer({
-    storage,
-    limits: { fileSize: MAX_UPLOAD_SIZE },
-    fileFilter: function (req, file, cb) {
-        const allowedMimeTypes = new Set(['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp']);
-        const allowedExtensions = new Set(['.jpeg', '.jpg', '.png', '.gif', '.webp']);
-        const extname = path.extname(file.originalname || '').toLowerCase();
-
-        if (allowedMimeTypes.has(file.mimetype) && allowedExtensions.has(extname)) {
-            return cb(null, true);
-        }
-        return cb(new Error('Only JPG, PNG, GIF, and WEBP images are allowed'));
-    }
-});
 
 function safeJsonParse(value, fallback = []) {
     try {
@@ -987,38 +918,49 @@ router.put('/graphics/:id', upload.single('photo'), async (req, res) => {
 // SECURE MEDIA UPLOADS
 // ==========================================
 
-router.post('/upload', requireApiAdmin, upload.fields([
-    { name: 'images', maxCount: 10 },
-    { name: 'image', maxCount: 1 }
-]), async (req, res) => {
-    try {
-        const images = [
-            ...(req.files?.images || []),
-            ...(req.files?.image || [])
-        ];
 
-        if (!images.length) {
-            return res.status(400).json({ success: false, message: 'No image files were uploaded' });
+// New upload endpoint supporting images and videos, with logging and robust error handling
+router.post(
+    '/upload',
+    requireApiAdmin,
+    uploadMiddleware.fields([
+        { name: 'file', maxCount: 1 }
+    ]),
+    uploadHandler,
+    async (req, res) => {
+        try {
+            // Collect all uploaded files
+            const files = [
+                ...(req.files?.images || []),
+                ...(req.files?.image || []),
+                ...(req.files?.videos || []),
+                ...(req.files?.video || [])
+            ];
+
+            if (!files.length) {
+                return res.status(400).json({ success: false, message: 'No files were uploaded' });
+            }
+
+            const data = files.map((file) => ({
+                originalName: file.originalname,
+                fileName: file.filename,
+                mimeType: file.mimetype,
+                size: file.size,
+                url: relativeUploadUrl(file.path),
+                type: file._fileType || 'unknown',
+            }));
+
+            return res.status(201).json({
+                success: true,
+                message: `${data.length} file(s) uploaded successfully`,
+                data
+            });
+        } catch (error) {
+            console.error('Error uploading files:', error);
+            return res.status(500).json({ success: false, message: error.message || 'Failed to upload files' });
         }
-
-        const files = images.map((file) => ({
-            originalName: file.originalname,
-            fileName: file.filename,
-            mimeType: file.mimetype,
-            size: file.size,
-            url: relativeUploadUrl(file.path)
-        }));
-
-        return res.status(201).json({
-            success: true,
-            message: `${files.length} file(s) uploaded successfully`,
-            data: files
-        });
-    } catch (error) {
-        console.error('Error uploading files:', error);
-        return res.status(500).json({ success: false, message: error.message || 'Failed to upload files' });
     }
-});
+);
 
 // ==========================================
 // MESSAGES (CONTACT)

@@ -24,9 +24,10 @@ COPY backend ./
 # Copy environment variables (if present)
 COPY backend/.env ./
 
-# Create uploads directory for file uploads and set permissions
+
+# Ensure uploads directory exists and is writable by nodejs user
 RUN mkdir -p public/uploads && \
-    chown -R nodejs:nodejs /app
+  chown -R nodejs:nodejs public/uploads
 
 # Switch to non-root user
 USER nodejs
@@ -39,16 +40,11 @@ ENV PORT=3000
 # Expose port
 EXPOSE 3000
 
-# Use dumb-init for proper signal handling and run with node (not nodemon)
-ENTRYPOINT ["dumb-init", "--"]
-CMD ["node", "server.js"]
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=5 \
   CMD node -e "require('http').get('http://localhost:' + (process.env.PORT || 3000) + '/api/health', (r) => {if (r.statusCode !== 200) throw new Error(r.statusCode)}).on('error', (e) => {throw e})"
 
-# Use dumb-init to handle signals properly
+# Use dumb-init to handle signals properly and start the app
 ENTRYPOINT ["dumb-init", "--"]
-
-# Start the application
 CMD ["npm", "start"]

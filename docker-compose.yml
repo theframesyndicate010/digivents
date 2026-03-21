@@ -85,4 +85,5 @@ networks:
     driver: bridge
 
 volumes:
-  - ./upload:/app/public/uploads
+  mysql_data:
+    driver: local

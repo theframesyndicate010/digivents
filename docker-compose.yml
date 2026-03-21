@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   # MySQL Database
   mysql:
@@ -87,4 +85,4 @@ networks:
     driver: bridge
 
 volumes:
-  mysql_data:
+  - ./upload:/app/public/uploads

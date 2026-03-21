@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState } from 'react';
+import axios from 'axios';
 import { motion } from 'framer-motion';
 import { HiArrowRight } from 'react-icons/hi';
 import { Link } from 'react-router-dom';
@@ -6,6 +7,37 @@ import { fadeInUp, fadeInLeft, fadeInRight, staggerContainer } from '../animatio
 import { contactInfo } from '../data/contactData';
 
 const Contact = () => {
+  const [form, setForm] = useState({ name: '', email: '', message: '' });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+    setSuccess('');
+    setLoading(true);
+    try {
+      await axios.post('/message', {
+        name: form.name,
+        email: form.email,
+        message: form.message
+      });
+      setSuccess('Message sent successfully!');
+      setForm({ name: '', email: '', message: '' });
+    } catch (err) {
+      setError(
+        err.response?.data?.message || 'Failed to send message. Please try again.'
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <section className="section-padding bg-dark relative overflow-hidden">
       <motion.div
@@ -106,22 +138,37 @@ const Contact = () => {
               </motion.h3>
               <p className="text-white/40 text-sm mb-8">We'll get back to you within 24 hours.</p>
 
-              <form className="space-y-5" onSubmit={(e) => e.preventDefault()}>
-                {['Your Name', 'Your Email'].map((placeholder, i) => (
-                  <motion.div
-                    key={i}
-                    initial={{ opacity: 0, x: 30 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: 0.4 + i * 0.1 }}
-                  >
-                    <input
-                      type={i === 1 ? 'email' : 'text'}
-                      placeholder={placeholder}
-                      className="w-full bg-dark/60 border border-white/[0.1] rounded-xl px-5 py-3.5 text-white placeholder:text-white/25 focus:border-accent1 focus:bg-dark/80 focus:outline-none focus:ring-2 focus:ring-accent1/30 hover:border-white/20 transition-all text-sm font-medium"
-                    />
-                  </motion.div>
-                ))}
+              <form className="space-y-5" onSubmit={handleSubmit}>
+                <motion.div
+                  initial={{ opacity: 0, x: 30 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.4 }}
+                >
+                  <input
+                    type="text"
+                    name="name"
+                    placeholder="Your Name"
+                    value={form.name}
+                    onChange={handleChange}
+                    className="w-full bg-dark/60 border border-white/[0.1] rounded-xl px-5 py-3.5 text-white placeholder:text-white/25 focus:border-accent1 focus:bg-dark/80 focus:outline-none focus:ring-2 focus:ring-accent1/30 hover:border-white/20 transition-all text-sm font-medium"
+                  />
+                </motion.div>
+                <motion.div
+                  initial={{ opacity: 0, x: 30 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.5 }}
+                >
+                  <input
+                    type="email"
+                    name="email"
+                    placeholder="Your Email"
+                    value={form.email}
+                    onChange={handleChange}
+                    className="w-full bg-dark/60 border border-white/[0.1] rounded-xl px-5 py-3.5 text-white placeholder:text-white/25 focus:border-accent1 focus:bg-dark/80 focus:outline-none focus:ring-2 focus:ring-accent1/30 hover:border-white/20 transition-all text-sm font-medium"
+                  />
+                </motion.div>
                 <motion.div
                   initial={{ opacity: 0, x: 30 }}
                   whileInView={{ opacity: 1, x: 0 }}
@@ -129,23 +176,34 @@ const Contact = () => {
                   transition={{ delay: 0.6 }}
                 >
                   <textarea
+                    name="message"
                     placeholder="Your Message"
                     rows={4}
+                    value={form.message}
+                    onChange={handleChange}
                     className="w-full bg-dark/60 border border-white/[0.1] rounded-xl px-5 py-3.5 text-white placeholder:text-white/25 focus:border-accent1 focus:bg-dark/80 focus:outline-none focus:ring-2 focus:ring-accent1/30 hover:border-white/20 transition-all text-sm font-medium resize-none"
                   />
                 </motion.div>
+                {error && (
+                  <div className="text-red-400 text-sm font-medium">{error}</div>
+                )}
+                {success && (
+                  <div className="text-green-400 text-sm font-medium">{success}</div>
+                )}
                 <motion.button
                   type="submit"
                   whileHover={{ scale: 1.02, y: -3 }}
                   whileTap={{ scale: 0.98 }}
                   className="btn-primary w-full justify-center text-sm font-semibold shadow-lg hover:shadow-xl hover:shadow-accent1/30 transition-all duration-300"
+                  disabled={loading}
                 >
-                  Send Message <HiArrowRight />
+                  {loading ? 'Sending...' : (<><span>Send Message</span> <HiArrowRight /></>)}
                 </motion.button>
               </form>
             </motion.div>
           </motion.div>
         </div>
+
       </div>
     </section>
   );

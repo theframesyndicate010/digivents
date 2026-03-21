@@ -7,7 +7,7 @@ router.use((req, res, next) => {
 });
 const creatorsController = require('../controllers/creatorsController');
 const { requireApiAdmin } = require('../middlewares/auth.middleware');
-const upload = require('../middlewares/upload.middleware');
+const { uploadMiddleware } = require('../middlewares/upload.middleware');
 
 // Public route: Fetch all creators
 router.get('/', creatorsController.getCreators);
@@ -17,14 +17,14 @@ router.get('/:id', creatorsController.getCreatorById);
 router.post(
     '/', 
     requireApiAdmin, 
-    upload.single('photo'), 
+    uploadMiddleware.single('photo'), 
     creatorsController.createCreator
 );
 
 router.put(
     '/:id',
     requireApiAdmin,
-    upload.single('photo'),
+    uploadMiddleware.single('photo'),
     creatorsController.updateCreator
 );
 

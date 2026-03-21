@@ -7,7 +7,7 @@ router.use((req, res, next) => {
 });
 const projectsController = require('../controllers/projectsController');
 const { requireApiAdmin } = require('../middlewares/auth.middleware');
-const upload = require('../middlewares/upload.middleware');
+const { uploadMiddleware } = require('../middlewares/upload.middleware');
 
 // Public route: Fetch all projects
 router.get('/', projectsController.getProjects);
@@ -17,7 +17,7 @@ router.get('/:id', projectsController.getProjectById);
 router.post(
     '/', 
     requireApiAdmin, 
-    upload.fields([
+    uploadMiddleware.fields([
         { name: 'graphics', maxCount: 10 },
         { name: 'coverPhoto', maxCount: 1 }
     ]), 
@@ -27,7 +27,7 @@ router.post(
 router.put(
     '/:id',
     requireApiAdmin,
-    upload.fields([
+    uploadMiddleware.fields([
         { name: 'graphics', maxCount: 10 },
         { name: 'coverPhoto', maxCount: 1 }
     ]),

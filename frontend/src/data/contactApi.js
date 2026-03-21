@@ -4,6 +4,7 @@
 import { FiMapPin, FiMail, FiPhone, FiClock } from 'react-icons/fi';
 import React from 'react';
 import { apiFetch } from './api';
+import axios from 'axios';
 
 // Icon mapping for contact info types
 const iconMap = {
@@ -76,18 +77,18 @@ export const sendMessage = async (formData) => {
       finalMessage = `Subject: ${subject}\n\nMessage: ${messageText}`;
     }
 
-    // Build the payload with only fields that Strapi supports
+
+    // Build the payload with snake_case keys as expected by backend
     const payload = {
-      data: {
-        firstName,
-        lastName,
-        email,
-        message: finalMessage,
-      },
+      first_name: firstName,
+      last_name: lastName,
+      email,
+      message: finalMessage,
     };
 
     console.log('[Contact API] Prepared payload:', JSON.stringify(payload, null, 2));
 
+    // Use the correct endpoint: /api/messages
     const response = await apiFetch('/api/messages', {
       method: 'POST',
       body: JSON.stringify(payload),

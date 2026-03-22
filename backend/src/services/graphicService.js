@@ -47,7 +47,7 @@ exports.createGraphic = async (data, file) => {
         throw error;
     }
 
-    const photo = `/uploads/graphics/${file.filename}`;
+    const photo = `/uploads/graphics/${file}`;
     const payload = {
         id: crypto.randomUUID(),
         name,
@@ -76,7 +76,7 @@ exports.updateGraphic = async (id, data, file) => {
         ...(name !== undefined ? { name } : {}),
         ...(title !== undefined ? { title } : {}),
         ...(description !== undefined ? { description } : {}),
-        ...(file ? { photo: `/uploads/graphics/${file.filename}` } : {}),
+        ...(file ? { photo: `/uploads/graphics/${file}` } : {}),
         updated_at: db.fn.now()
     };
 

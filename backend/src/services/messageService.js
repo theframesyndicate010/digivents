@@ -1,14 +1,6 @@
 const crypto = require('crypto');
 const db = require('../config/db');
-
-// Utility to ensure we're querying the correct table (supports legacy fallback)
-const getMessagesTable = async () => {
-    const hasMessages = await db.schema.hasTable('messages');
-    if (hasMessages) return 'messages';
-    const hasContacts = await db.schema.hasTable('contacts');
-    if (hasContacts) return 'contacts';
-    throw new Error('No messages or contacts table found in database');
-};
+const { getMessagesTable } = require('../utils/tableResolver');
 
 const normalizeMessage = (row) => {
     if (!row) return null;

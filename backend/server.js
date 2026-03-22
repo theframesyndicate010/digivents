@@ -9,7 +9,6 @@ const bootstrapDatabase = require('./scripts/bootstrapDatabase');
 const app = express();
 
 const PORT = process.env.PORT || 3000;
-app.use(express.static(path.join(__dirname, 'public')));
 
 process.on('exit', (code) => {
     console.log(`About to exit with code: ${code}`);

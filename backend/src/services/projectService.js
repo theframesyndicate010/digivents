@@ -33,8 +33,10 @@ exports.getProjectById = async (id) => {
 
 exports.createProject = async (data, files) => {
     const { youtubeLink, instagramLink, tiktokLink, facebookLink } = data;
+    
     const payload = {
         id: crypto.randomUUID(),
+        name: 'Untitled Project', // satisfies the NOT NULL database requirement to fix the 500 error
         youtube_link: youtubeLink || null,
         instagram_link: instagramLink || null,
         tiktok_link: tiktokLink || null,
@@ -55,6 +57,7 @@ exports.updateProject = async (id, data, files) => {
         throw error;
     }
     const { youtubeLink, instagramLink, tiktokLink, facebookLink, status } = data;
+
     const payload = {
         ...(youtubeLink !== undefined ? { youtube_link: youtubeLink || null } : {}),
         ...(instagramLink !== undefined ? { instagram_link: instagramLink || null } : {}),

@@ -1,5 +1,5 @@
 const express = require('express');
-router = express.Router();
+const router = express.Router();
 const messagesRoutes = require('./messages.routes');
 const contactsRoutes = require('./contacts.routes');
 const projectsRoutes = require('./projects.routes');
@@ -15,14 +15,9 @@ router.use('/creators', creatorsRoutes);
 router.use('/clients', require('./clients.routes'));
 router.use('/graphics', require('./graphics.routes'));
 router.use('/feedback', require('./feedback.routes'));
+router.use('/posts', require('./posts.routes'));
 
 // Admin stats used by the SSR dashboard (JSON endpoint)
 router.get('/admin/stats', requireApiAdmin, adminStatsController.getAdminStats);
-
-
-
-// You can add more modular routes here as they get refactored:
-// router.use('/projects', projectsRoutes);
-// router.use('/auth', authRoutes);
 
 module.exports = router;

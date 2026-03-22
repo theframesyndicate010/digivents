@@ -19,12 +19,25 @@
 
     async function apiRequest(url, options) {
         const response = await fetch(url, options || {});
-        const payload = await response.json().catch(function () {
-            return { success: false, message: 'Invalid API response' };
-        });
+        let text;
+        try {
+            text = await response.text();
+        } catch (e) {
+            throw new Error('Failed to read response body');
+        }
+        
+        let payload;
+        try {
+            payload = text ? JSON.parse(text) : {};
+        } catch (e) {
+            const error = new Error(`[Status ${response.status}] Invalid API response: ${text.substring(0, 100)}`);
+            error.status = response.status;
+            throw error;
+        }
 
         if (!response.ok || payload.success === false) {
-            const error = new Error(payload.message || 'Request failed');
+            const fallbackMsg = `[Status ${response.status}] Request failed. Raw parsed payload: ${JSON.stringify(payload)}`;
+            const error = new Error(payload.message || fallbackMsg);
             error.payload = payload;
             error.status = response.status;
             throw error;

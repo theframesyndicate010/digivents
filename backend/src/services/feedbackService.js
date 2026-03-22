@@ -1,37 +1,32 @@
 const db = require('../config/db');
 
-class FeedbackService {
-    async getAllFeedback() {
-        const rows = await db('feedback').select('*').orderBy('created_at', 'desc');
-        return rows;
-    }
+exports.getAllFeedback = async () => {
+    return db('feedback').select('*').orderBy('created_at', 'desc');
+};
 
-    async createFeedback(data) {
-        const payload = {
-            name: data.name,
-            email: data.email || null,
-            rating: data.rating ? parseInt(data.rating, 10) : 5,
-            message: data.message,
-            project_id: data.project_id ? parseInt(data.project_id, 10) : null,
-            status: data.status || 'pending'
-        };
+exports.createFeedback = async (data) => {
+    const payload = {
+        name: data.name,
+        email: data.email || null,
+        rating: data.rating ? parseInt(data.rating, 10) : 5,
+        message: data.message,
+        project_id: data.project_id ? parseInt(data.project_id, 10) : null,
+        status: data.status || 'pending'
+    };
 
-        const [id] = await db('feedback').insert(payload);
-        return this.getFeedbackById(id);
-    }
+    const [id] = await db('feedback').insert(payload);
+    return exports.getFeedbackById(id);
+};
 
-    async getFeedbackById(id) {
-        return db('feedback').where({ id }).first();
-    }
+exports.getFeedbackById = async (id) => {
+    return db('feedback').where({ id }).first();
+};
 
-    async updateFeedbackStatus(id, status) {
-        await db('feedback').where({ id }).update({ status });
-        return this.getFeedbackById(id);
-    }
+exports.updateFeedbackStatus = async (id, status) => {
+    await db('feedback').where({ id }).update({ status });
+    return exports.getFeedbackById(id);
+};
 
-    async deleteFeedback(id) {
-        return db('feedback').where({ id }).del();
-    }
-}
-
-module.exports = new FeedbackService();
+exports.deleteFeedback = async (id) => {
+    return db('feedback').where({ id }).del();
+};

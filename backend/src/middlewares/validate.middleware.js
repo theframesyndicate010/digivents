@@ -11,7 +11,6 @@ const validate = (schema) => {
         });
 
         if (error) {
-            const errorMessage = error.details.map((details) => details.message).join(', ');
             
             // Return 400 Bad Request directly
             return res.status(400).json({

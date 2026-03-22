@@ -25,51 +25,35 @@ services:
 
   # Backend - Node.js/Express API Server
   backend:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: sailesh10/digivents:latest
     container_name: digivents_backend
     depends_on:
       mysql:
         condition: service_healthy
     environment:
-      # Server Configuration
       NODE_ENV: production
       HOST: 0.0.0.0
       PORT: 3000
       CLIENT_URL: ${CLIENT_URL:-http://localhost}
-      
-      # Authentication
-      # ACCESS_TOKEN_SECRET and REFRESH_TOKEN_SECRET are loaded from backend/.env inside container
-      
-      # Admin Credentials
-      ADMIN_USERNAME: ${ADMIN_USERNAME:-admin@digivents.com}
-      # ADMIN_PASSWORD is loaded from backend/.env inside container
-      
-      # Database - MySQL (Local)
+
       DATABASE_CLIENT: ${DATABASE_CLIENT:-mysql}
       DATABASE_HOST: ${DATABASE_HOST:-mysql}
       DATABASE_PORT: ${DATABASE_PORT:-3306}
       DATABASE_NAME: ${DATABASE_NAME:-digivents}
       DATABASE_USERNAME: ${DATABASE_USERNAME:-digivents_user}
       DATABASE_PASSWORD: ${DATABASE_PASSWORD:-digivents_password}
-      
-      # CORS Configuration
-      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-http://localhost,http://localhost:3000,http://localhost:3001,http://127.0.0.1:3000,http://163.47.151.246:3000,http://digivents.com.np,https://digivents.com.np,null}
-      
-      # Rate Limiting
+
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-http://localhost,http://localhost:3000,http://localhost:3001,http://127.0.0.1:3000,http://163.47.151.246:3000,http://digivents.com.np,https://digivents.com.np}
+
       RATE_LIMIT_LOGIN_MAX: ${RATE_LIMIT_LOGIN_MAX:-5}
       RATE_LIMIT_LOGIN_WINDOW: ${RATE_LIMIT_LOGIN_WINDOW:-900000}
-      
-      # Storage (Local Disk)
+
       UPLOAD_DIR: ${UPLOAD_DIR:-./public/uploads}
-      
-      # JWT
-      # JWT_SECRET is loaded from backend/.env inside container
+
     ports:
       - "3000:3000"
     volumes:
-      - ./backend/public/uploads:/app/public/uploads
+      - uploads_data:/app/public/uploads
     networks:
       - digivents_network
     healthcheck:
@@ -86,4 +70,6 @@ networks:
 
 volumes:
   mysql_data:
+    driver: local
+  uploads_data:
     driver: local

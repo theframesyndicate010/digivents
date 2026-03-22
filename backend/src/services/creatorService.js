@@ -1,5 +1,6 @@
 const db = require('../config/db');
 const crypto = require('crypto');
+const { getCreatorsTable } = require('../utils/tableResolver');
 
 const normalizeCreator = (row) => {
     if (!row) return null;
@@ -15,11 +16,7 @@ const normalizeCreator = (row) => {
 };
 
 exports.fetchAllCreators = async () => {
-    // If you need legacy support for other environments
-    let table = 'creators';
-    const hasCreators = await db.schema.hasTable('creators');
-    if (!hasCreators) throw new Error('Creators table not found');
-
+    const table = await getCreatorsTable();
     const creators = await db(table).select('*').orderBy('created_at', 'desc');
     return creators.map(normalizeCreator);
 };
@@ -37,7 +34,7 @@ exports.getCreatorById = async (id) => {
 
 exports.createCreator = async (data, file) => {
     const { name, role, description } = data;
-    
+
     if (!name) {
         const error = new Error('Creator name is required');
         error.statusCode = 400;
@@ -55,7 +52,7 @@ exports.createCreator = async (data, file) => {
     };
 
     await db('creators').insert(payload);
-    
+
     const newCreator = await db('creators').where({ id: payload.id }).first();
     return normalizeCreator(newCreator);
 };

@@ -15,7 +15,10 @@ exports.requireApiAdmin = (req, res, next) => {
             return res.status(401).json({ success: false, message: 'Authentication required' });
         }
 
-        const secret = process.env.ACCESS_TOKEN_SECRET || 'access_secret_123';
+        const secret = process.env.ACCESS_TOKEN_SECRET;
+        if (!secret) {
+            return res.status(500).json({ success: false, message: 'Server authentication not configured' });
+        }
         const decoded = jwt.verify(token, secret);
         
         if (!decoded || decoded.role !== 'admin') {
@@ -44,7 +47,11 @@ exports.requireWebAdmin = (req, res, next) => {
             return res.render('admin/login', { title: 'Login', message: null, error: null });
         }
 
-        const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET || 'access_secret_123');
+        const secret = process.env.ACCESS_TOKEN_SECRET;
+        if (!secret) {
+            return res.render('admin/login', { title: 'Login', message: null, error: 'Server authentication not configured' });
+        }
+        const decoded = jwt.verify(token, secret);
         req.user = decoded;
         req.token = token;
         next();

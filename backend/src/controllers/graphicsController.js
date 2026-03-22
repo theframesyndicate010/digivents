@@ -1,51 +1,49 @@
 const graphicService = require('../services/graphicService');
-const { successResponse } = require('../utils/apiResponse');
+const { successResponse, errorResponse } = require('../utils/apiResponse');
+const BASE_URL = process.env.BASE_URL || '';
 
-exports.getGraphics = async (req, res, next) => {
+exports.getGraphics = async (req, res) => {
     try {
         const graphics = await graphicService.fetchAllGraphics();
-        return successResponse(res, 'Graphics retrieved successfully', graphics);
-    } catch (error) {
-        next(error);
+        const data = graphics.map(g => ({
+            ...g,
+            photo: g.photo ? `${BASE_URL}${g.photo}` : ''
+        }));
+        return successResponse(res, 'Graphics retrieved successfully', data);
+    } catch (err) {
+        return errorResponse(res, 'Failed to fetch graphics', err, err.statusCode || 500);
     }
 };
 
-exports.getGraphicById = async (req, res, next) => {
+exports.createGraphic = async (req, res) => {
     try {
-        const { id } = req.params;
-        const graphic = await graphicService.getGraphicById(id);
-        return successResponse(res, 'Graphic retrieved successfully', graphic);
-    } catch (error) {
-        next(error);
-    }
-};
-
-exports.createGraphic = async (req, res, next) => {
-    try {
-        // req.file is populated by multer upload middleware
-        const newGraphic = await graphicService.createGraphic(req.body, req.file);
+        if (!req.file) return errorResponse(res, 'No file uploaded', null, 400);
+        const newGraphic = await graphicService.createGraphic(req.body, req.file.filename);
+        newGraphic.photo = req.file._publicPath;
         return successResponse(res, 'Graphic added successfully', newGraphic, 201);
-    } catch (error) {
-        next(error);
+    } catch (err) {
+        return errorResponse(res, 'Failed to add graphic', err, err.statusCode || 500);
     }
 };
 
-exports.updateGraphic = async (req, res, next) => {
+exports.updateGraphic = async (req, res) => {
     try {
         const { id } = req.params;
-        const updatedGraphic = await graphicService.updateGraphic(id, req.body, req.file);
-        return successResponse(res, 'Graphic updated successfully', updatedGraphic);
-    } catch (error) {
-        next(error);
+        const updated = await graphicService.updateGraphic(id, req.body, req.file?.filename);
+        if (!updated) return errorResponse(res, 'Graphic not found', null, 404);
+        if (req.file) updated.photo = req.file._publicPath;
+        return successResponse(res, 'Graphic updated successfully', updated);
+    } catch (err) {
+        return errorResponse(res, 'Failed to update graphic', err, err.statusCode || 500);
     }
 };
 
-exports.deleteGraphic = async (req, res, next) => {
+exports.deleteGraphic = async (req, res) => {
     try {
         const { id } = req.params;
         await graphicService.deleteGraphic(id);
         return successResponse(res, 'Graphic deleted successfully');
-    } catch (error) {
-        next(error);
+    } catch (err) {
+        return errorResponse(res, 'Failed to delete graphic', err, err.statusCode || 500);
     }
 };

@@ -15,6 +15,19 @@ exports.getGraphics = async (req, res) => {
     }
 };
 
+exports.getGraphicById = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const graphic = await graphicService.getGraphicById(id);
+        if (graphic && graphic.photo) {
+            graphic.photo = `${BASE_URL}${graphic.photo}`;
+        }
+        return successResponse(res, 'Graphic retrieved successfully', graphic);
+    } catch (err) {
+        return errorResponse(res, 'Failed to fetch graphic', err, err.statusCode || 500);
+    }
+};
+
 exports.createGraphic = async (req, res) => {
     try {
         if (!req.file) return errorResponse(res, 'No file uploaded', null, 400);

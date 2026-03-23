@@ -74,11 +74,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 method: 'DELETE',
                 credentials: 'include'
             });
-            ui.showToast('Deleted successfully', 'success');
-            loadGraphics();
+            ui.showElement('graphicsError', 'Graphic deleted successfully!', 'mb-4 rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700');
+            setTimeout(() => {
+                ui.hideElement('graphicsError');
+                loadGraphics();
+            }, 1000);
         } catch (err) {
             console.error('[DELETE GRAPHIC ERROR]', err);
-            ui.showToast(err.message || 'Failed to delete graphic', 'error');
+            ui.showElement('graphicsError', err.message || 'Failed to delete graphic', 'mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700');
+            setTimeout(() => ui.hideElement('graphicsError'), 3000);
         } finally {
             if (btn) btn.disabled = false;
         }

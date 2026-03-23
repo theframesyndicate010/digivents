@@ -14,6 +14,10 @@ const transformClient = (client) => {
     name: attrs.name || '',
     logo: getImageUrl(attrs.logo),
     slug: attrs.slug || '',
+    website: attrs.website || '',
+    instagram: attrs.instagram_link || '',
+    facebook: attrs.facebook_link || '',
+    tiktok: attrs.tiktok_link || '',
     socialMediaLink: attrs.socialMediaLink || '',
   };
 };

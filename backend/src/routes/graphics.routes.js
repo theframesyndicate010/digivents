@@ -6,7 +6,6 @@ const { uploadMiddleware, uploadHandler, multerErrorHandler } = require('../midd
 
 // Public
 router.get('/', graphicsController.getGraphics);
-router.get('/:id', graphicsController.getGraphicById);
 
 // Admin
 router.post(

@@ -31,25 +31,17 @@ const transformProject = (project) => {
   }
 
   // 2. Determine Cover Image
-  // Priority: cover_photo field -> first image in media -> video thumbnail
+  // Try to find the first image in media
+  let coverMedia = mediaItems.find((m) => m.mime?.startsWith('image/'));
   let coverImage = null;
 
-  if (attrs.cover_photo) {
-    coverImage = getImageUrl(attrs.cover_photo);
+  if (coverMedia) {
+    coverImage = getImageUrl(coverMedia);
   } else {
-    // Try to find the first image in media (supports both string URLs and objects)
-    const coverMedia = mediaItems.find((m) => {
-      if (typeof m === 'string') return /\.(jpg|jpeg|png|webp|gif)$/i.test(m);
-      return m.mime?.startsWith('image/');
-    });
-    if (coverMedia) {
-      coverImage = getImageUrl(coverMedia);
-    } else {
-      // If no image media, try to get thumbnail from video media
-      const videoMedia = mediaItems.find((m) => typeof m !== 'string' && m.mime?.startsWith('video/'));
-      if (videoMedia && videoMedia.formats?.thumbnail) {
-        coverImage = getImageUrl(videoMedia.formats.thumbnail);
-      }
+    // If no image media, try to get thumbnail from video media
+    const videoMedia = mediaItems.find((m) => m.mime?.startsWith('video/'));
+    if (videoMedia && videoMedia.formats?.thumbnail) {
+      coverImage = getImageUrl(videoMedia.formats.thumbnail);
     }
   }
 
@@ -72,13 +64,13 @@ const transformProject = (project) => {
     documentId: project.documentId,
     title: attrs.name || '',
     slug: attrs.slug || '',
-    category: (typeof attrs.client === 'string' ? attrs.client : attrs.client?.name) || attrs.tag || '',
+    category: attrs.client?.name || attrs.tag || '',
     image: coverImage,
     media: allMedia,
     tags: attrs.tag ? attrs.tag.split(',').map((t) => t.trim()) : [],
     description: attrs.description || '',
     createdDate: attrs.createdDate || '',
-    client: (typeof attrs.client === 'string' ? attrs.client : attrs.client?.name) || '',
+    client: attrs.client?.name || '',
     videoUrl: videoUrl,
     likes: attrs.likes || 0,
     workers: (attrs.workers || []).map((w) => ({

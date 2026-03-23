@@ -109,9 +109,6 @@ function uploadHandler(req, res, next) {
     }
     for (const file of files) {
         logUpload(file, req);
-        // Set the public URL path so controllers can use it
-        const subfolder = getUploadSubfolderByType(file);
-        file._publicPath = `/uploads/${subfolder}/${file.filename}`;
         if (file._fileType === 'image' && file.size > IMAGE_MAX_SIZE) {
             return res.status(400).json({ success: false, message: `Image file too large (max 5MB): ${file.originalname}` });
         }

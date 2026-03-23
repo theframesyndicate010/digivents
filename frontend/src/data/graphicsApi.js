@@ -14,7 +14,7 @@ const transformGraphic = (graphic) => {
     slug: graphic.slug || '',
     description: graphic.description || '',
     category: graphic.category || '',
-    image: getImageUrl(graphic.photo || graphic.image),
+    image: getImageUrl(graphic.image),
   };
 };
 

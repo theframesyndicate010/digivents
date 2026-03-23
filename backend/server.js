@@ -96,10 +96,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Serve uploaded files (graphics, videos, etc.) at /uploads
-const uploadRoot = process.env.UPLOAD_DIR || '/tmp/uploads';
-app.use('/uploads', express.static(uploadRoot));
-
 
 
 // Set view engine

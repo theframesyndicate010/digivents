@@ -1,5 +1,7 @@
 <%- include('layout', { 
     title: 'Messages', 
-    currentPage: 'contacts',
-    body: include('messages-content')
+    currentPage: 'messages', 
+    pageScript: '/js/messages.js',
+    user: typeof user !== 'undefined' ? user : null,
+    body: include('partials/messages-content')
 }) %>

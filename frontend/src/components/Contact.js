@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 import { motion } from 'framer-motion';
 import { HiArrowRight } from 'react-icons/hi';
 import { Link } from 'react-router-dom';
 import { fadeInUp, fadeInLeft, fadeInRight, staggerContainer } from '../animations';
 import { contactInfo } from '../data/contactData';
+import { apiFetch } from '../data/api';
 
 const Contact = () => {
   const [form, setForm] = useState({ name: '', email: '', message: '' });
@@ -22,17 +22,18 @@ const Contact = () => {
     setSuccess('');
     setLoading(true);
     try {
-      await axios.post('/message', {
-        name: form.name,
-        email: form.email,
-        message: form.message
+      await apiFetch('/messages', {
+        method: 'POST',
+        body: JSON.stringify({
+          name: form.name,
+          email: form.email,
+          message: form.message
+        })
       });
       setSuccess('Message sent successfully!');
       setForm({ name: '', email: '', message: '' });
     } catch (err) {
-      setError(
-        err.response?.data?.message || 'Failed to send message. Please try again.'
-      );
+      setError(err.message || 'Failed to send message. Please try again.');
     } finally {
       setLoading(false);
     }

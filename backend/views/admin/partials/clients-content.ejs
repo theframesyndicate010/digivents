@@ -1,0 +1,12 @@
+<%- include('shared-table', {
+    title: 'Clients Management',
+    addButton: { href: '/admin/add-client', text: 'Add Client', icon: 'fas fa-plus' },
+    errorId: 'clientsError',
+    loadingId: 'clientsLoading',
+    tableHeaders: [
+        'Client Name', 'Website', 'Social Media', 'Created At', 'Actions'
+    ],
+    tableBodyId: 'clientsTableBody',
+    mobileListId: 'clientsMobileList',
+    scriptSrc: '/js/clients.js'
+}) %>

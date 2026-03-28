@@ -30,12 +30,12 @@ exports.fetchAllMessages = async ({ page = 1, perPage = 20, status, search }) =>
 
     if (search) {
         query = query.where((qb) => {
-            qb.whereILike('name', `%${search}%`)
-                .orWhereILike('first_name', `%${search}%`)
-                .orWhereILike('last_name', `%${search}%`)
-                .orWhereILike('email', `%${search}%`)
-                .orWhereILike('subject', `%${search}%`)
-                .orWhereILike('message', `%${search}%`);
+            qb.where('name', 'like', `%${search}%`)
+                .orWhere('first_name', 'like', `%${search}%`)
+                .orWhere('last_name', 'like', `%${search}%`)
+                .orWhere('email', 'like', `%${search}%`)
+                .orWhere('subject', 'like', `%${search}%`)
+                .orWhere('message', 'like', `%${search}%`);
         });
     }
 

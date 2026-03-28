@@ -15,6 +15,20 @@ exports.getGraphics = async (req, res) => {
     }
 };
 
+exports.getGraphicById = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const graphic = await graphicService.getGraphicById(id);
+        const data = {
+            ...graphic,
+            photo: graphic.photo ? `${BASE_URL}${graphic.photo}` : ''
+        };
+        return successResponse(res, 'Graphic retrieved successfully', data);
+    } catch (err) {
+        return errorResponse(res, 'Failed to fetch graphic', err, err.statusCode || 500);
+    }
+};
+
 exports.createGraphic = async (req, res) => {
     try {
         if (!req.file) return errorResponse(res, 'No file uploaded', null, 400);
@@ -42,7 +56,7 @@ exports.deleteGraphic = async (req, res) => {
     try {
         const { id } = req.params;
         await graphicService.deleteGraphic(id);
-        return successResponse(res, 'Graphic deleted successfully');
+        return successResponse(res, 'Graphic deleted successfully', {});
     } catch (err) {
         return errorResponse(res, 'Failed to delete graphic', err, err.statusCode || 500);
     }

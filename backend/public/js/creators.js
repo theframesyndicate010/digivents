@@ -60,12 +60,23 @@ document.addEventListener('DOMContentLoaded', function () {
                 const id = ui.escapeHtml(creator.id || '');
                 const name = ui.escapeHtml(creator.name || 'Unnamed');
                 const photo = creator.photo
-                    ? '<img class="h-12 w-12 rounded-full object-cover" src="' + ui.escapeHtml(creator.photo) + '" alt="Creator photo">'
-                    : '<div class="h-12 w-12 rounded-full bg-gray-200 flex items-center justify-center text-gray-500"><i class="fas fa-user"></i></div>';
+                    ? '<img class="h-16 w-16 rounded-full object-cover border-2 border-gray-200" src="' + ui.escapeHtml(creator.photo) + '" alt="Creator photo">'
+                    : '<div class="h-16 w-16 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 border-2 border-gray-200"><i class="fas fa-user text-2xl"></i></div>';
+                const createdDate = ui.escapeHtml(ui.formatDate(creator.created_at));
 
-                return '<div class="bg-white shadow rounded-lg p-4">' +
-                    '<div class="flex items-center space-x-4 mb-4">' + photo + '<div><h3 class="text-lg font-medium text-gray-900">' + name + '</h3><p class="text-xs text-gray-500">Created: ' + ui.escapeHtml(ui.formatDate(creator.created_at)) + '</p></div></div>' +
-                    '<div class="flex justify-end space-x-3 border-t pt-3"><a href="/admin/edit-creator/' + id + '" class="text-indigo-600 font-medium text-sm">Edit</a><button class="text-red-600 font-medium text-sm" type="button" data-delete-creator-id="' + id + '">Delete</button></div>' +
+                return '<div class="mobile-card">' +
+                    '<div class="flex gap-3 mb-3">' +
+                        '<div class="flex-shrink-0">' + photo + '</div>' +
+                        '<div class="flex-1 min-w-0">' +
+                            '<h3 class="mobile-card-title truncate">' + name + '</h3>' +
+                            '<p class="text-xs text-gray-500">ID: ' + id + '</p>' +
+                            '<p class="text-xs text-gray-500 mt-1">Created: ' + createdDate + '</p>' +
+                        '</div>' +
+                    '</div>' +
+                    '<div class="mobile-card-actions">' +
+                        '<a class="bg-indigo-600 text-white rounded hover:bg-indigo-700 transition-colors" href="/admin/edit-creator/' + id + '"><i class="fas fa-edit mr-1"></i>Edit</a>' +
+                        '<button class="bg-red-600 text-white rounded hover:bg-red-700 transition-colors" type="button" data-delete-creator-id="' + id + '"><i class="fas fa-trash mr-1"></i>Delete</button>' +
+                    '</div>' +
                 '</div>';
             }).join('');
         }

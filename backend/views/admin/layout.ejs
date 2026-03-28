@@ -7,57 +7,220 @@
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        @media (max-width: 768px) {
-            .sidebar-mobile {
+        /* Base styles */
+        html, body { height: 100%; width: 100%; }
+        body { overflow: hidden; }
+        
+        /* Sidebar styles */
+        #sidebar {
+            transition: transform 0.3s ease-in-out;
+            z-index: 30;
+        }
+        
+        #mobileMenuOverlay {
+            transition: opacity 0.3s ease-in-out;
+        }
+        
+        /* Mobile sidebar (< 768px) */
+        @media (max-width: 767px) {
+            #sidebar {
+                position: fixed;
+                left: 0;
+                top: 0;
+                height: 100vh;
                 transform: translateX(-100%);
-                transition: transform 0.3s ease-in-out;
+                width: 16rem; /* w-64 */
             }
-            .sidebar-mobile.open {
+            
+            #sidebar.open {
                 transform: translateX(0);
             }
+            
+            #mobileMenuOverlay {
+                opacity: 0;
+                pointer-events: none;
+            }
+            
+            #mobileMenuOverlay.open {
+                opacity: 1;
+                pointer-events: auto;
+            }
+            
+            /* Ensure main content is full width on mobile */
+            .flex-1 {
+                width: 100%;
+            }
+            
+            /* Touch-friendly sizing */
+            button, a {
+                min-height: 44px;
+                min-width: 44px;
+            }
+            
+            /* Ensure no horizontal scroll */
+            main {
+                overflow-x: hidden !important;
+            }
+        }
+        
+        /* Desktop sidebar (≥ 768px) */
+        @media (min-width: 768px) {
+            #sidebar {
+                position: static;
+                transform: translateX(0) !important;
+                height: auto;
+            }
+            
+            #mobileMenuOverlay {
+                display: none !important;
+            }
+        }
+        
+        /* Mobile card styles */
+        .mobile-card {
+            background: white;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e5e7eb;
+        }
+        
+        .mobile-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #f3f4f6;
+        }
+        
+        .mobile-card-title {
+            font-weight: 600;
+            color: #1f2937;
+            font-size: 1rem;
+        }
+        
+        .mobile-card-body {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        
+        .mobile-card-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.875rem;
+        }
+        
+        .mobile-card-label {
+            color: #6b7280;
+            font-weight: 500;
+        }
+        
+        .mobile-card-value {
+            color: #1f2937;
+            text-align: right;
+            word-break: break-word;
+        }
+        
+        .mobile-card-actions {
+            display: flex;
+            gap: 8px;
+            padding-top: 12px;
+            border-top: 1px solid #f3f4f6;
+        }
+        
+        .mobile-card-actions button,
+        .mobile-card-actions a {
+            flex: 1;
+            padding: 8px 12px;
+            font-size: 0.875rem;
+            text-align: center;
+            min-height: 40px;
+        }
+        
+        /* Responsive button styles */
+        .btn-responsive {
+            width: 100%;
+            justify-content: center;
+            min-height: 44px;
+        }
+        
+        /* Header title responsive */
+        .header-title {
+            font-size: 1.25rem;
+        }
+        
+        @media (max-width: 640px) {
+            .header-title {
+                font-size: 1.125rem;
+            }
+        }
+        
+        /* Ensure proper spacing on mobile */
+        @media (max-width: 767px) {
+            .p-4 {
+                padding: 1rem;
+            }
+            
+            .gap-3 {
+                gap: 0.75rem;
+            }
+        }
+        
+        /* Prevent horizontal scroll */
+        * {
+            max-width: 100%;
+        }
+        
+        /* Sidebar nav link improvements */
+        #sidebar a {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        #sidebar i {
+            min-width: 24px;
+            text-align: center;
         }
     </style>
 </head>
 <body class="bg-gray-100">
     <div class="flex h-screen overflow-hidden">
         <!-- Mobile Menu Overlay -->
-        <div id="mobileMenuOverlay" class="fixed inset-0 bg-black bg-opacity-50 z-20 hidden md:hidden" onclick="toggleMobileMenu()"></div>
+        <div id="mobileMenuOverlay" data-toggle-mobile-menu class="fixed inset-0 bg-black bg-opacity-50 z-20 md:hidden"></div>
         
         <!-- Sidebar -->
-        <div id="sidebar" class="sidebar-mobile fixed md:static inset-y-0 left-0 z-30 w-64 bg-gray-800 text-white overflow-y-auto md:translate-x-0 transition-transform duration-300 ease-in-out">
-            <div class="p-4 flex items-center justify-between border-b border-gray-700">
-                <h1 class="text-xl font-bold">Admin Panel</h1>
-                <button onclick="toggleMobileMenu()" class="md:hidden text-white hover:text-gray-300">
+        <div id="sidebar" class="fixed md:static inset-y-0 left-0 z-30 w-64 bg-gray-800 text-white overflow-y-auto">
+            <div class="p-4 flex items-center justify-between border-b border-gray-700 min-h-16">
+                <h1 class="text-xl font-bold truncate">Admin Panel</h1>
+                <button type="button" data-toggle-mobile-menu class="md:hidden text-white hover:text-gray-300 p-2 -mr-2">
                     <i class="fas fa-times text-xl"></i>
                 </button>
             </div>
             <nav class="mt-4">
                 <a href="/admin" class="block px-4 py-3 hover:bg-gray-700 transition-colors <%= currentPage === 'dashboard' ? 'bg-gray-700 border-l-4 border-blue-500' : '' %>">
-                    <i class="fas fa-tachometer-alt w-6"></i> Dashboard
+                    <i class="fas fa-tachometer-alt"></i> <span>Dashboard</span>
                 </a>
-                
                 <div class="px-4 py-2 text-xs uppercase text-gray-400 font-semibold mt-4">Content</div>
-                
                 <a href="/admin/creators" class="block px-4 py-3 hover:bg-gray-700 transition-colors <%= currentPage === 'creators' ? 'bg-gray-700 border-l-4 border-blue-500' : '' %>">
-                    <i class="fas fa-user-pen w-6"></i> Creators
+                    <i class="fas fa-user-pen"></i> <span>Creators</span>
                 </a>
-                
                 <a href="/admin/clients" class="block px-4 py-3 hover:bg-gray-700 transition-colors <%= currentPage === 'clients' ? 'bg-gray-700 border-l-4 border-blue-500' : '' %>">
-                    <i class="fas fa-briefcase w-6"></i> Clients
+                    <i class="fas fa-briefcase"></i> <span>Clients</span>
                 </a>
-                
                 <a href="/admin/projects" class="block px-4 py-3 hover:bg-gray-700 transition-colors <%= currentPage === 'projects' ? 'bg-gray-700 border-l-4 border-blue-500' : '' %>">
-                    <i class="fas fa-project-diagram w-6"></i> Projects
+                    <i class="fas fa-project-diagram"></i> <span>Projects</span>
                 </a>
-                
                 <a href="/admin/graphics" class="block px-4 py-3 hover:bg-gray-700 transition-colors <%= currentPage === 'graphics' ? 'bg-gray-700 border-l-4 border-blue-500' : '' %>">
-                    <i class="fas fa-images w-6"></i> Graphics
+                    <i class="fas fa-images"></i> <span>Graphics</span>
                 </a>
-
                 <div class="px-4 py-2 text-xs uppercase text-gray-400 font-semibold mt-4">System</div>
-
-                <a href="/admin/messages" class="block px-4 py-3 hover:bg-gray-700 transition-colors <%= currentPage === 'contacts' ? 'bg-gray-700 border-l-4 border-blue-500' : '' %>">
-                    <i class="fas fa-envelope w-6"></i> Messages
+                <a href="/admin/messages" class="block px-4 py-3 hover:bg-gray-700 transition-colors <%= currentPage === 'messages' ? 'bg-gray-700 border-l-4 border-blue-500' : '' %>">
+                    <i class="fas fa-envelope"></i> <span>Messages</span>
                 </a>
             </nav>
         </div>
@@ -65,32 +228,25 @@
         <!-- Main Content -->
         <div class="flex-1 flex flex-col overflow-hidden w-full">
             <header class="bg-white shadow-sm border-b border-gray-200 z-10">
-                <div class="px-4 md:px-6 py-4 flex items-center justify-between">
-                    <div class="flex items-center">
-                        <button onclick="toggleMobileMenu()" class="md:hidden mr-3 text-gray-600 hover:text-gray-900 focus:outline-none">
+                <div class="px-4 md:px-6 py-3 md:py-4 flex items-center justify-between gap-2">
+                    <div class="flex items-center gap-2 min-w-0">
+                        <button type="button" data-toggle-mobile-menu class="md:hidden text-gray-600 hover:text-gray-900 p-2 -ml-2 flex-shrink-0">
                             <i class="fas fa-bars text-xl"></i>
                         </button>
-                        <h2 class="text-xl md:text-2xl font-semibold text-gray-800"><%= title %></h2>
+                        <h2 class="text-lg md:text-2xl font-semibold text-gray-800 header-title truncate"><%= title %></h2>
                     </div>
-                    <div class="flex items-center space-x-4">
+                    <div class="flex items-center gap-3 md:gap-4 flex-shrink-0">
                         <div class="relative">
                             <span class="absolute top-0 right-0 h-2 w-2 bg-red-500 rounded-full"></span>
-                            <i class="fas fa-bell text-gray-600 text-lg cursor-pointer"></i>
+                            <i class="fas fa-bell text-gray-600 text-lg cursor-pointer hover:text-gray-900 transition-colors"></i>
                         </div>
                         <div class="relative group">
-                            <div class="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold cursor-pointer">
-                                <% if (user && user.email) { %>
-                                    <%= user.email.charAt(0).toUpperCase() %>
-                                <% } else { %>
-                                    A
-                                <% } %>
+                            <div class="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold cursor-pointer hover:bg-blue-600 transition-colors">
+                                <% if (user && user.email) { %><%= user.email.charAt(0).toUpperCase() %><% } else { %>A<% } %>
                             </div>
-                            <!-- Dropdown Menu -->
                             <div class="hidden group-hover:block absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-50">
                                 <% if (user && user.email) { %>
-                                    <div class="px-4 py-2 text-sm text-gray-600 border-b">
-                                        <%= user.email %>
-                                    </div>
+                                    <div class="px-4 py-2 text-sm text-gray-600 border-b truncate"><%= user.email %></div>
                                 <% } %>
                                 <a href="/auth/logout" class="block px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors">
                                     <i class="fas fa-sign-out-alt mr-2"></i> Logout
@@ -101,40 +257,17 @@
                 </div>
             </header>
 
-            <!-- Content -->
-            <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-4 md:p-6">
+            <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-3 md:p-6">
                 <%- body %>
             </main>
         </div>
     </div>
 
+    <!-- External JS only -->
     <script src="/js/common.js"></script>
-    <script>
-        function toggleMobileMenu() {
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('mobileMenuOverlay');
-            
-            sidebar.classList.toggle('open');
-            sidebar.classList.toggle('-translate-x-full'); // Tailwind class toggle if used
-            
-            if (sidebar.classList.contains('open')) {
-                overlay.classList.remove('hidden');
-                sidebar.classList.remove('-translate-x-full'); // Ensure it shows
-            } else {
-                overlay.classList.add('hidden');
-                sidebar.classList.add('-translate-x-full'); // Hide it
-            }
-        }
-        
-        // Initial state fix for mobile
-        document.addEventListener('DOMContentLoaded', () => {
-            const sidebar = document.getElementById('sidebar');
-            if (window.innerWidth < 768) {
-                sidebar.classList.add('-translate-x-full');
-            } else {
-                sidebar.classList.remove('-translate-x-full');
-            }
-        });
-    </script>
+    <script src="/js/layout.js"></script>
+    <% if (pageScript) { %>
+    <script src="<%= pageScript %>"></script>
+    <% } %>
 </body>
 </html>

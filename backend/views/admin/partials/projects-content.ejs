@@ -1,0 +1,12 @@
+<%- include('shared-table', {
+    title: 'Projects Directory',
+    addButton: { href: '/admin/add-project', text: 'New Project', icon: 'fas fa-plus' },
+    errorId: 'projectsError',
+    loadingId: 'projectsLoading',
+    tableHeaders: [
+        'Project Info', 'Status', 'Client/Link', 'Actions'
+    ],
+    tableBodyId: 'projectsTableBody',
+    mobileListId: 'projectsMobileList',
+    scriptSrc: '/js/projects.js'
+}) %>

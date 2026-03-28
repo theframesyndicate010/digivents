@@ -1,0 +1,50 @@
+<% /*
+  Shared Table/List Partial
+  Usage: 
+    - Pass title, addButton (optional), errorId, loadingId, tableHeaders, tableBodyId, mobileListId, scriptSrc
+    - Example:
+      <%- include('admin/partials/shared-table', {
+            title: 'Clients Management',
+            addButton: { href: '/admin/add-client', text: 'Add Client', icon: 'fas fa-plus' },
+            errorId: 'clientsError',
+            loadingId: 'clientsLoading',
+            tableHeaders: [
+              'Client Name', 'Website', 'Social Media', 'Created At', 'Actions'
+            ],
+            tableBodyId: 'clientsTableBody',
+            mobileListId: 'clientsMobileList',
+            scriptSrc: '/js/clients.js'
+        }) %>
+*/ %>
+<div class="bg-white rounded-lg shadow">
+    <div class="p-4 md:p-6 border-b border-gray-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+        <h3 class="text-lg font-semibold text-gray-800"><%= title %></h3>
+        <% if (typeof addButton !== 'undefined' && addButton) { %>
+            <a href="<%= addButton.href %>" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium btn-responsive w-full sm:w-auto text-center">
+                <% if (addButton.icon) { %><i class="<%= addButton.icon %> mr-2"></i><% } %><%= addButton.text %>
+            </a>
+        <% } %>
+    </div>
+
+    <div class="p-4 md:p-6">
+        <div id="<%= errorId %>" class="hidden mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"></div>
+        <p id="<%= loadingId %>" class="text-sm text-gray-500 mb-4">Loading...</p>
+
+        <!-- Desktop Table -->
+        <div class="responsive-table overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <% tableHeaders.forEach(function(header) { %>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"><%= header %></th>
+                        <% }); %>
+                    </tr>
+                </thead>
+                <tbody id="<%= tableBodyId %>" class="bg-white divide-y divide-gray-200"></tbody>
+            </table>
+        </div>
+
+        <!-- Mobile List -->
+        <div id="<%= mobileListId %>" class="mobile-list space-y-3"></div>
+    </div>
+</div>

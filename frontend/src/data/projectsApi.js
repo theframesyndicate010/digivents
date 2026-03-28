@@ -4,80 +4,37 @@
 import { apiFetch, getImageUrl } from './api';
 
 /**
- * Transform Strapi project response to frontend format
+ * Transform backend project response to frontend format
  */
 const transformProject = (project) => {
   const attrs = project;
-  const mediaItems = attrs.media || [];
-
-  // 1. Determine Video URL
-  // Priority: videoUrl field -> Social Links -> Video File in Media
-  let videoUrl = attrs.videoUrl || '';
   
-  if (!videoUrl) {
-    if (attrs.tiktokLink && attrs.tiktokLink.includes('tiktok.com')) {
-      videoUrl = attrs.tiktokLink;
-    } else if (attrs.instagramLink && attrs.instagramLink.includes('instagram.com')) {
-      videoUrl = attrs.instagramLink;
-    } else if (attrs.youtubeLink && (attrs.youtubeLink.includes('youtube.com') || attrs.youtubeLink.includes('youtu.be'))) {
-      videoUrl = attrs.youtubeLink;
-    } else {
-      // Check for video file in media
-      const videoFile = mediaItems.find((m) => m.mime?.startsWith('video/'));
-      if (videoFile) {
-        videoUrl = getImageUrl(videoFile);
-      }
+  // Use cover_photo if available, otherwise try to extract from video URL
+  let coverImage = getImageUrl(attrs.coverPhoto) || '';
+  
+  if (!coverImage && attrs.youtubeLink) {
+    let videoId = attrs.youtubeLink.split('v=')[1]?.split('&')[0];
+    if (!videoId && attrs.youtubeLink.includes('youtu.be')) videoId = attrs.youtubeLink.split('/').pop();
+    if (videoId) {
+      coverImage = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
     }
   }
-
-  // 2. Determine Cover Image
-  // Try to find the first image in media
-  let coverMedia = mediaItems.find((m) => m.mime?.startsWith('image/'));
-  let coverImage = null;
-
-  if (coverMedia) {
-    coverImage = getImageUrl(coverMedia);
-  } else {
-    // If no image media, try to get thumbnail from video media
-    const videoMedia = mediaItems.find((m) => m.mime?.startsWith('video/'));
-    if (videoMedia && videoMedia.formats?.thumbnail) {
-      coverImage = getImageUrl(videoMedia.formats.thumbnail);
-    }
-  }
-
-  // If still no cover image, try to extract from video URL (YouTube only for now)
-  if (!coverImage && videoUrl) {
-    if (videoUrl.includes('youtube.com') || videoUrl.includes('youtu.be')) {
-      let videoId = videoUrl.split('v=')[1]?.split('&')[0];
-      if (!videoId && videoUrl.includes('youtu.be')) videoId = videoUrl.split('/').pop();
-      if (videoId) {
-        coverImage = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
-      }
-    }
-  }
-
-  // Build all media URLs
-  const allMedia = mediaItems.map((m) => getImageUrl(m));
 
   return {
     id: project.id,
-    documentId: project.documentId,
-    title: attrs.name || '',
+    title: attrs.name || attrs.title || '',
     slug: attrs.slug || '',
-    category: attrs.client?.name || attrs.tag || '',
+    category: attrs.client || attrs.tag || '',
     image: coverImage,
-    media: allMedia,
-    tags: attrs.tag ? attrs.tag.split(',').map((t) => t.trim()) : [],
     description: attrs.description || '',
-    createdDate: attrs.createdDate || '',
-    client: attrs.client?.name || '',
-    videoUrl: videoUrl,
+    client: attrs.client || '',
+    videoUrl: attrs.youtubeLink || attrs.instagramLink || attrs.tiktokLink || '',
     likes: attrs.likes || 0,
     workers: (attrs.workers || []).map((w) => ({
       id: w.id,
       name: w.name,
       role: w.role,
-      photo: getImageUrl(w.photo),
+      photo: w.photo,
     })),
     socialLinks: {
       instagram: attrs.instagramLink || '',
@@ -91,7 +48,7 @@ const transformProject = (project) => {
 // Fetch all projects from Strapi
 export const fetchAllProjects = async () => {
   try {
-    const data = await apiFetch('/api/projects');
+    const data = await apiFetch('/projects');
     return (data.data || data || []).map(transformProject);
   } catch (error) {
     console.error('Failed to fetch projects:', error);
@@ -102,7 +59,7 @@ export const fetchAllProjects = async () => {
 // Fetch limited projects for homepage portfolio
 export const fetchFeaturedProjects = async (limit = 5) => {
   try {
-    const data = await apiFetch('/api/projects');
+    const data = await apiFetch('/projects');
     return (data.data || data || []).slice(0, limit).map(transformProject);
   } catch (error) {
     console.error('Failed to fetch featured projects:', error);
@@ -113,7 +70,7 @@ export const fetchFeaturedProjects = async (limit = 5) => {
 // Fetch single project by documentId
 export const fetchProjectById = async (id) => {
   try {
-    const data = await apiFetch(`/api/projects/${id}`);
+    const data = await apiFetch(`/projects/${id}`);
     return transformProject(data.data || data);
   } catch (error) {
     console.error('Failed to fetch project:', error);
@@ -124,7 +81,7 @@ export const fetchProjectById = async (id) => {
 // Fetch single project by slug
 export const fetchProjectBySlug = async (slug) => {
   try {
-    const data = await apiFetch('/api/projects');
+    const data = await apiFetch('/projects');
     const projects = (data.data || data || []).filter((p) => p.slug === slug);
     if (projects.length === 0) throw new Error('Project not found');
     return transformProject(projects[0]);

@@ -8,6 +8,7 @@ exports.getMessages = async (req, res, next) => {
         const { status, search } = req.query;
 
         const data = await messageService.fetchAllMessages({ page, perPage, status, search });
+
         return successResponse(res, 'Messages retrieved successfully', data);
     } catch (error) {
         next(error);

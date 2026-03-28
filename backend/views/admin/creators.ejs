@@ -1,8 +1,8 @@
-<%- include('layout', { title: 'Creators', currentPage: 'creators', body: `
+<%- include('layout', { title: 'Creators', currentPage: 'creators', pageScript: '/js/creators.js', body: `
 <div class="bg-white rounded-lg shadow">
     <div class="p-4 md:p-6 border-b border-gray-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
         <h3 class="text-lg font-semibold text-gray-800">Creators Directory</h3>
-        <a href="/admin/add-creator" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium">
+        <a href="/admin/add-creator" class="w-full sm:w-auto bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium text-center min-h-10 flex items-center justify-center">
             <i class="fas fa-plus mr-2"></i>Add Creator
         </a>
     </div>
@@ -11,6 +11,7 @@
         <div id="creatorsError" class="hidden mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"></div>
         <p id="creatorsLoading" class="text-sm text-gray-500 mb-4">Loading creators...</p>
 
+        <!-- Desktop Table View -->
         <div class="hidden md:block overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">
@@ -24,11 +25,8 @@
             </table>
         </div>
 
-        <div id="creatorsMobileList" class="md:hidden space-y-4"></div>
+        <!-- Mobile Card View -->
+        <div id="creatorsMobileList" class="md:hidden space-y-3"></div>
     </div>
 </div>
-
-<script>
-</script><script src="/js/creators.js"></script><script>
-</script>
 `}) %>

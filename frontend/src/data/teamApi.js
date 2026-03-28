@@ -20,10 +20,10 @@ const transformWorker = (worker) => {
 };
 
 // Fetch all team members from Strapi
-// PATCHED: No /workers endpoint in backend, use /api/creators as team equivalent
+// PATCHED: No /workers endpoint in backend, use /creators as team equivalent
 export const fetchTeam = async () => {
   try {
-    const data = await apiFetch('/api/creators');
+    const data = await apiFetch('/creators');
     return (data.data || data || []).map(transformWorker);
   } catch (error) {
     console.error('Failed to fetch team:', error);
@@ -31,16 +31,15 @@ export const fetchTeam = async () => {
   }
 };
 
-// Fetch stats from Strapi Global settings
 // Stats are part of the global single type or can be hardcoded as fallback
-// PATCHED: No /global or /workers endpoints, fallback to static stats or count from /api endpoints
+// PATCHED: No /global or /workers endpoints, fallback to static stats or count from endpoints
 export const fetchStats = async () => {
   try {
     // Fallback: derive stats from actual data counts
     const [projectsRes, clientsRes, creatorsRes] = await Promise.all([
-      apiFetch('/api/projects'),
-      apiFetch('/api/clients'),
-      apiFetch('/api/creators'),
+      apiFetch('/projects'),
+      apiFetch('/clients'),
+      apiFetch('/creators'),
     ]);
     return [
       { id: 1, value: '4', label: 'Years of Experience' },

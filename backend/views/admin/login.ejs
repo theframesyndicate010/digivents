@@ -137,7 +137,7 @@
                 </div>
             <% } %>
 
-            <form id="loginForm" method="POST" action="/auth/login" onsubmit="handleSubmit(event)">
+            <form id="loginForm" method="POST" action="/auth/login">
                 <div class="form-group">
                     <label for="email">Email Address</label>
                     <input 
@@ -173,23 +173,7 @@
         </div>
     </div>
 
-    <script>
-        function handleSubmit(e) {
-            e.preventDefault();
-            const form = document.getElementById('loginForm');
-            const submitBtn = document.getElementById('submitBtn');
-            const btnText = document.getElementById('btnText');
-            const originalText = btnText.innerHTML;
-
-            // Disable button and show loading state
-            submitBtn.disabled = true;
-            btnText.innerHTML = '<span class="loading-spinner"></span>Signing in...';
-
-            // Submit form after a brief delay for UX
-            setTimeout(() => {
-                form.submit();
-            }, 300);
-        }
-    </script>
+    <script src="/js/common.js"></script>
+    <script src="/js/login.js"></script>
 </body>
 </html>

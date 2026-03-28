@@ -175,24 +175,10 @@ async function deleteClient(id) {
     }
 }
 
-// FEEDBACK FUNCTIONS
-async function updateFeedback(id, formData) {
+async function fetchMessages() {
     try {
-        const result = await apiCall(`/admin/feedback/${id}`, 'PUT', formData);
-        showNotification(result.message);
-        location.reload();
-    } catch (error) {
-        showNotification(error.message, 'error');
-    }
-}
-
-async function deleteFeedback(id) {
-    if (!confirm('Are you sure you want to delete this feedback?')) return;
-    
-    try {
-        const result = await apiCall(`/admin/feedback/${id}`, 'DELETE');
-        showNotification(result.message);
-        location.reload();
+        const result = await apiCall('/admin/messages');
+        console.log(result);
     } catch (error) {
         showNotification(error.message, 'error');
     }

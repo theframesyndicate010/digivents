@@ -5,6 +5,7 @@ import { SiTiktok, SiInstagram } from 'react-icons/si';
 import { Link } from 'react-router-dom';
 import { fadeInUp, staggerContainer } from '../animations';
 import { fetchFeaturedProjects } from '../data/projectsApi';
+import { fetchFeaturedGraphics } from '../data/graphicsApi';
 
 /* ── Helper: extract TikTok video ID ──────────────────────────── */
 const getTikTokVideoId = (url) => {
@@ -115,9 +116,9 @@ const MiniProjectCard = ({ project, index }) => {
               </span>
             </div>
             <h3 className="text-white font-bold text-base leading-snug truncate mb-2">{project.title}</h3>
-            {project.category && (
+            {(project.category || project.description) && (
               <p className="text-white/60 text-xs font-medium truncate">
-                {project.category}
+                {project.category || project.description}
               </p>
             )}
           </div>
@@ -132,9 +133,16 @@ const Portfolio = ({ limit }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchFeaturedProjects(limit || 4)
-      .then((data) => setItems(data))
-      .catch((err) => console.error('Failed to fetch projects:', err))
+    Promise.all([
+      fetchFeaturedProjects(limit || 4),
+      fetchFeaturedGraphics(limit || 4)
+    ])
+      .then(([projects, graphics]) => {
+        // Combine projects and graphics, then slice to limit
+        const combined = [...projects, ...graphics].slice(0, limit || 4);
+        setItems(combined);
+      })
+      .catch((err) => console.error('Failed to fetch projects or graphics:', err))
       .finally(() => setLoading(false));
   }, [limit]);
 

@@ -68,16 +68,28 @@ document.addEventListener('DOMContentLoaded', function () {
                 const tag = ui.escapeHtml(project.tag || 'No tag');
                 const cover = project.cover_photo || project.coverPhoto;
                 const coverHtml = cover
-                    ? '<img class="h-12 w-12 rounded-md object-cover" src="' + ui.escapeHtml(cover) + '" alt="Project cover">'
-                    : '<div class="h-12 w-12 rounded-md bg-gray-200 flex items-center justify-center text-gray-500"><i class="fas fa-image"></i></div>';
+                    ? '<img class="h-16 w-16 rounded-md object-cover" src="' + ui.escapeHtml(cover) + '" alt="Project cover">'
+                    : '<div class="h-16 w-16 rounded-md bg-gray-200 flex items-center justify-center text-gray-500"><i class="fas fa-image text-2xl"></i></div>';
                 const contact = project.contact
-                    ? '<a href="' + ui.escapeHtml(project.contact) + '" target="_blank" class="text-blue-600 hover:underline">Link</a>'
-                    : '';
+                    ? '<a href="' + ui.escapeHtml(project.contact) + '" target="_blank" class="text-blue-600 hover:underline break-all">Link</a>'
+                    : '<span class="text-gray-400">-</span>';
 
-                return '<div class="border border-gray-200 rounded-lg p-4 bg-white">' +
-                    '<div class="flex items-center gap-4 mb-3"><div class="h-12 w-12 flex-shrink-0">' + coverHtml + '</div><div class="flex-1"><h4 class="font-medium text-gray-900">' + name + '</h4><p class="text-xs text-gray-500">' + tag + '</p></div></div>' +
-                    '<div class="flex justify-between items-center text-sm mb-3">' + statusBadge(project.status) + contact + '</div>' +
-                    '<div class="flex justify-end gap-3 border-t pt-2"><a href="/admin/edit-project/' + id + '" class="text-indigo-600 text-sm">Edit</a><button class="text-red-600 text-sm" type="button" data-delete-project-id="' + id + '">Delete</button></div>' +
+                return '<div class="mobile-card">' +
+                    '<div class="flex gap-3 mb-3">' +
+                        '<div class="flex-shrink-0">' + coverHtml + '</div>' +
+                        '<div class="flex-1 min-w-0">' +
+                            '<h3 class="mobile-card-title truncate">' + name + '</h3>' +
+                            '<p class="text-xs text-gray-500 truncate">' + tag + '</p>' +
+                        '</div>' +
+                    '</div>' +
+                    '<div class="mobile-card-body">' +
+                        '<div class="mobile-card-row"><span class="mobile-card-label">Status:</span><span>' + statusBadge(project.status) + '</span></div>' +
+                        '<div class="mobile-card-row"><span class="mobile-card-label">Link:</span><span class="mobile-card-value">' + contact + '</span></div>' +
+                    '</div>' +
+                    '<div class="mobile-card-actions">' +
+                        '<a class="bg-indigo-600 text-white rounded hover:bg-indigo-700 transition-colors" href="/admin/edit-project/' + id + '"><i class="fas fa-edit mr-1"></i>Edit</a>' +
+                        '<button class="bg-red-600 text-white rounded hover:bg-red-700 transition-colors" type="button" data-delete-project-id="' + id + '"><i class="fas fa-trash mr-1"></i>Delete</button>' +
+                    '</div>' +
                 '</div>';
             }).join('');
         }

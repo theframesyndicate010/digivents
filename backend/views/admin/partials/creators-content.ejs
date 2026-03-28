@@ -1,0 +1,12 @@
+<%- include('shared-table', {
+    title: 'Creators Directory',
+    addButton: { href: '/admin/add-creator', text: 'Add Creator', icon: 'fas fa-plus' },
+    errorId: 'creatorsError',
+    loadingId: 'creatorsLoading',
+    tableHeaders: [
+        'Creator', 'Created At', 'Actions'
+    ],
+    tableBodyId: 'creatorsTableBody',
+    mobileListId: 'creatorsMobileList',
+    scriptSrc: '/js/creators.js'
+}) %>

@@ -19,7 +19,7 @@ const getApiUrl = () => {
 };
 
 
-export const API_BASE = '';
+export const API_BASE = '/api';
 const API_URL = getApiUrl();
 
 console.log('[API Config] Using API URL:', API_URL);

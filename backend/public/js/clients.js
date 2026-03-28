@@ -55,12 +55,21 @@ document.addEventListener('DOMContentLoaded', function () {
             mobileList.innerHTML = items.map(function (client) {
                 const id = ui.escapeHtml(client.id || '');
                 const name = ui.escapeHtml(client.name || 'Unnamed');
-                const website = client.website ? '<a href="' + ui.escapeHtml(client.website) + '" target="_blank" class="text-blue-600 block mb-1">' + ui.escapeHtml(client.website) + '</a>' : '';
-                return '<div class="bg-white shadow rounded-lg p-4">' +
-                    '<div class="flex justify-between items-start mb-2"><h3 class="text-lg font-medium text-gray-900">' + name + '</h3><span class="text-xs text-gray-500">' + ui.escapeHtml(ui.formatDate(client.created_at)) + '</span></div>' +
-                    '<div class="mb-3 text-sm">' + website + '</div>' +
-                    '<div class="flex space-x-4 mb-4 text-lg">' + socialLinks(client) + '</div>' +
-                    '<div class="flex justify-end space-x-3 border-t pt-3"><a class="text-indigo-600 font-medium text-sm" href="/admin/edit-client/' + id + '">Edit</a><button class="text-red-600 font-medium text-sm" type="button" data-delete-client-id="' + id + '">Delete</button></div>' +
+                const website = client.website ? '<a href="' + ui.escapeHtml(client.website) + '" target="_blank" class="text-blue-600 hover:underline break-all">' + ui.escapeHtml(client.website) + '</a>' : '<span class="text-gray-400">-</span>';
+                const createdDate = ui.escapeHtml(ui.formatDate(client.created_at));
+                return '<div class="mobile-card">' +
+                    '<div class="mobile-card-header">' +
+                        '<div><h3 class="mobile-card-title">' + name + '</h3><div class="text-xs text-gray-500 mt-1">ID: ' + id + '</div></div>' +
+                        '<div class="text-xs text-gray-500 text-right">' + createdDate + '</div>' +
+                    '</div>' +
+                    '<div class="mobile-card-body">' +
+                        '<div class="mobile-card-row"><span class="mobile-card-label">Website:</span><span class="mobile-card-value">' + website + '</span></div>' +
+                        '<div class="mobile-card-row"><span class="mobile-card-label">Social:</span><div class="flex gap-2 text-lg">' + socialLinks(client) + '</div></div>' +
+                    '</div>' +
+                    '<div class="mobile-card-actions">' +
+                        '<a class="bg-indigo-600 text-white rounded hover:bg-indigo-700 transition-colors" href="/admin/edit-client/' + id + '"><i class="fas fa-edit mr-1"></i>Edit</a>' +
+                        '<button class="bg-red-600 text-white rounded hover:bg-red-700 transition-colors" type="button" data-delete-client-id="' + id + '"><i class="fas fa-trash mr-1"></i>Delete</button>' +
+                    '</div>' +
                 '</div>';
             }).join('');
         }

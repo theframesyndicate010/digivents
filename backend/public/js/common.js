@@ -18,7 +18,20 @@
     }
 
     async function apiRequest(url, options) {
-        const response = await fetch(url, options || {});
+        const defaultOptions = {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        };
+        
+        const mergedOptions = { ...defaultOptions, ...options };
+        
+        // Remove Content-Type header for FormData
+        if (mergedOptions.body instanceof FormData) {
+            delete mergedOptions.headers['Content-Type'];
+        }
+        
+        const response = await fetch(url, mergedOptions);
         let text;
         try {
             text = await response.text();
@@ -74,6 +87,21 @@
         el.classList.remove('hidden');
     }
 
+    function showToast(message, type = 'success') {
+        const toast = document.createElement('div');
+        toast.className = `fixed top-4 right-4 p-4 rounded-lg text-white z-50 shadow-lg transition-opacity ${
+            type === 'success' ? 'bg-green-500' : 'bg-red-500'
+        }`;
+        toast.textContent = message;
+        
+        document.body.appendChild(toast);
+        
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            setTimeout(() => toast.remove(), 300);
+        }, 3000);
+    }
+
     window.AdminUI = {
         apiRequest: apiRequest,
         escapeHtml: escapeHtml,
@@ -81,6 +109,7 @@
         setElementText: setElementText,
         showElement: showElement,
         hideElement: hideElement,
-        setFormAlert: setFormAlert
+        setFormAlert: setFormAlert,
+        showToast: showToast
     };
 })();

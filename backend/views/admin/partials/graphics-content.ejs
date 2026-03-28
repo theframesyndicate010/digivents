@@ -1,0 +1,11 @@
+<%- include('shared-table', {
+    title: 'Graphics Gallery',
+    addButton: { href: '/admin/add-graphic', text: 'Add Graphic', icon: 'fas fa-plus' },
+    errorId: 'graphicsError',
+    loadingId: 'graphicsLoading',
+    tableHeaders: [
+        'Preview', 'Name', 'Description', 'Created', 'Actions'
+    ],
+    tableBodyId: 'graphicsTableBody',
+    mobileListId: 'graphicsMobileList'
+}) %>

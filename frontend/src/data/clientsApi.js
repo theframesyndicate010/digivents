@@ -14,6 +14,10 @@ const transformClient = (client) => {
     name: attrs.name || '',
     logo: getImageUrl(attrs.logo),
     slug: attrs.slug || '',
+    website: attrs.website || '',
+    instagram: attrs.instagram_link || '',
+    tiktok: attrs.tiktok_link || '',
+    facebook: attrs.facebook_link || '',
     socialMediaLink: attrs.socialMediaLink || '',
   };
 };
@@ -21,7 +25,7 @@ const transformClient = (client) => {
 // Fetch all clients from Strapi
 export const fetchAllClients = async () => {
   try {
-    const data = await apiFetch('/api/clients');
+    const data = await apiFetch('/clients');
     return (data.data || data || []).map(transformClient);
   } catch (error) {
     console.error('Failed to fetch clients:', error);
@@ -32,7 +36,7 @@ export const fetchAllClients = async () => {
 // Fetch limited clients for homepage
 export const fetchFeaturedClients = async (limit = 6) => {
   try {
-    const data = await apiFetch('/api/clients');
+    const data = await apiFetch('/clients');
     return (data.data || data || []).slice(0, limit).map(transformClient);
   } catch (error) {
     console.error('Failed to fetch featured clients:', error);
@@ -43,7 +47,7 @@ export const fetchFeaturedClients = async (limit = 6) => {
 // Fetch feedbacks/testimonials with client info
 export const fetchTestimonials = async () => {
   try {
-    const data = await apiFetch('/api/feedback');
+    const data = await apiFetch('/feedback');
     return (data.data || data || []).map((feedback) => {
       const attrs = feedback;
       return {

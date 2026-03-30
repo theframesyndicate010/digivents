@@ -90,7 +90,25 @@ const loginLimiter = rateLimit({
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname, 'public')));
+
+// Static file serving with dual caching strategy
+// 1. Upload directory with no caching (must be registered first)
+app.use('/uploads', express.static(path.join(__dirname, 'public/uploads'), {
+    etag: false,
+    lastModified: false,
+    maxAge: 0,
+    setHeaders: (res, filePath) => {
+        res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+        res.setHeader('Pragma', 'no-cache');
+        res.setHeader('Expires', '0');
+    }
+}));
+
+// 2. General static files with caching enabled
+app.use(express.static(path.join(__dirname, 'public'), {
+    maxAge: '1h',
+    etag: true
+}));
 
 
 

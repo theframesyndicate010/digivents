@@ -136,6 +136,10 @@ app.get('/api/health', (req, res) => {
     res.json({ status: 'OK', timestamp: new Date().toISOString() });
 });
 
+// Multer error handler (must come before general error handler)
+const { multerErrorHandler } = require('./src/middlewares/upload.middleware');
+app.use(multerErrorHandler);
+
 // Centralized Error handler
 const errorHandler = require('./src/middlewares/error.middleware');
 app.use(errorHandler);

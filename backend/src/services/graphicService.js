@@ -33,14 +33,25 @@ exports.getGraphicById = async (id) => {
 exports.createGraphic = async (data, file) => {
     const { name, title, description } = data;
     
-    if (!name) {
+    // Trim the name field before validation
+    const trimmedName = (name || '').trim();
+    
+    // Check if trimmed name is empty
+    if (!trimmedName) {
+        console.error('[GRAPHICS_SERVICE] Validation failed: name is required');
         const error = new Error('Graphic name is required');
         error.statusCode = 400;
         error.isOperational = true;
         throw error;
     }
 
+    // Log warning if name had whitespace that was trimmed
+    if (trimmedName !== name) {
+        console.warn('[GRAPHICS_SERVICE] Name had leading/trailing whitespace, trimmed');
+    }
+
     if (!file) {
+        console.error('[GRAPHICS_SERVICE] Validation failed: photo is required');
         const error = new Error('Graphic photo is required');
         error.statusCode = 400;
         error.isOperational = true;
@@ -50,12 +61,13 @@ exports.createGraphic = async (data, file) => {
     const photo = `/uploads/graphics/${file}`;
     const payload = {
         id: crypto.randomUUID(),
-        name,
-        title: title || name,
+        name: trimmedName,
+        title: title || trimmedName,
         description: description || null,
         photo
     };
 
+    console.log(`[GRAPHICS_SERVICE] Creating graphic: ${payload.id}`);
     await db('graphics').insert(payload);
     
     const newGraphic = await db('graphics').where({ id: payload.id }).first();

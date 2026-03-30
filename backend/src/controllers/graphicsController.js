@@ -11,6 +11,7 @@ exports.getGraphics = async (req, res) => {
         }));
         return successResponse(res, 'Graphics retrieved successfully', data);
     } catch (err) {
+        console.error('[GRAPHICS_CONTROLLER] Error fetching graphics:', err);
         return errorResponse(res, 'Failed to fetch graphics', err, err.statusCode || 500);
     }
 };
@@ -25,18 +26,28 @@ exports.getGraphicById = async (req, res) => {
         };
         return successResponse(res, 'Graphic retrieved successfully', data);
     } catch (err) {
+        console.error('[GRAPHICS_CONTROLLER] Error fetching graphic by ID:', err);
         return errorResponse(res, 'Failed to fetch graphic', err, err.statusCode || 500);
     }
 };
 
 exports.createGraphic = async (req, res) => {
     try {
-        if (!req.file) return errorResponse(res, 'No file uploaded', null, 400);
+        if (!req.file) {
+            console.error('[GRAPHICS_CONTROLLER] File upload failed - req.file is undefined');
+            console.error('[GRAPHICS_CONTROLLER] req.body:', req.body);
+            console.error('[GRAPHICS_CONTROLLER] Content-Type:', req.headers['content-type']);
+            return errorResponse(res, 'File upload failed - no file received', null, 400);
+        }
         const newGraphic = await graphicService.createGraphic(req.body, req.file.filename);
-        newGraphic.photo = req.file._publicPath;
+        // Set the public path for the photo
+        newGraphic.photo = `${BASE_URL}/uploads/graphics/${req.file.filename}`;
         return successResponse(res, 'Graphic added successfully', newGraphic, 201);
     } catch (err) {
-        return errorResponse(res, 'Failed to add graphic', err, err.statusCode || 500);
+        console.error('[GRAPHICS_CONTROLLER] Error creating graphic:', err);
+        // Use the error's message if it's an operational error, otherwise use generic message
+        const message = err.isOperational ? err.message : 'Failed to add graphic';
+        return errorResponse(res, message, err, err.statusCode || 500);
     }
 };
 
@@ -48,6 +59,7 @@ exports.updateGraphic = async (req, res) => {
         if (req.file) updated.photo = req.file._publicPath;
         return successResponse(res, 'Graphic updated successfully', updated);
     } catch (err) {
+        console.error('[GRAPHICS_CONTROLLER] Error updating graphic:', err);
         return errorResponse(res, 'Failed to update graphic', err, err.statusCode || 500);
     }
 };
@@ -58,6 +70,7 @@ exports.deleteGraphic = async (req, res) => {
         await graphicService.deleteGraphic(id);
         return successResponse(res, 'Graphic deleted successfully', {});
     } catch (err) {
+        console.error('[GRAPHICS_CONTROLLER] Error deleting graphic:', err);
         return errorResponse(res, 'Failed to delete graphic', err, err.statusCode || 500);
     }
 };

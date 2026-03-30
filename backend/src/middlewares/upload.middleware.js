@@ -59,8 +59,6 @@ const storage = multer.diskStorage({
 function fileFilter(req, file, cb) {
     const imageMimeTypes = new Set(['image/jpeg', 'image/jpg', 'image/png', 'image/webp']);
     const imageExts = new Set(['.jpeg', '.jpg', '.png', '.webp']);
-    const videoMimeTypes = new Set(['video/mp4', 'video/quicktime', 'video/x-msvideo', 'video/x-matroska']);
-    const videoExts = new Set(['.mp4', '.mov', '.avi', '.mkv']);
     const extname = path.extname(file.originalname || '').toLowerCase();
 
     if (imageMimeTypes.has(file.mimetype) && imageExts.has(extname)) {
@@ -68,18 +66,13 @@ function fileFilter(req, file, cb) {
         console.log(`[UPLOAD] Accepting image: ${file.originalname}`);
         return cb(null, true);
     }
-    if (videoMimeTypes.has(file.mimetype) && videoExts.has(extname)) {
-        file._fileType = 'video';
-        console.log(`[UPLOAD] Accepting video: ${file.originalname}`);
-        return cb(null, true);
-    }
 
     console.warn(`[UPLOAD] Rejecting file: ${file.originalname} (${file.mimetype})`);
-    return cb(new multer.MulterError(
-        'LIMIT_UNEXPECTED_FILE',
-        'Only JPG, PNG, WEBP images and MP4, MOV, AVI, MKV videos are allowed'
-    ));
+    const error = new Error('Only JPG, PNG, WEBP images are allowed');
+    error.code = 'INVALID_FILE_TYPE';
+    return cb(error, false);
 }
+
 
 // Multer middleware (fields, single, array supported)
 const uploadMiddleware = multer({
@@ -123,6 +116,10 @@ function uploadHandler(req, res, next) {
 function multerErrorHandler(err, req, res, next) {
     if (err instanceof multer.MulterError) {
         console.error(`[UPLOAD ERROR] MulterError: ${err.message}`);
+        return res.status(400).json({ success: false, message: err.message });
+    }
+    if (err && err.code === 'INVALID_FILE_TYPE') {
+        console.error(`[UPLOAD ERROR] Invalid file type: ${err.message}`);
         return res.status(400).json({ success: false, message: err.message });
     }
     next(err);

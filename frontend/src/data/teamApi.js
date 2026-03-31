@@ -8,12 +8,21 @@ import { apiFetch, getImageUrl } from './api';
  */
 const transformWorker = (worker) => {
   const attrs = worker;
+  const imageUrl = getImageUrl(attrs.photo);
+  
+  console.log('[TeamAPI] Transforming worker:', {
+    id: worker.id,
+    name: attrs.name,
+    photoRaw: attrs.photo,
+    photoTransformed: imageUrl
+  });
+  
   return {
     id: worker.id,
     documentId: worker.documentId,
     name: attrs.name || '',
     role: attrs.role || '',
-    image: getImageUrl(attrs.photo),
+    image: imageUrl,
     bio: attrs.description || '',
     slug: attrs.slug || '',
   };

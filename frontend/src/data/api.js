@@ -25,15 +25,30 @@ const API_URL = getApiUrl();
 console.log('[API Config] Using API URL:', API_URL);
 
 /**
- * Helper to build full image URL from Strapi media object
- * Strapi v5 returns media in { url: '/uploads/...' } format
+ * Helper to build full image URL from Strapi media object or path string
+ * Handles:
+ * - Strapi v5 media objects: { url: '/uploads/...' }
+ * - Direct path strings: '/uploads/...'
+ * - Full URLs: 'http://...' or 'https://...'
  */
 export const getImageUrl = (media) => {
   if (!media) return null;
-  // If it's already a full URL (e.g., from ImageKit), return as-is
+  
+  // Extract URL from media object or use media directly if it's a string
   const url = media?.url || media;
-  if (typeof url === 'string' && url.startsWith('http')) return url;
-  return `${API_URL}${url}`;
+  
+  // If it's not a string, return null
+  if (typeof url !== 'string') return null;
+  
+  // If it's already a full URL (http/https), return as-is
+  if (url.startsWith('http://') || url.startsWith('https://')) {
+    return url;
+  }
+  
+  // If it's a relative path, prepend API_URL
+  // Make sure we don't double-add slashes
+  const cleanUrl = url.startsWith('/') ? url : `/${url}`;
+  return `${API_URL}${cleanUrl}`;
 };
 
 /**

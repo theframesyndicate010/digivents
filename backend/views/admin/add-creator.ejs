@@ -20,13 +20,15 @@
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">Photo</label>
                 <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-                    <span class="inline-block h-16 w-16 rounded-full overflow-hidden bg-gray-100 flex-shrink-0">
-                        <svg class="h-full w-full text-gray-300" fill="currentColor" viewBox="0 0 24 24">
+                    <span id="photoPreview" class="inline-block h-16 w-16 rounded-full overflow-hidden bg-gray-100 flex-shrink-0">
+                        <svg id="photoPlaceholder" class="h-full w-full text-gray-300" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
                         </svg>
+                        <img id="photoImage" class="hidden h-full w-full object-cover" alt="Preview">
                     </span>
-                    <input type="file" name="photo" accept="image/*" class="flex-1 w-full px-3 md:px-4 py-2 md:py-2.5 border border-gray-300 rounded-lg text-sm text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent cursor-pointer file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:bg-blue-50 file:text-blue-600 file:cursor-pointer">
+                    <input type="file" id="photoInput" name="photo" accept="image/*" class="flex-1 w-full px-3 md:px-4 py-2 md:py-2.5 border border-gray-300 rounded-lg text-sm text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent cursor-pointer file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:bg-blue-50 file:text-blue-600 file:cursor-pointer">
                 </div>
+                <p class="mt-1 text-xs text-gray-500">Recommended: Square image, at least 200x200px</p>
             </div>
 
             <div class="flex flex-col-reverse sm:flex-row justify-end gap-3 pt-4 md:pt-6 border-t">

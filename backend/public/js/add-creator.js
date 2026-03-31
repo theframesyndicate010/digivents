@@ -1,8 +1,48 @@
 document.addEventListener('DOMContentLoaded', function () {
     const form = document.getElementById('addCreatorForm');
+    const photoInput = document.getElementById('photoInput');
+    const photoImage = document.getElementById('photoImage');
+    const photoPlaceholder = document.getElementById('photoPlaceholder');
     const ui = window.AdminUI;
 
     if (!form) return;
+
+    // Photo preview functionality
+    if (photoInput) {
+        photoInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            
+            if (file) {
+                // Validate file type
+                if (!file.type.startsWith('image/')) {
+                    ui.setFormAlert('formAlert', 'Please select a valid image file.', 'error');
+                    photoInput.value = '';
+                    return;
+                }
+
+                // Validate file size (5MB max)
+                if (file.size > 5 * 1024 * 1024) {
+                    ui.setFormAlert('formAlert', 'Image size must be less than 5MB.', 'error');
+                    photoInput.value = '';
+                    return;
+                }
+
+                // Create preview
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    photoImage.src = event.target.result;
+                    photoImage.classList.remove('hidden');
+                    photoPlaceholder.classList.add('hidden');
+                };
+                reader.readAsDataURL(file);
+            } else {
+                // Reset to placeholder if no file selected
+                photoImage.classList.add('hidden');
+                photoPlaceholder.classList.remove('hidden');
+                photoImage.src = '';
+            }
+        });
+    }
 
     form.addEventListener('submit', async function (event) {
         event.preventDefault();

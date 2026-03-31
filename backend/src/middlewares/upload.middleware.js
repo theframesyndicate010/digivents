@@ -23,30 +23,18 @@ console.log(`[UPLOAD] Video max size: ${VIDEO_MAX_SIZE / 1024 / 1024}MB`);
 // Verify upload directory is accessible
 try {
     if (!fs.existsSync(uploadRoot)) {
-        console.warn(`[UPLOAD] Upload root does not exist, creating: ${uploadRoot}`);
-        fs.mkdirSync(uploadRoot, { recursive: true });
+        console.warn(`[UPLOAD] Upload root does not exist: ${uploadRoot}`);
+        console.warn(`[UPLOAD] Please create the directory manually with proper permissions`);
+    } else {
+        // Test write permissions
+        const testFile = path.join(uploadRoot, '.write-test');
+        fs.writeFileSync(testFile, 'test');
+        fs.unlinkSync(testFile);
+        console.log(`[UPLOAD] Upload directory is writable: ${uploadRoot}`);
     }
-    // Test write permissions
-    const testFile = path.join(uploadRoot, '.write-test');
-    fs.writeFileSync(testFile, 'test');
-    fs.unlinkSync(testFile);
-    console.log(`[UPLOAD] Upload directory is writable: ${uploadRoot}`);
 } catch (err) {
     console.error(`[UPLOAD] CRITICAL: Upload directory is not writable: ${uploadRoot}`, err);
     console.error(`[UPLOAD] File uploads will fail until this is resolved!`);
-}
-
-// Ensure directory exists safely
-function ensureDirectory(dirPath) {
-    try {
-        if (!fs.existsSync(dirPath)) {
-            fs.mkdirSync(dirPath, { recursive: true });
-            console.log(`[UPLOAD] Created directory: ${dirPath}`);
-        }
-    } catch (err) {
-        console.error(`[UPLOAD] Failed to create directory: ${dirPath}`, err);
-        throw err;
-    }
 }
 
 // Sanitize filename
@@ -69,7 +57,7 @@ const storage = multer.diskStorage({
         try {
             const subfolder = getUploadSubfolderByType(file);
             const target = path.join(uploadRoot, subfolder);
-            ensureDirectory(target);
+            // Directory should already exist - don't try to create it
             console.log(`[UPLOAD] Saving ${file.originalname} to ${target}`);
             cb(null, target);
         } catch (err) {

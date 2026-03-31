@@ -42,8 +42,21 @@ function sanitizeFilenamePart(value) {
     return String(value || '').replace(/[^a-z0-9]/gi, '_').toLowerCase();
 }
 
-// Determine subfolder
-function getUploadSubfolderByType(file) {
+// Determine subfolder based on fieldname or file type
+function getUploadSubfolderByType(file, req) {
+    // Check if fieldname indicates entity type
+    const fieldName = file.fieldname || '';
+    
+    // Check request URL to determine entity type
+    const url = req.originalUrl || req.url || '';
+    
+    // Map URL patterns to subfolders
+    if (url.includes('/creators')) return 'creators';
+    if (url.includes('/clients')) return 'images';
+    if (url.includes('/projects')) return 'projects';
+    if (url.includes('/graphics')) return 'graphics';
+    
+    // Fallback to mimetype-based detection
     const imageTypes = new Set(['image/jpeg', 'image/jpg', 'image/png', 'image/webp']);
     const videoTypes = new Set(['video/mp4', 'video/quicktime', 'video/x-msvideo', 'video/x-matroska']);
     if (imageTypes.has(file.mimetype)) return 'graphics';
@@ -55,10 +68,10 @@ function getUploadSubfolderByType(file) {
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
         try {
-            const subfolder = getUploadSubfolderByType(file);
+            const subfolder = getUploadSubfolderByType(file, req);
             const target = path.join(uploadRoot, subfolder);
             // Directory should already exist - don't try to create it
-            console.log(`[UPLOAD] Saving ${file.originalname} to ${target}`);
+            console.log(`[UPLOAD] Saving ${file.originalname} to ${target} (subfolder: ${subfolder})`);
             cb(null, target);
         } catch (err) {
             console.error(`[UPLOAD] Error setting destination:`, err);

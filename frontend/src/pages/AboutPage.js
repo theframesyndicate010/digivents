@@ -256,13 +256,13 @@ Since its launch, the agency has successfully organized various events and live 
               >
                 <div className="relative overflow-hidden rounded-2xl mb-5 border border-white/[0.06] group-hover:border-white/15 transition-colors duration-300">
                   <img
-                    src={member.image || 'https://via.placeholder.com/400x600/1a1a1a/666666?text=No+Photo'}
+                    src={member.image || 'https://images.unsplash.com/photo-1511367461989-f85a21fda167?w=400&h=600&fit=crop'}
                     alt={member.name}
                     className="w-full h-72 object-cover transition-transform duration-500 ease-out group-hover:scale-105"
                     loading="lazy"
                     onError={(e) => {
                       console.error('Image failed to load:', member.image);
-                      e.target.src = 'https://via.placeholder.com/400x600/1a1a1a/666666?text=No+Photo';
+                      e.target.src = 'https://images.unsplash.com/photo-1511367461989-f85a21fda167?w=400&h=600&fit=crop';
                     }}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-dark/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />

@@ -5,7 +5,36 @@ const crypto = require('crypto');
 
 const IMAGE_MAX_SIZE = 5 * 1024 * 1024; // 5MB
 const VIDEO_MAX_SIZE = 100 * 1024 * 1024; // 100MB
-const uploadRoot = process.env.UPLOAD_DIR || '/tmp/uploads';
+
+// Use relative path for cPanel compatibility
+// If UPLOAD_DIR is absolute, use it; otherwise use relative path from project root
+const uploadRoot = process.env.UPLOAD_DIR 
+    ? (path.isAbsolute(process.env.UPLOAD_DIR) 
+        ? process.env.UPLOAD_DIR 
+        : path.join(__dirname, '../../', process.env.UPLOAD_DIR))
+    : path.join(__dirname, '../../public/uploads');
+
+// Log upload configuration on startup
+console.log(`[UPLOAD] Upload directory configured: ${uploadRoot}`);
+console.log(`[UPLOAD] Absolute path: ${path.resolve(uploadRoot)}`);
+console.log(`[UPLOAD] Image max size: ${IMAGE_MAX_SIZE / 1024 / 1024}MB`);
+console.log(`[UPLOAD] Video max size: ${VIDEO_MAX_SIZE / 1024 / 1024}MB`);
+
+// Verify upload directory is accessible
+try {
+    if (!fs.existsSync(uploadRoot)) {
+        console.warn(`[UPLOAD] Upload root does not exist, creating: ${uploadRoot}`);
+        fs.mkdirSync(uploadRoot, { recursive: true });
+    }
+    // Test write permissions
+    const testFile = path.join(uploadRoot, '.write-test');
+    fs.writeFileSync(testFile, 'test');
+    fs.unlinkSync(testFile);
+    console.log(`[UPLOAD] Upload directory is writable: ${uploadRoot}`);
+} catch (err) {
+    console.error(`[UPLOAD] CRITICAL: Upload directory is not writable: ${uploadRoot}`, err);
+    console.error(`[UPLOAD] File uploads will fail until this is resolved!`);
+}
 
 // Ensure directory exists safely
 function ensureDirectory(dirPath) {
@@ -37,21 +66,31 @@ function getUploadSubfolderByType(file) {
 // Multer storage config
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        const subfolder = getUploadSubfolderByType(file);
-        const target = path.join(uploadRoot, subfolder);
-        ensureDirectory(target);
-        console.log(`[UPLOAD] Saving ${file.originalname} to ${target}`);
-        cb(null, target);
+        try {
+            const subfolder = getUploadSubfolderByType(file);
+            const target = path.join(uploadRoot, subfolder);
+            ensureDirectory(target);
+            console.log(`[UPLOAD] Saving ${file.originalname} to ${target}`);
+            cb(null, target);
+        } catch (err) {
+            console.error(`[UPLOAD] Error setting destination:`, err);
+            cb(err);
+        }
     },
     filename: function (req, file, cb) {
-        const ext = path.extname(file.originalname || '').toLowerCase();
-        // Use the 'name' field from the form, fallback to 'file' if not present
-        let userName = req.body && req.body.name ? req.body.name : 'file';
-        userName = sanitizeFilenamePart(userName);
-        const dateStr = new Date().toISOString().slice(0,10).replace(/-/g, '');
-        const finalName = `${userName}-${dateStr}${ext}`;
-        console.log(`[UPLOAD] Final filename: ${finalName}`);
-        cb(null, finalName);
+        try {
+            const ext = path.extname(file.originalname || '').toLowerCase();
+            // Use the 'name' field from the form, fallback to 'file' if not present
+            let userName = req.body && req.body.name ? req.body.name : 'file';
+            userName = sanitizeFilenamePart(userName);
+            const dateStr = new Date().toISOString().slice(0,10).replace(/-/g, '');
+            const finalName = `${userName}-${dateStr}${ext}`;
+            console.log(`[UPLOAD] Final filename: ${finalName}`);
+            cb(null, finalName);
+        } catch (err) {
+            console.error(`[UPLOAD] Error generating filename:`, err);
+            cb(err);
+        }
     }
 });
 
@@ -115,12 +154,29 @@ function uploadHandler(req, res, next) {
 // Middleware to handle multer errors globally
 function multerErrorHandler(err, req, res, next) {
     if (err instanceof multer.MulterError) {
-        console.error(`[UPLOAD ERROR] MulterError: ${err.message}`);
-        return res.status(400).json({ success: false, message: err.message });
+        console.error(`[UPLOAD ERROR] MulterError: ${err.message}`, err);
+        return res.status(400).json({ 
+            success: false, 
+            message: err.message,
+            data: null 
+        });
     }
     if (err && err.code === 'INVALID_FILE_TYPE') {
         console.error(`[UPLOAD ERROR] Invalid file type: ${err.message}`);
-        return res.status(400).json({ success: false, message: err.message });
+        return res.status(400).json({ 
+            success: false, 
+            message: err.message,
+            data: null 
+        });
+    }
+    if (err && err.message) {
+        // Catch any other upload-related errors
+        console.error(`[UPLOAD ERROR] Upload error:`, err);
+        return res.status(400).json({ 
+            success: false, 
+            message: `Upload failed: ${err.message}`,
+            data: null 
+        });
     }
     next(err);
 }

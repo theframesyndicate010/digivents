@@ -33,12 +33,33 @@ exports.getGraphicById = async (req, res) => {
 
 exports.createGraphic = async (req, res) => {
     try {
+        // Enhanced debugging for file upload issues
+        console.log('[GRAPHICS_CONTROLLER] Create graphic request received');
+        console.log('[GRAPHICS_CONTROLLER] Content-Type:', req.headers['content-type']);
+        console.log('[GRAPHICS_CONTROLLER] req.body:', JSON.stringify(req.body));
+        console.log('[GRAPHICS_CONTROLLER] req.file:', req.file ? 'Present' : 'Missing');
+        
         if (!req.file) {
             console.error('[GRAPHICS_CONTROLLER] File upload failed - req.file is undefined');
-            console.error('[GRAPHICS_CONTROLLER] req.body:', req.body);
-            console.error('[GRAPHICS_CONTROLLER] Content-Type:', req.headers['content-type']);
-            return errorResponse(res, 'File upload failed - no file received', null, 400);
+            console.error('[GRAPHICS_CONTROLLER] This usually means:');
+            console.error('[GRAPHICS_CONTROLLER] 1. File was not sent from frontend');
+            console.error('[GRAPHICS_CONTROLLER] 2. Field name mismatch (expecting "photo")');
+            console.error('[GRAPHICS_CONTROLLER] 3. File type not allowed');
+            console.error('[GRAPHICS_CONTROLLER] 4. Upload directory permission issue');
+            return res.status(400).json({ 
+                success: false, 
+                message: 'File upload failed - no file received. Please ensure you are uploading a valid image file.',
+                data: null 
+            });
         }
+        
+        console.log('[GRAPHICS_CONTROLLER] File received:', {
+            filename: req.file.filename,
+            size: req.file.size,
+            mimetype: req.file.mimetype,
+            path: req.file.path
+        });
+        
         const newGraphic = await graphicService.createGraphic(req.body, req.file.filename);
         // Set the public path for the photo
         newGraphic.photo = `${BASE_URL}/uploads/graphics/${req.file.filename}`;

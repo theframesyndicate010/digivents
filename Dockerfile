@@ -25,9 +25,13 @@ COPY backend ./
 COPY backend/.env ./
 
 
-# Ensure uploads directory exists and is writable by nodejs user
-RUN mkdir -p public/uploads && \
-  chown -R nodejs:nodejs public/uploads
+# Ensure uploads directory exists with subdirectories and is writable by nodejs user
+RUN mkdir -p public/uploads/graphics && \
+    mkdir -p public/uploads/videos && \
+    mkdir -p public/uploads/images && \
+    mkdir -p public/uploads/projects && \
+    mkdir -p public/uploads/creators && \
+    chown -R nodejs:nodejs public/uploads
 
 # Switch to non-root user
 USER nodejs

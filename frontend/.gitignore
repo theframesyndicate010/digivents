@@ -4,6 +4,14 @@
 # production build
 /build
 
+# testing
+**/*.test.js
+**/*.test.jsx
+**/*.spec.js
+**/*.spec.jsx
+/coverage
+.nyc_output
+
 # misc
 .DS_Store
 .env.local

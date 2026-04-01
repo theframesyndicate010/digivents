@@ -1,0 +1,17 @@
+<svg width="1280" height="720" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="1280" height="720" fill="#f3f4f6"/>
+  
+  <!-- Video icon -->
+  <g transform="translate(640, 360)">
+    <!-- Play button circle -->
+    <circle cx="0" cy="0" r="80" fill="#9ca3af" opacity="0.5"/>
+    <!-- Play triangle -->
+    <polygon points="-20,-30 -20,30 30,0" fill="#ffffff"/>
+  </g>
+  
+  <!-- Text -->
+  <text x="640" y="480" font-family="Arial, sans-serif" font-size="24" fill="#6b7280" text-anchor="middle">
+    No Video Thumbnail Available
+  </text>
+</svg>

@@ -44,6 +44,15 @@ backend/public/uploads/
 # Testing
 coverage/
 .nyc_output/
+**/*.test.js
+**/*.test.jsx
+**/*.spec.js
+**/*.spec.jsx
+**/*.test.ts
+**/*.test.tsx
+**/*.spec.ts
+**/*.spec.tsx
+E2E_TEST_RESULTS.md
 
 # Misc
 *.pid

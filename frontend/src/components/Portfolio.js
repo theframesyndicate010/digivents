@@ -33,9 +33,23 @@ const getProjectPlatform = (project) => {
 /* ── Mini TikTok Card for homepage ────────────────────────────── */
 const MiniProjectCard = ({ project, index }) => {
   const [liked, setLiked] = useState(false);
+  const [imageSrc, setImageSrc] = useState(project.thumbnail || project.image);
+  const [imageError, setImageError] = useState(false);
   const platform = getProjectPlatform(project);
   const hasVideo = !!platform;
   const PlatformIcon = platform === 'instagram' ? SiInstagram : SiTiktok;
+
+  // Handle image load error with fallback to cover photo
+  const handleImageError = () => {
+    if (!imageError && project.image && imageSrc !== project.image) {
+      // First fallback: try the cover photo/image field
+      setImageSrc(project.image);
+      setImageError(true);
+    } else if (!imageError) {
+      // If already using cover photo or no cover photo available, show placeholder
+      setImageError(true);
+    }
+  };
 
   return (
     <motion.div
@@ -46,12 +60,13 @@ const MiniProjectCard = ({ project, index }) => {
       <div className="relative bg-black rounded-2xl overflow-hidden border border-white/[0.12] hover:border-white/[0.25] transition-all duration-500 shadow-lg hover:shadow-2xl hover:shadow-accent1/10 h-full">
         <div className={`relative overflow-hidden ${index === 0 ? 'aspect-[9/14]' : 'aspect-[9/16]'}`}>
           {/* Thumbnail */}
-          {project.image ? (
+          {imageSrc && !imageError ? (
             <img
-              src={project.image}
+              src={imageSrc}
               alt={project.title}
               className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
               loading="lazy"
+              onError={handleImageError}
             />
           ) : (
             <div className="w-full h-full bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">

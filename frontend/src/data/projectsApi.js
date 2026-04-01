@@ -2,22 +2,27 @@
 // Used by both ProjectsPage (full list) and Portfolio component (home page preview)
 
 import { apiFetch, getImageUrl } from './api';
+import { extractVideoThumbnail, getThumbnailUrl } from '../utils/videoThumbnailExtractor';
 
 /**
  * Transform backend project response to frontend format
+ * Now supports thumbnail extraction from multiple video platforms
  */
-const transformProject = (project) => {
+const transformProject = async (project) => {
   const attrs = project;
   
-  // Use cover_photo if available, otherwise try to extract from video URL
-  let coverImage = getImageUrl(attrs.coverPhoto) || '';
+  // Get cover photo from backend
+  const coverPhoto = getImageUrl(attrs.coverPhoto) || '';
   
-  if (!coverImage && attrs.youtubeLink) {
-    let videoId = attrs.youtubeLink.split('v=')[1]?.split('&')[0];
-    if (!videoId && attrs.youtubeLink.includes('youtu.be')) videoId = attrs.youtubeLink.split('/').pop();
-    if (videoId) {
-      coverImage = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
-    }
+  // Determine the video link from available sources
+  const videoLink = attrs.youtubeLink || attrs.instagramLink || attrs.tiktokLink || attrs.facebookLink || '';
+  
+  // Extract thumbnail from video link if available
+  let thumbnail = coverPhoto;
+  if (videoLink) {
+    const extractedThumbnail = await extractVideoThumbnail(videoLink);
+    // Use getThumbnailUrl to apply fallback logic
+    thumbnail = getThumbnailUrl({ cover_photo: coverPhoto }, extractedThumbnail);
   }
 
   return {
@@ -25,10 +30,11 @@ const transformProject = (project) => {
     title: attrs.name || attrs.title || '',
     slug: attrs.slug || '',
     category: attrs.client || attrs.tag || '',
-    image: coverImage,
+    image: thumbnail,
+    thumbnail: thumbnail, // Add explicit thumbnail field
     description: attrs.description || '',
     client: attrs.client || '',
-    videoUrl: attrs.youtubeLink || attrs.instagramLink || attrs.tiktokLink || '',
+    videoUrl: videoLink,
     likes: attrs.likes || 0,
     workers: (attrs.workers || []).map((w) => ({
       id: w.id,
@@ -49,7 +55,13 @@ const transformProject = (project) => {
 export const fetchAllProjects = async () => {
   try {
     const data = await apiFetch('/projects');
-    return (data.data || data || []).map(transformProject);
+    const projects = data.data || data || [];
+    // Transform projects sequentially to handle async thumbnail extraction
+    const transformedProjects = [];
+    for (const project of projects) {
+      transformedProjects.push(await transformProject(project));
+    }
+    return transformedProjects;
   } catch (error) {
     console.error('Failed to fetch projects:', error);
     return [];
@@ -60,7 +72,13 @@ export const fetchAllProjects = async () => {
 export const fetchFeaturedProjects = async (limit = 5) => {
   try {
     const data = await apiFetch('/projects');
-    return (data.data || data || []).slice(0, limit).map(transformProject);
+    const projects = (data.data || data || []).slice(0, limit);
+    // Transform projects sequentially to handle async thumbnail extraction
+    const transformedProjects = [];
+    for (const project of projects) {
+      transformedProjects.push(await transformProject(project));
+    }
+    return transformedProjects;
   } catch (error) {
     console.error('Failed to fetch featured projects:', error);
     return [];
@@ -71,7 +89,7 @@ export const fetchFeaturedProjects = async (limit = 5) => {
 export const fetchProjectById = async (id) => {
   try {
     const data = await apiFetch(`/projects/${id}`);
-    return transformProject(data.data || data);
+    return await transformProject(data.data || data);
   } catch (error) {
     console.error('Failed to fetch project:', error);
     throw new Error('Project not found');
@@ -84,7 +102,7 @@ export const fetchProjectBySlug = async (slug) => {
     const data = await apiFetch('/projects');
     const projects = (data.data || data || []).filter((p) => p.slug === slug);
     if (projects.length === 0) throw new Error('Project not found');
-    return transformProject(projects[0]);
+    return await transformProject(projects[0]);
   } catch (error) {
     console.error('Failed to fetch project by slug:', error);
     throw new Error('Project not found');

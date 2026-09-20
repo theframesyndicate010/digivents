@@ -4,3 +4,4 @@ public/uploads/*
 !public/uploads/projects/.gitkeep
 *.log
 .DS_Store
+.env.

@@ -155,7 +155,7 @@ exports.login = async (req, res) => {
         // Check if this is a form submission
         const isFormSubmission = req.headers['content-type']?.includes('application/x-www-form-urlencoded');
         if (isFormSubmission) {
-            return res.render('admin/login', { 
+            return res.status(500).render('admin/login', {
                 title: 'Login',
                 message: null,
                 error: 'An error occurred during login. Please try again.' 
@@ -270,4 +270,3 @@ exports.refreshToken = async (req, res) => {
         res.status(500).json({ message: 'Server error' });
     }
 };
-

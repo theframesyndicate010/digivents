@@ -85,7 +85,7 @@ async function ensureProjectsTable() {
     if (exists) return;
 
     await db.schema.createTable('projects', (table) => {
-        table.increments('id').primary();
+        table.string('id', 36).primary();
         table.string('name').notNullable();
         table.text('description');
         table.string('tag');
@@ -108,7 +108,7 @@ async function ensureClientsTable() {
     if (exists) return;
 
     await db.schema.createTable('clients', (table) => {
-        table.increments('id').primary();
+        table.string('id', 36).primary();
         table.string('name').notNullable();
         table.string('website');
         table.string('instagram_link');
@@ -124,7 +124,7 @@ async function ensureCreatorsTable() {
     if (existing) return existing;
 
     await db.schema.createTable('creators', (table) => {
-        table.increments('id').primary();
+        table.string('id', 36).primary();
         table.string('name').notNullable();
         table.string('photo');
         table.string('role');
@@ -141,7 +141,7 @@ async function ensureGraphicsTable() {
     if (exists) return;
 
     await db.schema.createTable('graphics', (table) => {
-        table.increments('id').primary();
+        table.string('id', 36).primary();
         table.string('name').notNullable();
         table.text('description');
         table.string('photo').notNullable();
@@ -155,7 +155,7 @@ async function ensureContactsTable() {
     if (exists) return;
 
     await db.schema.createTable('contacts', (table) => {
-        table.increments('id').primary();
+        table.string('id', 36).primary();
         table.string('first_name');
         table.string('last_name');
         table.string('name');
@@ -173,7 +173,7 @@ async function ensureMessagesTable() {
     if (existing) return existing;
 
     await db.schema.createTable('messages', (table) => {
-        table.increments('id').primary();
+        table.string('id', 36).primary();
         table.string('first_name');
         table.string('last_name');
         table.string('name');

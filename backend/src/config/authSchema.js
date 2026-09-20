@@ -24,6 +24,17 @@ const ensureAuthSchema = async (db) => {
             table.timestamp('created_at').notNullable().defaultTo(db.fn.now());
         });
     }
+
+    for (const tableName of ['projects', 'clients', 'creators', 'graphics', 'contacts', 'messages', 'posts']) {
+        if (await db.schema.hasTable(tableName)) {
+            const column = await db(tableName).columnInfo('id');
+            if (String(column.type).toLowerCase().startsWith('int')) {
+                await db.schema.alterTable(tableName, (table) => {
+                    table.string('id', 36).notNullable().alter();
+                });
+            }
+        }
+    }
 };
 
 module.exports = { ensureAuthSchema };

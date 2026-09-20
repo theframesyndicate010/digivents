@@ -31,7 +31,7 @@ exports.getGraphicById = async (id) => {
 };
 
 exports.createGraphic = async (data, file) => {
-    const { name, title, description } = data;
+    const { name, description } = data;
     
     // Trim the name field before validation
     const trimmedName = (name || '').trim();
@@ -62,7 +62,6 @@ exports.createGraphic = async (data, file) => {
     const payload = {
         id: crypto.randomUUID(),
         name: trimmedName,
-        title: title || trimmedName,
         description: description || null,
         photo
     };
@@ -83,10 +82,9 @@ exports.updateGraphic = async (id, data, file) => {
         throw error;
     }
 
-    const { name, title, description } = data;
+    const { name, description } = data;
     const payload = {
         ...(name !== undefined ? { name } : {}),
-        ...(title !== undefined ? { title } : {}),
         ...(description !== undefined ? { description } : {}),
         ...(file ? { photo: `/uploads/graphics/${file}` } : {}),
         updated_at: db.fn.now()

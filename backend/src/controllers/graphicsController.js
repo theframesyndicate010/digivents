@@ -1,5 +1,7 @@
 const graphicService = require('../services/graphicService');
 const { successResponse, errorResponse } = require('../utils/apiResponse');
+const fs = require('fs/promises');
+const path = require('path');
 const BASE_URL = process.env.BASE_URL || '';
 
 exports.getGraphics = async (req, res) => {
@@ -66,6 +68,9 @@ exports.createGraphic = async (req, res) => {
         return successResponse(res, 'Graphic added successfully', newGraphic, 201);
     } catch (err) {
         console.error('[GRAPHICS_CONTROLLER] Error creating graphic:', err);
+        if (req.file?.path) {
+            await fs.unlink(path.resolve(req.file.path)).catch(() => {});
+        }
         // Use the error's message if it's an operational error, otherwise use generic message
         const message = err.isOperational ? err.message : 'Failed to add graphic';
         return errorResponse(res, message, err, err.statusCode || 500);

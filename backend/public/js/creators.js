@@ -43,12 +43,13 @@ document.addEventListener('DOMContentLoaded', function () {
             tableBody.innerHTML = items.map(function (creator) {
                 const id = ui.escapeHtml(creator.id || '');
                 const name = ui.escapeHtml(creator.name || 'Unnamed');
+                const designation = creator.role ? '<div class="text-xs text-gray-500">' + ui.escapeHtml(creator.role) + '</div>' : '';
                 const photo = creator.photo
                     ? '<img class="h-10 w-10 rounded-full object-cover" src="' + ui.escapeHtml(creator.photo) + '" alt="Creator photo">'
                     : '<div class="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-500"><i class="fas fa-user"></i></div>';
 
                 return '<tr>' +
-                    '<td class="px-6 py-4 whitespace-nowrap"><div class="flex items-center"><div class="h-10 w-10 flex-shrink-0">' + photo + '</div><div class="ml-4"><div class="text-sm font-medium text-gray-900">' + name + '</div><div class="text-xs text-gray-500">ID: ' + id + '</div></div></div></td>' +
+                    '<td class="px-6 py-4 whitespace-nowrap"><div class="flex items-center"><div class="h-10 w-10 flex-shrink-0">' + photo + '</div><div class="ml-4"><div class="text-sm font-medium text-gray-900">' + name + '</div>' + designation + '<div class="text-xs text-gray-500">ID: ' + id + '</div></div></div></td>' +
                     '<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">' + ui.escapeHtml(ui.formatDate(creator.created_at)) + '</td>' +
                     '<td class="px-6 py-4 whitespace-nowrap text-sm font-medium"><a href="/admin/edit-creator/' + id + '" class="text-indigo-600 hover:text-indigo-900 mr-3">Edit</a><button class="text-red-600 hover:text-red-900" type="button" data-delete-creator-id="' + id + '">Delete</button></td>' +
                 '</tr>';
@@ -59,6 +60,7 @@ document.addEventListener('DOMContentLoaded', function () {
             mobileList.innerHTML = items.map(function (creator) {
                 const id = ui.escapeHtml(creator.id || '');
                 const name = ui.escapeHtml(creator.name || 'Unnamed');
+                const designation = creator.role ? '<p class="text-sm text-gray-600">' + ui.escapeHtml(creator.role) + '</p>' : '';
                 const photo = creator.photo
                     ? '<img class="h-16 w-16 rounded-full object-cover border-2 border-gray-200" src="' + ui.escapeHtml(creator.photo) + '" alt="Creator photo">'
                     : '<div class="h-16 w-16 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 border-2 border-gray-200"><i class="fas fa-user text-2xl"></i></div>';
@@ -69,6 +71,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         '<div class="flex-shrink-0">' + photo + '</div>' +
                         '<div class="flex-1 min-w-0">' +
                             '<h3 class="mobile-card-title truncate">' + name + '</h3>' +
+                            designation +
                             '<p class="text-xs text-gray-500">ID: ' + id + '</p>' +
                             '<p class="text-xs text-gray-500 mt-1">Created: ' + createdDate + '</p>' +
                         '</div>' +

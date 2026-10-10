@@ -37,4 +37,29 @@ const ensureAuthSchema = async (db) => {
     }
 };
 
-module.exports = { ensureAuthSchema };
+// Migration 003 (dynamic testimonials + client logo) is only replayed by
+// docker-entrypoint-initdb.d on first volume creation. This bootstrap brings
+// long-lived volumes up to the same shape at boot. Every check is guarded, so
+// it is a no-op once the columns/table exist.
+const ensureContentSchema = async (db) => {
+    if (!(await db.schema.hasTable('testimonials'))) {
+        await db.schema.createTable('testimonials', (table) => {
+            table.string('id', 36).notNullable().primary();
+            table.string('name', 255).notNullable();
+            table.text('text').notNullable();
+            table.string('avatar', 500);
+            table.integer('position').notNullable().defaultTo(0);
+            table.boolean('is_active').notNullable().defaultTo(true);
+            table.timestamp('created_at').notNullable().defaultTo(db.fn.now());
+            table.timestamp('updated_at').notNullable().defaultTo(db.fn.now());
+        });
+    }
+
+    if (await db.schema.hasTable('clients') && !(await db.schema.hasColumn('clients', 'logo'))) {
+        await db.schema.alterTable('clients', (table) => {
+            table.string('logo', 500).nullable();
+        });
+    }
+};
+
+module.exports = { ensureAuthSchema, ensureContentSchema };

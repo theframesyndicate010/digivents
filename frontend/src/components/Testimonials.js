@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { HiChevronLeft, HiChevronRight } from 'react-icons/hi';
 import { FiStar } from 'react-icons/fi';
+
+import { fetchHomeTestimonials } from '../data/clientsApi';
 
 // Import images from your assets folder
 import benidhi from '../assets/benidhi.jpeg';
@@ -10,23 +12,29 @@ import shivam from '../assets/shivam.jpeg';
 import goldCup from '../assets/gold-cup.jpeg';
 
 
-const testimonials = [
+// Fallback used only while loading, or if the API is unreachable — so the
+// section never renders empty.
+const FALLBACK_TESTIMONIALS = [
   {
+    id: 'fallback-1',
     text: 'We wanted to improve our online presence and reach more customers. Digivents helped us with digital marketing and the results have been very positive for our business.',
     name: 'Bednidhi Traders',
     avatar: benidhi
   },
   {
+    id: 'fallback-2',
     text: 'Working with Digivents has been a smooth experience. They helped us grow our visibility online and connect with more people who need our services',
     name: 'Advance Pain Specialist Clinic',
     avatar: clinic
   },
   {
+    id: 'fallback-3',
     text: 'Our social media presence has improved a lot. We are now reaching the right audience for our housing projects',
     name: 'Shivam Housing',
     avatar: shivam
   },
   {
+    id: 'fallback-4',
     text: 'With Digivents’ support, our match updates and schedules reached fans instantly. The engagement this season was outstanding.',
     name: 'Jhapa Gold Cup',
     avatar: goldCup
@@ -41,6 +49,21 @@ const slideVariants = {
 
 const Testimonials = () => {
   const [[current, direction], setCurrent] = useState([0, 0]);
+  const [testimonials, setTestimonials] = useState(FALLBACK_TESTIMONIALS);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    fetchHomeTestimonials().then((rows) => {
+      // Only swap in API data when there is some; otherwise keep the fallback.
+      if (!cancelled && rows.length > 0) {
+        setTestimonials(rows);
+        setCurrent([0, 0]);
+      }
+    });
+
+    return () => { cancelled = true; };
+  }, []);
 
   const next = () => setCurrent([(current + 1) % testimonials.length, 1]);
   const prev = () => setCurrent([(current - 1 + testimonials.length) % testimonials.length, -1]);
@@ -123,17 +146,25 @@ const Testimonials = () => {
                   transition={{ delay: 0.4 }}
                   className="flex items-center gap-4"
                 >
-                  <motion.img
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    transition={{ delay: 0.5, type: 'spring' }}
-                    src={testimonial.avatar}
-                    alt={testimonial.name}
-                    className="w-14 h-14 rounded-full object-cover border-2 border-white/20"
-                  />
+                  {testimonial.avatar ? (
+                    <motion.img
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ delay: 0.5, type: 'spring' }}
+                      src={testimonial.avatar}
+                      alt={testimonial.name}
+                      className="w-14 h-14 rounded-full object-cover border-2 border-white/20"
+                    />
+                  ) : (
+                    <div className="w-14 h-14 rounded-full bg-white/10 border-2 border-white/20 flex items-center justify-center text-white/60 font-semibold">
+                      {(testimonial.name || '?').charAt(0).toUpperCase()}
+                    </div>
+                  )}
                   <div>
                     <h4 className="text-white font-semibold">{testimonial.name}</h4>
-                    <p className="text-white/40 text-sm">{testimonial.title}</p>
+                    {testimonial.title && (
+                      <p className="text-white/40 text-sm">{testimonial.title}</p>
+                    )}
                   </div>
                 </motion.div>
               </motion.div>

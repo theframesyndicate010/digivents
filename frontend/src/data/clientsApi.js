@@ -63,3 +63,23 @@ export const fetchTestimonials = async () => {
     return [];
   }
 };
+
+// Fetch the testimonials rendered on the home page.
+// Shape mirrors the component's usage: { id, name, text, avatar, title }
+export const fetchHomeTestimonials = async () => {
+  try {
+    const data = await apiFetch('/testimonials');
+    const rows = data.data || data || [];
+    if (!Array.isArray(rows) || rows.length === 0) return [];
+
+    return rows.map((row) => ({
+      id: row.id,
+      name: row.name || '',
+      text: row.text || '',
+      avatar: getImageUrl(row.avatar),
+    }));
+  } catch (error) {
+    console.error('Failed to fetch home testimonials:', error);
+    return [];
+  }
+};

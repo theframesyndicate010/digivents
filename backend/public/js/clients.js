@@ -24,6 +24,14 @@ document.addEventListener('DOMContentLoaded', function () {
         return parts.join(' ');
     }
 
+    function logoThumb(client) {
+        const initial = ui.escapeHtml((client.name || '?').charAt(0).toUpperCase());
+        const style = 'h-9 w-9 rounded object-cover bg-gray-100 flex-shrink-0';
+        return client.logo
+            ? '<img src="' + ui.escapeHtml(client.logo) + '" alt="' + ui.escapeHtml(client.name || 'Client logo') + '" class="' + style + '" onerror="this.outerHTML=\'<span class=\\\'h-9 w-9 rounded bg-gray-100 flex-shrink-0 flex items-center justify-center text-sm font-semibold text-gray-500\\\'>' + initial + '</span>\'">'
+            : '<span class="h-9 w-9 rounded bg-gray-100 flex-shrink-0 flex items-center justify-center text-sm font-semibold text-gray-500">' + initial + '</span>';
+    }
+
     function renderClients(clients) {
         const tableBody = document.getElementById('clientsTableBody');
         const mobileList = document.getElementById('clientsMobileList');
@@ -42,7 +50,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 const name = ui.escapeHtml(client.name || 'Unnamed');
                 const website = client.website ? '<a href="' + ui.escapeHtml(client.website) + '" target="_blank" class="hover:underline text-blue-600">' + ui.escapeHtml(client.website) + '</a>' : '-';
                 return '<tr>' +
-                    '<td class="px-6 py-4 whitespace-nowrap"><div class="text-sm font-medium text-gray-900">' + name + '</div><div class="text-xs text-gray-500">ID: ' + id + '</div></td>' +
+                    '<td class="px-6 py-4 whitespace-nowrap"><div class="flex items-center gap-3">' + logoThumb(client) + '<div><div class="text-sm font-medium text-gray-900">' + name + '</div><div class="text-xs text-gray-500">ID: ' + id + '</div></div></div></td>' +
                     '<td class="px-6 py-4 whitespace-nowrap text-sm">' + website + '</td>' +
                     '<td class="px-6 py-4 whitespace-nowrap"><div class="flex space-x-3 text-lg">' + socialLinks(client) + '</div></td>' +
                     '<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">' + ui.escapeHtml(ui.formatDate(client.created_at)) + '</td>' +
@@ -59,7 +67,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 const createdDate = ui.escapeHtml(ui.formatDate(client.created_at));
                 return '<div class="mobile-card">' +
                     '<div class="mobile-card-header">' +
-                        '<div><h3 class="mobile-card-title">' + name + '</h3><div class="text-xs text-gray-500 mt-1">ID: ' + id + '</div></div>' +
+                        '<div class="flex items-center gap-3">' + logoThumb(client) + '<div><h3 class="mobile-card-title">' + name + '</h3><div class="text-xs text-gray-500 mt-1">ID: ' + id + '</div></div></div>' +
                         '<div class="text-xs text-gray-500 text-right">' + createdDate + '</div>' +
                     '</div>' +
                     '<div class="mobile-card-body">' +

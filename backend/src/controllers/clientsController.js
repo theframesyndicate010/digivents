@@ -24,7 +24,7 @@ exports.getClientById = async (req, res, next) => {
 
 exports.createClient = async (req, res, next) => {
     try {
-        const newClient = await clientService.createClient(req.body);
+        const newClient = await clientService.createClient(req.body, req.file);
         return successResponse(res, 'Client added successfully', newClient, 201);
     } catch (error) {
         console.error('[CREATE CLIENT ERROR]', error);
@@ -35,7 +35,7 @@ exports.createClient = async (req, res, next) => {
 exports.updateClient = async (req, res, next) => {
     try {
         const { id } = req.params;
-        const updatedClient = await clientService.updateClient(id, req.body);
+        const updatedClient = await clientService.updateClient(id, req.body, req.file);
         return successResponse(res, 'Client updated successfully', updatedClient);
     } catch (error) {
         console.error(`[UPDATE CLIENT ${req.params.id} ERROR]`, error);

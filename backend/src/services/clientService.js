@@ -1,6 +1,11 @@
 const db = require('../config/db');
 const crypto = require('crypto');
 
+// Multer maps any URL containing "/clients" to the "images" subfolder.
+const UPLOAD_ROOT = 'uploads';
+const CLIENT_UPLOAD_SUBDIR = 'images';
+const buildLogoPath = (file) => `/${UPLOAD_ROOT}/${CLIENT_UPLOAD_SUBDIR}/${file.filename}`;
+
 const normalizeClient = (row) => {
     if (!row) return null;
     return {
@@ -10,6 +15,7 @@ const normalizeClient = (row) => {
         instagram_link: row.instagram_link || '',
         facebook_link: row.facebook_link || '',
         tiktok_link: row.tiktok_link || '',
+        logo: row.logo || '',
         created_at: row.created_at,
         updated_at: row.updated_at
     };
@@ -31,7 +37,7 @@ exports.getClientById = async (id) => {
     return normalizeClient(client);
 };
 
-exports.createClient = async (data) => {
+exports.createClient = async (data, file) => {
     // Support both camelCase (frontend) and snake_case (DB/service) fields
     const {
         name,
@@ -41,9 +47,10 @@ exports.createClient = async (data) => {
         tiktok_link,
         instagramLink,
         facebookLink,
-        tiktokLink
+        tiktokLink,
+        logo
     } = data;
-    
+
     if (!name) {
         const error = new Error('Client name is required');
         error.statusCode = 400;
@@ -57,16 +64,17 @@ exports.createClient = async (data) => {
         website: website || null,
         instagram_link: instagram_link ?? instagramLink ?? null,
         facebook_link: facebook_link ?? facebookLink ?? null,
-        tiktok_link: tiktok_link ?? tiktokLink ?? null
+        tiktok_link: tiktok_link ?? tiktokLink ?? null,
+        logo: file ? buildLogoPath(file) : (logo || null)
     };
 
     await db('clients').insert(payload);
-    
+
     const newClient = await db('clients').where({ id: payload.id }).first();
     return normalizeClient(newClient);
 };
 
-exports.updateClient = async (id, data) => {
+exports.updateClient = async (id, data, file) => {
     const existing = await db('clients').where({ id }).first();
     if (!existing) {
         const error = new Error('Client not found');
@@ -83,7 +91,8 @@ exports.updateClient = async (id, data) => {
         tiktok_link,
         instagramLink,
         facebookLink,
-        tiktokLink
+        tiktokLink,
+        logo
     } = data;
 
     const payload = {
@@ -98,6 +107,11 @@ exports.updateClient = async (id, data) => {
         ...(tiktok_link !== undefined || tiktokLink !== undefined
             ? { tiktok_link: tiktok_link ?? tiktokLink ?? null }
             : {}),
+        // An uploaded file always wins; otherwise honour an explicit `logo`
+        // (including "" to clear it). Omitting both preserves the current logo.
+        ...(file
+            ? { logo: buildLogoPath(file) }
+            : (logo !== undefined ? { logo: logo || null } : {})),
         updated_at: db.fn.now()
     };
 

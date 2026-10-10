@@ -22,3 +22,4 @@ async function resolveTable(candidates) {
 
 exports.getMessagesTable = () => resolveTable(['messages', 'contacts']);
 exports.getCreatorsTable = () => resolveTable(['creators']);
+exports.getTestimonialsTable = () => resolveTable(['testimonials']);

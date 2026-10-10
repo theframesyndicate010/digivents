@@ -15,6 +15,7 @@ router.use('/creators', creatorsRoutes);
 router.use('/clients', require('./clients.routes'));
 router.use('/graphics', require('./graphics.routes'));
 router.use('/posts', require('./posts.routes'));
+router.use('/testimonials', require('./testimonials.routes'));
 
 // Admin stats used by the SSR dashboard (JSON endpoint)
 router.get('/admin/stats', requireApiAdmin, adminStatsController.getAdminStats);

@@ -5,7 +5,7 @@ const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const rateLimit = require('express-rate-limit');
 const db = require('./src/config/db');
-const { ensureAuthSchema } = require('./src/config/authSchema');
+const { ensureAuthSchema, ensureContentSchema } = require('./src/config/authSchema');
 const app = express();
 
 const PORT = process.env.PORT || 3000;
@@ -152,6 +152,7 @@ app.use((req, res) => {
 });
 
 ensureAuthSchema(db)
+    .then(() => ensureContentSchema(db))
     .then(() => {
         app.listen(PORT, () => {
             console.log(`Server listening on port ${PORT}!`);

@@ -35,7 +35,7 @@ exports.getTestimonialById = async (req, res, next) => {
 
 exports.createTestimonial = async (req, res, next) => {
     try {
-        const newTestimonial = await testimonialService.createTestimonial(req.body);
+        const newTestimonial = await testimonialService.createTestimonial(req.body, req.file);
         return successResponse(res, 'Testimonial added successfully', newTestimonial, 201);
     } catch (error) {
         console.error('[CREATE TESTIMONIAL ERROR]', error);
@@ -46,7 +46,7 @@ exports.createTestimonial = async (req, res, next) => {
 exports.updateTestimonial = async (req, res, next) => {
     try {
         const { id } = req.params;
-        const updated = await testimonialService.updateTestimonial(id, req.body);
+        const updated = await testimonialService.updateTestimonial(id, req.body, req.file);
         return successResponse(res, 'Testimonial updated successfully', updated);
     } catch (error) {
         console.error(`[UPDATE TESTIMONIAL ${req.params.id} ERROR]`, error);

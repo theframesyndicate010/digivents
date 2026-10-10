@@ -53,6 +53,7 @@ function getUploadSubfolderByType(file, req) {
     // Map URL patterns to subfolders
     if (url.includes('/creators')) return 'creators';
     if (url.includes('/clients')) return 'images';
+    if (url.includes('/testimonials')) return 'images';
     if (url.includes('/projects')) return 'projects';
     if (url.includes('/graphics')) return 'graphics';
     

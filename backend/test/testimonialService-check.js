@@ -62,6 +62,66 @@ test('createTestimonial persists the row and normalizes is_active', async () => 
     assert.equal(row.name, 'Bednidhi Traders');
 });
 
+test('createTestimonial accepts the camelCase isActive flag', async () => {
+    const row = seed({ name: 'Camel', is_active: false });
+    await db('testimonials').insert(row);
+
+    await testimonialService.updateTestimonial(row.id, { isActive: false });
+    const updated = await testimonialService.getTestimonialById(row.id);
+    assert.equal(updated.is_active, false);
+});
+
+// multipart/form-data always sends strings, so the admin <select> posting
+// "true"/"false" must not reach the TINYINT column as a string.
+test('is_active accepts string "true"/"false" from form posts', async () => {
+    const a = await testimonialService.createTestimonial({ name: 'Str T', text: 't', is_active: 'true' });
+    assert.equal(a.is_active, true);
+
+    const b = await testimonialService.createTestimonial({ name: 'Str F', text: 't', is_active: 'false' });
+    assert.equal(b.is_active, false);
+
+    const c = await testimonialService.createTestimonial({ name: 'Str 1', text: 't', is_active: '1' });
+    assert.equal(c.is_active, true);
+
+    const d = await testimonialService.createTestimonial({ name: 'Str 0', text: 't', is_active: '0' });
+    assert.equal(d.is_active, false);
+});
+
+test('is_active defaults to true when absent from a form post', async () => {
+    const a = await testimonialService.createTestimonial({ name: 'Default', text: 't' });
+    assert.equal(a.is_active, true);
+});
+
+test('an uploaded photo is stored under /uploads/images', async () => {
+    const created = await testimonialService.createTestimonial(
+        { name: 'With Photo', text: 't' },
+        { filename: 'someone-20260101.png' }
+    );
+    assert.equal(created.avatar, '/uploads/images/someone-20260101.png');
+});
+
+test('updateTestimonial preserves the avatar when no file is sent', async () => {
+    const created = await testimonialService.createTestimonial(
+        { name: 'Keep Photo', text: 't' },
+        { filename: 'keep-20260101.png' }
+    );
+
+    const updated = await testimonialService.updateTestimonial(created.id, { text: 'changed' });
+    assert.equal(updated.avatar, created.avatar);
+});
+
+test('updateTestimonial replaces the avatar when a new file is sent', async () => {
+    const created = await testimonialService.createTestimonial(
+        { name: 'Swap Photo', text: 't' },
+        { filename: 'old.png' }
+    );
+
+    const updated = await testimonialService.updateTestimonial(
+        created.id, { text: 'changed' }, { filename: 'new.png' }
+    );
+    assert.equal(updated.avatar, '/uploads/images/new.png');
+});
+
 test('createTestimonial defaults position to 0', async () => {
     const created = await testimonialService.createTestimonial({ name: 'N', text: 'T' });
     assert.equal(created.position, 0);

@@ -89,6 +89,34 @@ router.get('/edit-client/:id', (req, res) => {
 });
 
 // ============================================
+// TESTIMONIALS
+// ============================================
+router.get('/testimonials', (req, res) => {
+    res.render('admin/testimonials', {
+        title: 'Testimonials',
+        currentPage: 'testimonials',
+        user: req.user || null
+    });
+});
+
+router.get('/add-testimonial', (req, res) => {
+    res.render('admin/add-testimonial', {
+        title: 'Add Testimonial',
+        currentPage: 'testimonials',
+        user: req.user || null
+    });
+});
+
+router.get('/edit-testimonial/:id', (req, res) => {
+    res.render('admin/edit-testimonial', {
+        title: 'Edit Testimonial',
+        currentPage: 'testimonials',
+        user: req.user || null,
+        id: req.params.id
+    });
+});
+
+// ============================================
 // CREATORS
 // ============================================
 router.get('/creators', (req, res) => {

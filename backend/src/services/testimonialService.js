@@ -2,6 +2,11 @@ const db = require('../config/db');
 const crypto = require('crypto');
 const { getTestimonialsTable } = require('../utils/tableResolver');
 
+// Multer maps any URL containing "/testimonials" to the "images" subfolder.
+const AVATAR_ROOT = 'uploads';
+const AVATAR_SUBDIR = 'images';
+const buildAvatarPath = (file) => `/${AVATAR_ROOT}/${AVATAR_SUBDIR}/${file.filename}`;
+
 const normalizeTestimonial = (row) => {
     if (!row) return null;
     return {
@@ -19,6 +24,17 @@ const normalizeTestimonial = (row) => {
 // Pulls `text` from either `text` (backend/DB) or `testimonial`/`body`, which is
 // what the React component historically called the field.
 const pickText = ({ text, testimonial, body }) => text ?? testimonial ?? body;
+
+// multipart/form-data always delivers strings, so an admin <select> posting
+// "true"/"false" must be coerced before it reaches the TINYINT column.
+const toBool = (value, fallback = true) => {
+    if (value === undefined || value === null || value === '') return fallback;
+    if (typeof value === 'boolean') return value;
+    const s = String(value).toLowerCase();
+    if (s === 'true' || s === '1' || s === 'yes' || s === 'on') return true;
+    if (s === 'false' || s === '0' || s === 'no' || s === 'off') return false;
+    return fallback;
+};
 
 exports.fetchAllTestimonials = async () => {
     const table = await getTestimonialsTable();
@@ -51,7 +67,7 @@ exports.getTestimonialById = async (id) => {
     return normalizeTestimonial(row);
 };
 
-exports.createTestimonial = async (data) => {
+exports.createTestimonial = async (data, file) => {
     const { name, avatar, position, is_active, isActive } = data;
     const text = pickText(data);
 
@@ -73,16 +89,16 @@ exports.createTestimonial = async (data) => {
         id: crypto.randomUUID(),
         name,
         text,
-        avatar: avatar || null,
+        avatar: file ? buildAvatarPath(file) : (avatar || null),
         position: position !== undefined && position !== '' ? Number(position) || 0 : 0,
-        is_active: is_active ?? isActive ?? true
+        is_active: toBool(is_active ?? isActive, true)
     };
 
     await db(table).insert(payload);
     return normalizeTestimonial(await db(table).where({ id: payload.id }).first());
 };
 
-exports.updateTestimonial = async (id, data) => {
+exports.updateTestimonial = async (id, data, file) => {
     const table = await getTestimonialsTable();
     const existing = await db(table).where({ id }).first();
     if (!existing) {
@@ -98,10 +114,14 @@ exports.updateTestimonial = async (id, data) => {
     const payload = {
         ...(name !== undefined ? { name } : {}),
         ...(text !== undefined ? { text } : {}),
-        ...(avatar !== undefined ? { avatar: avatar || null } : {}),
+        // An uploaded file always wins; otherwise honour an explicit `avatar`
+        // (including "" to clear it). Omitting both keeps the stored photo.
+        ...(file
+            ? { avatar: buildAvatarPath(file) }
+            : (avatar !== undefined ? { avatar: avatar || null } : {})),
         ...(position !== undefined ? { position: Number(position) || 0 } : {}),
         ...(is_active !== undefined || isActive !== undefined
-            ? { is_active: is_active ?? isActive ?? true }
+            ? { is_active: toBool(is_active ?? isActive, true) }
             : {}),
         updated_at: db.fn.now()
     };
